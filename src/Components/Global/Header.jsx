@@ -1,18 +1,28 @@
 import { Typography, Box } from "@mui/material";
+import { Container } from "@mui/system";
 
 const Header = ({ title, subtitle }) => {
   return (
-    <Box mb="10px">
-      <Typography
-        variant="h4"
-        color={"#374151"}
-        sx={{ fontWeight: "bold", fontSize: "26px" }}
+    <Box sx={{ display: "grid" }}>
+      <Box
+        sx={{
+          display: "block",
+          color: "#374151",
+          textAlign: "start",
+        }}
       >
-        {title}
-      </Typography>
-      <Typography variant="h5" sx={{ color: "#1b9359", fontSize: "22px" }}>
-        {subtitle}
-      </Typography>
+        <Typography
+          variant="h4"
+          sx={{ fontWeight: "bold", fontSize: "26px", float: "left" }}
+        >
+          {title}
+        </Typography>
+      </Box>
+      <Box sx={{ textAlign: "start" }}>
+        <Typography variant="h5" sx={{ color: "#1b9359", fontSize: "22px" }}>
+          {subtitle}
+        </Typography>
+      </Box>
     </Box>
   );
 };

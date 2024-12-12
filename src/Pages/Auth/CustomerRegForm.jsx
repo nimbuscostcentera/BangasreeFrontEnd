@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import moment from "moment";
@@ -64,6 +70,10 @@ export default function CustomerRegForm() {
     AplicantPhoto: null,
     Customersignature: null,
   });
+  let IdProofPhotoRef = useRef(null);
+  let AplicantPhotoRef = useRef(null);
+  let CustomersignatureRef = useRef(null);
+
   const [rawData, setRawData] = useState({
     CustomerName: a ? a?.CustomerName : null,
     PhoneNumber: a ? a?.PhoneNumber : null,
@@ -109,47 +119,52 @@ export default function CustomerRegForm() {
     "BranchId"
   );
 
+  const ResetHandler = () => {
+    if (IdProofPhotoRef.current) IdProofPhotoRef.current.value = "";
+    if (AplicantPhotoRef.current) AplicantPhotoRef.current.value = "";
+    if (CustomersignatureRef.current) CustomersignatureRef.current.value = "";
+    setInput({
+      CustomerName: true,
+      phn: true,
+      phn1: true,
+      Guardian: true,
+      Occupation: true,
+      Email: true,
+      AccountNo: true,
+      IdProofNumber: true,
+      NomineeIdProofNumber: true,
+    });
+    setRawData({
+      IdProofType: null,
+      BranchId: null,
+      AgentCode: null,
+      CustomerName: null,
+      PhoneNumber: null,
+      AlternateNo: null,
+      Occupation: null,
+      Guardian: null,
+      DOB: null,
+      Sex: null,
+      Email: null,
+      Address: null,
+      LocalBody: null,
+      LandMark: null,
+      IdProofNumber: null,
+      IdProofPhoto: null,
+      AplicantPhoto: null,
+      Customersignature: null,
+    });
+    setPic({
+      IdProofPhoto: null,
+      AplicantPhoto: null,
+      Customersignature: null,
+    });
+  };
   //toaster
   useEffect(() => {
     if (!isloading7 && isSuccess7) {
       toast.success(`${msg7}`, toast.POSITION.TOP_RIGHT);
-      document.getElementById("CustRegForm").reset();
-      setInput({
-        CustomerName: true,
-        phn: true,
-        phn1: true,
-        Guardian: true,
-        Occupation: true,
-        Email: true,
-        AccountNo: true,
-        IdProofNumber: true,
-        NomineeIdProofNumber: true,
-      });
-      setRawData({
-        IdProofType: null,
-        BranchId: null,
-        AgentCode: null,
-        CustomerName: null,
-        PhoneNumber: null,
-        AlternateNo: null,
-        Occupation: null,
-        Guardian: null,
-        DOB: null,
-        Sex: null,
-        Email: null,
-        Address: null,
-        LocalBody: null,
-        LandMark: null,
-        IdProofNumber: null,
-        IdProofPhoto: null,
-        AplicantPhoto: null,
-        Customersignature: null,
-      });
-      setPic({
-        IdProofPhoto: null,
-        AplicantPhoto: null,
-        Customersignature: null,
-      });
+      ResetHandler();
       dispatch(ClearState7());
       navigate("/superuser/customermanagement");
     }
@@ -237,7 +252,7 @@ export default function CustomerRegForm() {
     } else if (userInfo?.details?.Utype == 2) {
       freshData.SuperUserID = userInfo?.details?.SuperUserID;
       freshData.AgentCode = a?.AgentCode || userInfo?.details?.AgentCode;
-      freshData.BranchId = a?.BranchId||userInfo?.details?.BranchId;
+      freshData.BranchId = a?.BranchId || userInfo?.details?.BranchId;
     }
 
     if (typeof a == "object") {
@@ -640,7 +655,7 @@ export default function CustomerRegForm() {
                 name="Address"
                 required
                 id="Address"
-                value={rawData?.Address || a?.Address}
+                value={rawData?.Address || a?.Address||""}
                 InputLabelProps={{ shrink: true }}
                 label="Address"
                 fullWidth
@@ -951,12 +966,15 @@ export default function CustomerRegForm() {
 
             <Grid item xs={12} sm={12} md={12} lg={12}>
               Upload Id Proof of Applicant (Passport/Aadhar card / voter ID card
-              /Driving license) :{"\t\t"}
-              {/* <CameraComponent cameraKey="first" />
-            <ImageDisplay cameraKey="first" /> */}
-              <Input
+              /Driving license) :{"\n"}
+              <input
                 id={"custIdProofPic"}
-                fullWidth
+                style={{
+                  width: "90%",
+                  padding: "5px",
+                  borderBottom: "1px solid grey",
+                }}
+                ref={IdProofPhotoRef}
                 type="file"
                 onChange={HandleChangePic}
                 name="IdProofPhoto"
@@ -967,32 +985,38 @@ export default function CustomerRegForm() {
               ) : null}
             </Grid>
             <Grid item xs={12} sm={12} my={2} md={5.5} lg={5.5}>
-              Upload Applicant Passport Size Photo :{"\t\t"}
-              {/* <CameraComponent cameraKey="first" />
-            <ImageDisplay cameraKey="first" /> */}
-              <Input
-                fullWidth
+              Upload Applicant Passport Size Photo :{"\n"}
+              <input
+                style={{
+                  width: "90%",
+                  padding: "5px",
+                  borderBottom: "1px solid grey",
+                }}
                 id="applicantPhoto"
                 type="file"
                 onChange={HandleChangePic}
                 name="AplicantPhoto"
                 aria-label="Pic of Applicant's Photo *"
+                ref={AplicantPhotoRef}
               />{" "}
               {imgbool2 == true ? (
                 <Typography color={"error"}>{photovalmsg2}</Typography>
               ) : null}
             </Grid>
             <Grid item xs={12} sm={12} my={2} md={5.5} lg={5.5}>
-              Customer Signature:{"\t\t"}
-              {/* <CameraComponent cameraKey="first" />
-            <ImageDisplay cameraKey="first" /> */}
-              <Input
-                fullWidth
+              Customer Signature:{"\n"}
+              <input
+                style={{
+                  width: "90%",
+                  padding: "5px",
+                  borderBottom: "1px solid grey",
+                }}
                 id={"custsign"}
                 type="file"
                 onChange={HandleChangePic}
                 name="Customersignature"
                 aria-label="Customer Signature *"
+                ref={CustomersignatureRef}
               />{" "}
               {imgbool3 == true ? (
                 <Typography color={"error"}>{photovalmsg3}</Typography>
@@ -1022,6 +1046,7 @@ export default function CustomerRegForm() {
                   : true
               }
               functrigger1={OnSubmitHandler}
+              functrigger2={ResetHandler}
             />
           </Box>
         </Box>

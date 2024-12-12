@@ -1,9 +1,11 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import { useLocation, useNavigate } from "react-router-dom";
 import Grid from "@mui/system/Unstable_Grid/Grid";
-import { useReactToPrint } from "react-to-print";
-import useFetchCustPayList from "../../Apps/CustomHook/useFetchCustPayList";
+import Loader from "../../Components/Global/loader";
+// import { useReactToPrint } from "react-to-print";
+// import useFetchCustPayList from "../../Apps/CustomHook/useFetchCustPayList";
 import ReusableUnCheckedTable from "../../Components/Global/ReusableUnCheckedTable";
 import {
   Divider,
@@ -16,38 +18,58 @@ import {
   TableHead,
   TableCell,
   TableBody,
-  TableRow,
+  TableRow,Modal,
   Paper,
 } from "@mui/material";
 import ReusableBreadcrumbs from "../../Components/Global/ReusableBreadcrumbs";
 import LocalPrintshopIcon from "@mui/icons-material/LocalPrintshop";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  textAlign: "center",
-  border: `1px solid black`,
-  color: "black", // Use theme's divider color
-}));
-const HeaderCell = styled(TableCell)(({ theme }) => ({
-  textAlign: "center",
-  border: `1px solid black`,
-  color: "black",
-}));
-const StyledTableContainer = styled(TableContainer)({
-  display: "flex",
-  justifyContent: "center",
-  width: "100%",
-  backgroundColor: "white",
-});
-const StyledTable = styled(Table)({
-  overflow: "clip",
-});
+import { PaymentDetailList } from "../../Slice/PaymentDetails/PaymentDetailsSlice";
+import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
+// const StyledTableCell = styled(TableCell)(({ theme }) => ({
+//   textAlign: "center",
+//   border: `1px solid black`,
+//   color: "black", // Use theme's divider color
+// }));
+// const HeaderCell = styled(TableCell)(({ theme }) => ({
+//   textAlign: "center",
+//   border: `1px solid black`,
+//   color: "black",
+// }));
+// const StyledTableContainer = styled(TableContainer)({
+//   display: "flex",
+//   justifyContent: "center",
+//   width: "100%",
+//   backgroundColor: "white",
+// });
+// const StyledTable = styled(Table)({
+//   overflow: "clip",
+// });
 
 function CustPaymentHistory() {
-  const contentToPrint = useRef(null);
+  const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
+  const [pay, setPay] = useState([]);
+  // const contentToPrint = useRef(null);
   const location = useLocation();
   const { SchemeRegId } = location.state;
-  const { isloading29, pay, isError29, error29, isSuccess29 } =
-    useFetchCustPayList({ SchemeRegId: SchemeRegId });
+  const { global } = UseFetchLogger();
+  // const { isloading29, pay, isError29, error29, isSuccess29 } =
+  //   useFetchCustPayList({ SchemeRegId: SchemeRegId });
+  const { isloading29, Resp29, isError29, error29, isSuccess29 } = useSelector((state) => state.CustPayDetails);
+  useEffect(() => {
+    if (SchemeRegId) {
+      dispatch(PaymentDetailList({ ...global, SchemeRegId: SchemeRegId }));
+    }
+  }, [SchemeRegId]);
+ useEffect(() => {
+   if (!isloading29 && isSuccess29) {
+     setOpen(false)
+     setPay(Resp29);
+   }
+   if (isloading29 || !SchemeRegId) {
+     setOpen(true);
+   }
+ }, [isSuccess29, isloading29, SchemeRegId]);
   const columns = [
     {
       field: "SchemeTitle",
@@ -161,27 +183,60 @@ function CustPaymentHistory() {
     },
     // { field: "Name", headerName: "Agent", width: 150, printWidth: 100 },
   ];
-  const handlePrint = useReactToPrint({
-    onBeforePrint: () => console.log("before printing..."),
-    onAfterPrint: () => console.log("after printing..."),
-    removeAfterPrint: true,
-    pageStyle: ` @page {
-      size: A4 landscape;
-      margin:8mm;
-    }
-    @media print {
-      body {
-        -webkit-print-color-adjust: exact;
-        margin-top: 40px;
-        margin-bottom:20px;
-      }
-      .printable-content {
-        color: black;
-      }
-    }`,
-  });
+const handleClose=()=>{setOpen(false)}
+  // const handlePrint = useReactToPrint({
+  //   onBeforePrint: () => console.log("before printing..."),
+  //   onAfterPrint: () => console.log("after printing..."),
+  //   removeAfterPrint: true,
+  //   pageStyle: ` @page {
+  //     size: A4 landscape;
+  //     margin:8mm;
+  //   }
+  //   @media print {
+  //     body {
+  //       -webkit-print-color-adjust: exact;
+  //       margin-top: 40px;
+  //       margin-bottom:20px;
+  //     }
+  //     .printable-content {
+  //       color: black;
+  //     }
+  //   }`,
+  // });
   return (
     <Grid container mt={4} ml={2} maxWidth={"xl"}>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        sx={{
+          position: "stickey",
+          top: "40%",
+          left: {
+            xl: "50%",
+            lg: "45%",
+            md: "40%",
+            sm: "40%",
+            xs: "35%",
+          },
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: 100,
+            height: 50,
+            bgcolor: "whitesmoke",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Loader SpinnerColor="#0978ed" />
+        </Box>
+      </Modal>
       <Grid item sm={12} xs={12} md={12} lg={12}>
         <Box
           mr={3}
@@ -218,7 +273,7 @@ function CustPaymentHistory() {
         <Typography color={"#5c5c5c"} variant="h6">
           Payment History
         </Typography>
-        <Box sx={{ color: "black" }}>
+        {/* <Box sx={{ color: "black" }}>
           Print A/C Statement:
           <IconButton
             onClick={() => {
@@ -227,69 +282,70 @@ function CustPaymentHistory() {
           >
             <LocalPrintshopIcon />
           </IconButton>
-        </Box>
+        </Box> */}
       </Grid>
       <Grid item md={12} lg={12} sm={12} xs={12} mt={2}>
         <ReusableUnCheckedTable
           columns={columns}
           rows={pay}
           uniqueid={"CollectionId"}
+          isloading={isloading29}
         />
       </Grid>
-      <Box sx={{ display: "none" }}>
+      {/* <Box sx={{ display: "none" }}>
         <div ref={contentToPrint}>
           <PrintableTable row={pay} Col={columns} />
         </div>
-      </Box>
+      </Box> */}
     </Grid>
   );
 }
 
-const PrintableTable = ({ Col, row }) => {
-  return (
-    <StyledTableContainer component={Paper}>
-      <StyledTable size="small">
-        <TableHead sx={{ backgroundColor: "white", color: "black" }}>
-          <TableRow>
-            {Col?.map((header, index) => {
-              return (
-                <HeaderCell key={index}>
-                  <Typography sx={{ fontSize: "16px" }}>
-                    {header?.PrintHeaderName}
-                  </Typography>
-                </HeaderCell>
-              );
-            })}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {row?.map((item, index) => {
-            return (
-              <TableRow key={index}>
-                {Col?.map((celldata, index) => {
-                  return (
-                    <StyledTableCell
-                      sx={{ width: celldata?.printWidth }}
-                      key={index}
-                    >
-                      {celldata?.field == "CollDate" ? (
-                        <Typography sx={{ fontSize: "15px" }}>
-                          {moment(item[celldata?.field]).format("DD/MM/YYYY")}
-                        </Typography>
-                      ) : (
-                        <Typography sx={{ fontSize: "15px" }}>
-                          {item[celldata?.field]}
-                        </Typography>
-                      )}
-                    </StyledTableCell>
-                  );
-                })}
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </StyledTable>
-    </StyledTableContainer>
-  );
-};
+// const PrintableTable = ({ Col, row }) => {
+//   return (
+//     <StyledTableContainer component={Paper}>
+//       <StyledTable size="small">
+//         <TableHead sx={{ backgroundColor: "white", color: "black" }}>
+//           <TableRow>
+//             {Col?.map((header, index) => {
+//               return (
+//                 <HeaderCell key={index}>
+//                   <Typography sx={{ fontSize: "16px" }}>
+//                     {header?.PrintHeaderName}
+//                   </Typography>
+//                 </HeaderCell>
+//               );
+//             })}
+//           </TableRow>
+//         </TableHead>
+//         <TableBody>
+//           {row?.map((item, index) => {
+//             return (
+//               <TableRow key={index}>
+//                 {Col?.map((celldata, index) => {
+//                   return (
+//                     <StyledTableCell
+//                       sx={{ width: celldata?.printWidth }}
+//                       key={index}
+//                     >
+//                       {celldata?.field == "CollDate" ? (
+//                         <Typography sx={{ fontSize: "15px" }}>
+//                           {moment(item[celldata?.field]).format("DD/MM/YYYY")}
+//                         </Typography>
+//                       ) : (
+//                         <Typography sx={{ fontSize: "15px" }}>
+//                           {item[celldata?.field]}
+//                         </Typography>
+//                       )}
+//                     </StyledTableCell>
+//                   );
+//                 })}
+//               </TableRow>
+//             );
+//           })}
+//         </TableBody>
+//       </StyledTable>
+//     </StyledTableContainer>
+//   );
+// };
 export default CustPaymentHistory;

@@ -58,11 +58,12 @@ export default function ReusableUnCheckedTable({
   state,
   setState,
   width = "100%",
-  height,
+  height,isloading
 }) {
   return (
     <div style={{ height: height || 400, width: width }}>
       <StyledDataGrid
+        loading={isloading}
         selectRow
         getRowId={(rows) => {
           if (!rows) {

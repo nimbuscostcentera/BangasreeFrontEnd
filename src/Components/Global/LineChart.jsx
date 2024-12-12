@@ -1,7 +1,6 @@
 import { ResponsiveLine } from "@nivo/line";
 
-const LineChart = ({ sdata,Xaxislegend,Yaxislegend }) => {
-  console.log(sdata);
+const LineChart = ({ sdata, Xaxislegend, Yaxislegend }) => {
   return (
     <ResponsiveLine
       data={sdata}
@@ -64,11 +63,11 @@ const LineChart = ({ sdata,Xaxislegend,Yaxislegend }) => {
       }}
       axisLeft={{
         orient: "left",
-        tickValues: 5, 
+        tickValues: 5,
         tickSize: 3,
         tickPadding: 5,
         tickRotation: 0,
-        legend:Yaxislegend,
+        legend: Yaxislegend,
         legendOffset: -40,
         legendPosition: "middle",
         truncateTickAt: 0,

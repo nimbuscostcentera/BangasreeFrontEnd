@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { ToastContainer, toast } from "react-toastify";
@@ -43,6 +43,15 @@ import EmailValidation from "../../Apps/GlobalFunctions/EmailValidation";
 
 export default function SuperUserRegForm() {
   const dispatch = useDispatch();
+  let IdProofPicRef = useRef(null);
+  let SignatureRef = useRef(null);
+  let PhotoRef = useRef(null);
+  // console.log(
+  //   "hello",
+  //   SignatureRef.current.value,
+  //   IdProofPicRef.current.file,
+  //   PhotoRef.current.file
+  // );
   const [formData, setFormData] = useState({
     Name: null,
     PhoneNumber: null,
@@ -87,37 +96,43 @@ export default function SuperUserRegForm() {
   const { isloading37, isSuccess37, isError37, Resp37, error37 } = useSelector(
     (state) => state.superuserReg
   );
+  const ResetAll = () => {
+    if (PhotoRef.current) PhotoRef.current.value = ""; // Reset file input
+    if (SignatureRef.current) SignatureRef.current.value = "";
+    if (IdProofPicRef.current) IdProofPicRef.current.value = "";
+    setInput({
+      Name: true,
+      phn: true,
+      Email: true,
+      IdProofNumber: true,
+    });
+    setFormData({
+      Name: null,
+      Sex: null,
+      Did: null,
+      BranchId: null,
+      PhoneNumber: null,
+      EmailId: null,
+      Address: null,
+      IdProoftype: null,
+      IdProofNumber: null,
+      Photo: null,
+      IdProofPic: null,
+      Signature: null,
+      SUtype: null,
+    });
+    setPic({
+      Photo: null,
+      IdProofPic: null,
+      Signature: null,
+    });
+  };
 
   //supuser reg response in toaster
   useEffect(() => {
     if (isSuccess37 && !isloading37) {
+      ResetAll();
       toast.success(Resp37, { positions: toast.POSITION.TOP_RIGHT });
-      setInput({
-        Name: true,
-        phn: true,
-        Email: true,
-        IdProofNumber: true,
-      });
-      setFormData({
-        Name: null,
-        Sex: null,
-        Did: null,
-        BranchId: null,
-        PhoneNumber: null,
-        EmailId: null,
-        Address: null,
-        IdProoftype: null,
-        IdProofNumber: null,
-        Photo: null,
-        IdProofPic: null,
-        Signature: null,
-        SUtype: null,
-      });
-      setPic({
-        Photo: null,
-        IdProofPic: null,
-        Signature: null,
-      });
       dispatch(ClearState37());
     }
     if (isError37 && !isloading37) {
@@ -200,7 +215,7 @@ export default function SuperUserRegForm() {
     <Grid
       container
       maxWidth="lg"
-      mt={5}
+      mt={3}
       ml={3}
       sx={{
         display: "flex",
@@ -540,43 +555,60 @@ export default function SuperUserRegForm() {
               <label>
                 Upload Photo*
                 <br />
-                <Input
+                <input
                   required
-                  fullWidth
+                  style={{
+                    width: "90%",
+                    padding: "5px",
+                    borderBottom: "1px solid grey",
+                  }}
                   onChange={HandleChangePic}
                   name="Photo"
                   label="Upload Photo*"
                   type="file"
                   id="SuperUser_pic"
+                  ref={PhotoRef}
                 />{" "}
               </label>
             </Grid>
             <Grid item lg={3.5} md={3.5} sm={12} xs={12} mt={2}>
               <label>
                 Id Proof Photo*
-                <Input
+                <br />
+                <input
                   required
-                  fullWidth
+                  style={{
+                    width: "90%",
+                    padding: "5px",
+                    borderBottom: "1px solid grey",
+                  }}
                   onChange={HandleChangePic}
                   name="IdProofPic"
                   label="Upload Photo*"
                   type="file"
                   id="IdProofPic"
+                  ref={IdProofPicRef}
                 />{" "}
               </label>
             </Grid>
             <Grid item lg={3.5} md={3.5} sm={12} xs={12} mt={2}>
               <label>
                 Photo of Signature*
-                <Input
+                <br />
+                <input
                   required
-                  fullWidth
                   onChange={HandleChangePic}
                   name="Signature"
                   label="Upload Photo*"
                   type="file"
                   id="Signature"
-                />{" "}
+                  ref={SignatureRef}
+                  style={{
+                    width: "90%",
+                    padding: "5px",
+                    borderBottom: "1px solid grey",
+                  }}
+                />
               </label>
             </Grid>
             <Grid
@@ -629,7 +661,6 @@ export default function SuperUserRegForm() {
               justifyContent={"center"}
               flexWrap={"wrap"}
             >
-              {" "}
               <OnOffButton
                 yes={"Submit"}
                 no={"Reset"}
@@ -662,6 +693,7 @@ export default function SuperUserRegForm() {
                     : true
                 }
                 functrigger1={OnSubmitForm}
+                functrigger2={ResetAll}
               />
             </Grid>
           </Grid>

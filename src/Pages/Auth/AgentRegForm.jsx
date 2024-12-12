@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import {
@@ -70,6 +70,9 @@ export default function AgentRegForm() {
     AreaID: null,
     Commision: 0,
   });
+  let PhotoRef = useRef(null);
+  let SignatureRef = useRef(null);
+  let IDProofPhotoRef = useRef(null);
 
   const [pic, SetPic] = useState({
     Photo: null,
@@ -111,53 +114,62 @@ export default function AgentRegForm() {
   const handleClose = () => {
     setOpen(false);
   }
+
+  const ResetAll = () => {
+    if (PhotoRef.current) PhotoRef.current.value = "";
+    if (SignatureRef.current) SignatureRef.current.value = "";
+    if (IDProofPhotoRef.current) IDProofPhotoRef.current.value = "";
+    document.getElementById("agentform").reset();
+    setInput({
+      Name: true,
+      phn: true,
+      Email: true,
+      BankName: true,
+      AccountNo: true,
+      IFSC: true,
+      MICR: true,
+      NomineeName: true,
+      Relation: true,
+      Password: true,
+      IDProofNumber: true,
+      Commission: true,
+    });
+    setFormData({
+      Name: null,
+      Phonenumber: null,
+      EmailId: null,
+      DOB: null,
+      Address: null,
+      BankName: null,
+      AccountNumber: null,
+      IFSCCode: null,
+      MICR: null,
+      Sex: null,
+      NomineeName: null,
+      Relation: null,
+      IDProofNumber: null,
+      IDProofPhoto: null,
+      Photo: null,
+      Signature: null,
+      AccountType: null,
+      IDProofType: null,
+      BranchId: null,
+      AreaID: null,
+      Commision: 0,
+    });
+    SetPic({
+      Photo: null,
+      Signature: null,
+      IDProofPhoto: null,
+    });
+  }
+  
   //agent Reg
   useEffect(() => {
     if (isSuccess3 && !isloading3) {
       toast.success(`${msg3}`, toast.POSITION.TOP_RIGHT);
-      document.getElementById("agentform").reset();
-      setInput({
-        Name: true,
-        phn: true,
-        Email: true,
-        BankName: true,
-        AccountNo: true,
-        IFSC: true,
-        MICR: true,
-        NomineeName: true,
-        Relation: true,
-        Password: true,
-        IDProofNumber: true,
-        Commission: true,
-      });
-      setFormData({
-        Name: null,
-        Phonenumber: null,
-        EmailId: null,
-        DOB: null,
-        Address: null,
-        BankName: null,
-        AccountNumber: null,
-        IFSCCode: null,
-        MICR: null,
-        Sex: null,
-        NomineeName: null,
-        Relation: null,
-        IDProofNumber: null,
-        IDProofPhoto: null,
-        Photo: null,
-        Signature: null,
-        AccountType: null,
-        IDProofType: null,
-        BranchId: null,
-        AreaID:null,
-        Commision: 0,
-      });
-      SetPic({
-        Photo: null,
-        Signature: null,
-        IDProofPhoto: null,
-      }); dispatch(ClearState3());
+      ResetAll();
+       dispatch(ClearState3());
     }
     if (isError3 && !isloading3) {
       toast.error(`${error3}`, toast.POSITION.TOP_RIGHT);
@@ -291,7 +303,7 @@ console.log(Data,"agent");
   
 
   return (
-    <Grid container maxWidth="lg" mt={5} ml={2}>
+    <Grid container maxWidth="lg" mt={3} ml={2}>
       <ToastContainer autoClose={5000} />
 
       <Modal
@@ -767,39 +779,53 @@ console.log(Data,"agent");
                 </FormHelperText>
               ) : null}
             </Grid>
-            <Grid item xs={12} sm={12} md={5.5} lg={5.5}>
+            <Grid item lg={3.5} md={3.5} sm={12} xs={12}>
               <label>
-                Upload the Picture of ID Proof*
-                <Input
+                Upload the Picture of ID Proof*<br/>
+                <input
                   type="file"
                   name="IDProofPhoto"
                   onChange={HandleChangePic}
                   required
-                  fullWidth
+                  style={{
+                    width: "90%",
+                    padding: "5px",
+                    borderBottom: "1px solid grey",
+                  }}
                 />
               </label>
             </Grid>
-            <Grid item xs={12} sm={12} md={5.5} lg={5.5}>
+            <Grid item lg={3.5} md={3.5} sm={12} xs={12}>
               <label>
                 Upload Passport Size photo*
-                <Input
+                <br />
+                <input
                   type="file"
                   name="Photo"
                   onChange={HandleChangePic}
                   required
-                  fullWidth
+                  style={{
+                    width: "90%",
+                    padding: "5px",
+                    borderBottom: "1px solid grey",
+                  }}
                 />
               </label>
             </Grid>{" "}
-            <Grid item xs={12} sm={12} md={5.5} lg={5.5}>
+            <Grid item lg={3.5} md={3.5} sm={12} xs={12}>
               <label>
                 Upload photo of applicant's Signature*
-                <Input
+                <br />
+                <input
                   type="file"
                   name="Signature"
                   onChange={HandleChangePic}
                   required
-                  fullWidth
+                  style={{
+                    width: "90%",
+                    padding: "5px",
+                    borderBottom: "1px solid grey",
+                  }}
                 />
               </label>
             </Grid>
@@ -867,6 +893,7 @@ console.log(Data,"agent");
                 type1={"submit"}
                 type2={"reset"}
                 functrigger1={OnSubmitForm}
+                functrigger2={ResetAll}
                 disabled1={
                   Data?.Name &&
                   Data?.Phonenumber &&

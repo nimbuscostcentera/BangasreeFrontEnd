@@ -41,9 +41,10 @@ import useFetchSubscription from "../../Apps/CustomHook/UseFetchSubscription";
 import useFetchBarChartData from "../../Apps/CustomHook/useFetchBarChartData";
 import useFetchLineChartData from "../../Apps/CustomHook/useFetchLineChartData";
 import useFetchBranch from "../../Apps/CustomHook/useFetchBranch";
-
+import useFetchAgent from "../../Apps/CustomHook/useFetchAgent";
+import useFetchArea from "../../Apps/CustomHook/useFetchArea";
 const Dashboard = () => {
-  //console.log("Dashboard");
+  const currentdate = moment();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { userInfo, toasterBool } = UseFetchLogger();
@@ -52,8 +53,8 @@ const Dashboard = () => {
     AgentCode: null,
     year: null,
     monthe: null,
-    Branch: null,
-    Area: null,
+    BranchCode: null,
+    AreaID: null,
   });
   const [SessionData, setSessionData] = useState({
     StartDate: "2023-03-31",
@@ -64,18 +65,28 @@ const Dashboard = () => {
 
   if (userInfo?.details?.Utype == 1) {
     obj.SuperUserID = userInfo?.details?.SuperUserID;
+    obj.StartDate = currentdate;
+    obj.EndDate = currentdate;
+    obj.today = currentdate;
   } else if (userInfo?.details?.Utype == 2) {
     obj.AgentID = userInfo?.details?.AgentID;
     obj.AgentCode = userInfo?.details?.AgentCode;
+    obj.StartDate = currentdate;
+    obj.EndDate = currentdate;
+    obj.today = currentdate;
   }
 
   const { CardData } = useFetchCards(obj, [], "");
 
   const { duepaycust } = useFetchSubscription(obj, [], "");
 
-  const { branch } = useFetchBranch(obj, []);
+  const { branch } = useFetchBranch(obj, [], "");
+
+  const { agentList } = useFetchAgent(obj, [], "");
 
   const { session } = useFetchSession();
+
+  const { AreaList = [] } = useFetchArea(obj);
 
   let TotalCust = CardData?.TotalCust;
   let TotalAgent = CardData?.TotalAgent;
@@ -89,7 +100,6 @@ const Dashboard = () => {
 
   useEffect(() => {
     let sarray = session?.filter((item) => item?.SessionID == sid);
-    console.log(sarray);
     setSessionData({
       StartDate: sarray[0]?.StartDate,
       EndDate: sarray[0]?.EndDate,
@@ -188,16 +198,16 @@ const Dashboard = () => {
   } = useFetchBarChartData({}, []);
 
   const onChangeHandler = (e) => {
-    let key = e.target.value;
+    let key = e.target.name;
     let value = e.target.value;
     setFilter({ ...Filter, [key]: value });
   };
-  console.log(data, "dashboard");
+ // console.log(Filter, "dashboard");
   return (
-    <Grid container maxWidth={"xl"} columnGap={2} rowGap={2} ml={3} mt={3}>
+    <Grid container maxWidth={"xl"} columnGap={2} rowGap={2} ml={2} mt={5}>
       <ToastContainer autoClose={8000} />
       {/* HEADER */}
-      <Grid item md={2} lg={3} xs={12} sm={12}>
+      <Grid item lg={3.5} md={12} xs={12} sm={12}>
         <Header
           title="DASHBOARD"
           subtitle={`Welcome ${
@@ -206,17 +216,45 @@ const Dashboard = () => {
           editable={false}
         />
       </Grid>
-      <Grid item md={3} lg={2.5} sm={4} xs={12}>
+      <Grid item md={5.8} lg={2.5} sm={12} xs={12}>
         <ReusableDropDown4
-          Field={Filter?.Branch}
+          Field={Filter?.BranchCode}
           ObjectKey={["BranchCode"]}
           data={branch}
           deselectvalue={true}
           disabled={false}
-          id={"branch_id"}
+          id={"BranchCode"}
           label={"Branch"}
           onChange={onChangeHandler}
-          uniquekey={"BranchId"}
+          uniquekey={"BranchCode"}
+          key={1}
+        />
+      </Grid>
+      <Grid item md={5.8} lg={2.5} sm={12} xs={12}>
+        <ReusableDropDown4
+          Field={Filter?.AgentCode}
+          ObjectKey={["Name", "AgentCode"]}
+          data={agentList || []}
+          deselectvalue={true}
+          disabled={false}
+          id={"AgentCode"}
+          label={"Agent"}
+          onChange={onChangeHandler}
+          uniquekey={"AgentCode"}
+          key={1}
+        />
+      </Grid>
+      <Grid item md={11.9} lg={2.5} sm={12} xs={12}>
+        <ReusableDropDown4
+          Field={Filter?.AreaID}
+          ObjectKey={["AreaName"]}
+          data={AreaList}
+          deselectvalue={true}
+          disabled={false}
+          id={"AreaID"}
+          label={"Area"}
+          onChange={onChangeHandler}
+          uniquekey={"AreaID"}
           key={1}
         />
       </Grid>
@@ -224,8 +262,8 @@ const Dashboard = () => {
       <Grid
         item
         lg={2.2}
-        md={2.6}
-        sm={5.5}
+        md={5.8}
+        sm={12}
         xs={12}
         p={2}
         sx={{
@@ -268,8 +306,8 @@ const Dashboard = () => {
       <Grid
         item
         lg={2.2}
-        md={2.6}
-        sm={5.5}
+        md={5.8}
+        sm={12}
         xs={12}
         p={2}
         sx={{
@@ -304,8 +342,8 @@ const Dashboard = () => {
       <Grid
         item
         lg={2.2}
-        md={2.6}
-        sm={5.5}
+        md={5.8}
+        sm={12}
         xs={12}
         p={2}
         sx={{
@@ -342,8 +380,8 @@ const Dashboard = () => {
       <Grid
         item
         lg={2.2}
-        md={2.6}
-        sm={5.5}
+        md={5.8}
+        sm={12}
         xs={12}
         p={2}
         sx={{
@@ -408,8 +446,8 @@ const Dashboard = () => {
       <Grid
         item
         lg={2.2}
-        md={2.6}
-        sm={5.5}
+        md={12}
+        sm={12}
         xs={12}
         p={2}
         sx={{
@@ -540,8 +578,8 @@ const Dashboard = () => {
       <Grid
         item
         xl={5.9}
-        lg={5.8}
-        md={5.7}
+        lg={6}
+        md={12}
         sm={12}
         xs={12}
         sx={{
@@ -566,7 +604,14 @@ const Dashboard = () => {
         </Box>
 
         {loading ? (
-          <Box mt={10} height="100%" width="100%">
+          <Box
+            sx={{
+              minHeight: "300px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <Loader SpinnerColor="#00956c" />
           </Box>
         ) : (
@@ -631,7 +676,7 @@ const Dashboard = () => {
         }}
         xl={5.9}
         lg={5.8}
-        md={5.7}
+        md={12}
         sm={12}
         xs={12}
       >

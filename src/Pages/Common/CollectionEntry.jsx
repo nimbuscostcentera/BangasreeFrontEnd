@@ -87,7 +87,7 @@ function CollectionEntryForm() {
   ];
 
   //api call
-  console.log(formData);
+//  console.log(formData);
   //Scheme List
   useEffect(() => {
     if (
@@ -120,6 +120,7 @@ function CollectionEntryForm() {
         CustUUid: null,
         ID: null,
         PaymentType: 2,
+        CollectionDate:currentdate
       });
       setAutoCom(null);
       setOpen(false);
@@ -135,13 +136,23 @@ function CollectionEntryForm() {
 
   //input handler
   useEffect(() => {
+    console.log(
+      "hi",
+      formData?.PaymentType === 1,
+      formData?.CustUUid,
+      formData?.ID
+    );
     if (formData?.PaymentType === 1 && formData?.CustUUid && formData?.ID) {
       const selectedScheme = SchemeData.find(
         (scheme) => scheme.ID === formData.ID
       );
+      console.log(selectedScheme);
+
       setformData({ ...formData, CollectedAmt: selectedScheme?.Regfees });
+    } else {
+      setformData({ ...formData, CollectedAmt: null });
     }
-  }, [formData?.CustUUid, formData?.PaymentType, formData?.ID]);
+  }, [formData?.ID, formData?.PaymentType]);
 
   //submit func
   const OnsubmitHandler = (e) => {
@@ -200,10 +211,10 @@ function CollectionEntryForm() {
       <Grid item md={12} sm={12} xs={12} lg={12}>
         <ReusableBreadcrumbs
           props={[
-            { title: "Home", link: "/", icon: "home" },
+            { title: "Home", link: "/executive", icon: "home" },
             {
               title: "Manage Collection Details",
-              link:"/executive/managecollections",
+              link: "/executive/managecollections",
               icon: "manage_accounts",
             },
             {
@@ -293,7 +304,10 @@ function CollectionEntryForm() {
                 ddwidth={400}
                 Field={formData["PaymentType"]}
                 onChange={(e) => {
-                  setformData({ ...formData, [PaymentType]: e.target.value });
+                  let value = e.target.value;
+                  if (value) {
+                    setformData({ ...formData, PaymentType: e.target.value });
+                  }
                 }}
                 id="PaymentType"
               />

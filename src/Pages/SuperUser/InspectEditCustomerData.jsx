@@ -57,7 +57,10 @@ import {
 //   PaymentDetailList,
 //   ClearState29,
 // } from "../../Slice/PaymentDetails/PaymentDetailsSlice";
-import { ClearState23,CollectionList} from "../../Slice/Collection/CollectionListSlice";
+import {
+  ClearState23,
+  CollectionList,
+} from "../../Slice/Collection/CollectionListSlice";
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
 import useFetchBranch from "../../Apps/CustomHook/useFetchBranch";
 import useFetchArea from "../../Apps/CustomHook/useFetchArea";
@@ -101,9 +104,11 @@ function InspectEditCustomerData() {
   const dispatch = useDispatch();
   const location = useLocation();
   var { CustUUid } = location.state;
+  console.log(location);
+
   let datetime = moment().format("DD/MM/YYYY HH:mm:SS");
   const [sub, setSub] = useState([]);
-  const [params,setParams]=useState({warning:"",alert:false})
+  const [params, setParams] = useState({ warning: "", alert: false });
   const [scid, setScid] = useState([]);
   const [openPrompt, setOpenPrompt] = useState(false);
   const [comment, setComment] = useState({ Comment: "" });
@@ -189,7 +194,7 @@ function InspectEditCustomerData() {
   //Collection List for Table
   const { isloading23, Response, isError23, error23, isSuccess23 } =
     useSelector((state) => state.CollectionList);
-  
+
   const { userInfo, global } = UseFetchLogger();
 
   const { AreaList } = useFetchArea({ Status: 1 });
@@ -219,10 +224,13 @@ function InspectEditCustomerData() {
             ...global,
             CustomerID: custList[0]?.CustomerID,
           })
-        ).then(async (resp) => {
+        )
+          .then(async (resp) => {
             setSub(resp?.payload);
-            console.log(resp?.payload,"hi");
-          }).catch((err)=>{console.log(err);
+            console.log(resp?.payload, "hi");
+          })
+          .catch((err) => {
+            console.log(err);
           });
         // dispatch(
         //   PaymentDetailList({
@@ -296,133 +304,133 @@ function InspectEditCustomerData() {
     dispatch(ClearState10());
   }, [isSuccess10, isError10]);
 
-   const columns = [
-     {
-       field: `CustomerAccNo`,
-       headerName: "Cust. A/C No.",
-       width: 125,
-       hideable: false,
-     },
-     {
-       field: `CustomerName`,
-       headerName: "Customer Name",
-       width:130,
-     },
-     { field: `SchemeTitle`, headerName: "Scheme Title", width: 110 },
+  const columns = [
+    {
+      field: `CustomerAccNo`,
+      headerName: "Cust. A/C No.",
+      width: 125,
+      hideable: false,
+    },
+    {
+      field: `CustomerName`,
+      headerName: "Customer Name",
+      width: 130,
+    },
+    { field: `SchemeTitle`, headerName: "Scheme Title", width: 110 },
 
-     {
-       field: `amttobepaid`,
-       headerName: "Total Amt.",
-       width: 100,
-       renderCell: (item) => {
-         return <Typography> ₹ {item.row.amttobepaid||0} /-</Typography>;
-       },
-     },
-     {
-       field: `totcolection`,
-       headerName: "Collected Amt.",
-       hideable: false,
-       width: 120,
-       renderCell: (item) => {
-         return <Typography> ₹ {item.row.totcolection||0} /-</Typography>;
-       },
-     },
-     {
-       field: `RedeemAmt`,
-       headerName: "Redeem Amt.",
-       hideable: false,
-       width: 110,
-       renderCell: (item) => {
-         return (
-           <>
-             {item?.row?.MaturityStatus === 2 ||
-             item?.row?.MaturityStatus === 3 ? (
-               <Typography> ₹ {item?.row?.RedeemAmt||0} /-</Typography>
-             ) : null}
-           </>
-         );
-       },
-     },
-     {
-       field: `MaturityStatus`,
-       headerName: "Maturity Status",
-       hideable: false,
-       width: 110,
-       renderCell: (item) => {
-         return (
-           <>
-             {item?.row?.MaturityStatus === 1 ? (
-               <Typography>Active</Typography>
-             ) : item?.row?.MaturityStatus === 3 ? (
-               <Typography>Matured</Typography>
-             ) : item?.row?.MaturityStatus === 2 ? (
-               <>
-                 <Typography
-                   aria-owns={open ? "mouse-over-popover" : undefined}
-                   aria-haspopup="true"
-                   onMouseEnter={(e) => {
-                     handlePopoverOpenMaturity(e, item);
-                   }}
-                   onMouseLeave={handlePopoverClose}
-                 >
-                   Premature
-                 </Typography>{" "}
-               </>
-             ) : item?.row?.MaturityStatus === 0 ? (
-               <>
-                 <Typography
-                   aria-owns={open ? "mouse-over-popover" : undefined}
-                   aria-haspopup="true"
-                   onMouseEnter={(e) => {
-                     handlePopoverOpenMaturity(e, item);
-                   }}
-                   onMouseLeave={handlePopoverClose}
-                 >
-                   Inactive
-                 </Typography>{" "}
-               </>
-             ) : null}
-           </>
-         );
-       },
-     },
-     {
-       field: `BonusStatus`,
-       headerName: "Bonus Status",
-       hideable: false,
-       width:100,
-       renderCell: (item) => {
-         return (
-           <>
-             {item?.row?.BonusStatus == 1 ? (
-               <Typography>Active</Typography>
-             ) : item?.row?.BonusStatus == 0 ? (
-               <>
-                 <Typography
-                   aria-owns={open ? "mouse-over-popover" : undefined}
-                   aria-haspopup="true"
-                   onMouseEnter={(e) => {
-                     handlePopoverOpenBonus(e, item);
-                   }}
-                   onMouseLeave={handlePopoverClose}
-                 >
-                   InActive
-                 </Typography>
-               </>
-             ) : (
-               <Typography>Processing</Typography>
-             )}
-           </>
-         );
-       },
-     },
-     {
-       field: `AgentCode`,
-       headerName: "Agent Code",
-       width: 100,
-     },
-   ];
-  
+    {
+      field: `amttobepaid`,
+      headerName: "Total Amt.",
+      width: 100,
+      renderCell: (item) => {
+        return <Typography> ₹ {item.row.amttobepaid || 0} /-</Typography>;
+      },
+    },
+    {
+      field: `totcolection`,
+      headerName: "Collected Amt.",
+      hideable: false,
+      width: 120,
+      renderCell: (item) => {
+        return <Typography> ₹ {item.row.totcolection || 0} /-</Typography>;
+      },
+    },
+    {
+      field: `RedeemAmt`,
+      headerName: "Redeem Amt.",
+      hideable: false,
+      width: 110,
+      renderCell: (item) => {
+        return (
+          <>
+            {item?.row?.MaturityStatus === 2 ||
+            item?.row?.MaturityStatus === 3 ? (
+              <Typography> ₹ {item?.row?.RedeemAmt || 0} /-</Typography>
+            ) : null}
+          </>
+        );
+      },
+    },
+    {
+      field: `MaturityStatus`,
+      headerName: "Maturity Status",
+      hideable: false,
+      width: 110,
+      renderCell: (item) => {
+        return (
+          <>
+            {item?.row?.MaturityStatus === 1 ? (
+              <Typography>Active</Typography>
+            ) : item?.row?.MaturityStatus === 3 ? (
+              <Typography>Matured</Typography>
+            ) : item?.row?.MaturityStatus === 2 ? (
+              <>
+                <Typography
+                  aria-owns={open ? "mouse-over-popover" : undefined}
+                  aria-haspopup="true"
+                  onMouseEnter={(e) => {
+                    handlePopoverOpenMaturity(e, item);
+                  }}
+                  onMouseLeave={handlePopoverClose}
+                >
+                  Premature
+                </Typography>{" "}
+              </>
+            ) : item?.row?.MaturityStatus === 0 ? (
+              <>
+                <Typography
+                  aria-owns={open ? "mouse-over-popover" : undefined}
+                  aria-haspopup="true"
+                  onMouseEnter={(e) => {
+                    handlePopoverOpenMaturity(e, item);
+                  }}
+                  onMouseLeave={handlePopoverClose}
+                >
+                  Inactive
+                </Typography>{" "}
+              </>
+            ) : null}
+          </>
+        );
+      },
+    },
+    {
+      field: `BonusStatus`,
+      headerName: "Bonus Status",
+      hideable: false,
+      width: 100,
+      renderCell: (item) => {
+        return (
+          <>
+            {item?.row?.BonusStatus == 1 ? (
+              <Typography>Active</Typography>
+            ) : item?.row?.BonusStatus == 0 ? (
+              <>
+                <Typography
+                  aria-owns={open ? "mouse-over-popover" : undefined}
+                  aria-haspopup="true"
+                  onMouseEnter={(e) => {
+                    handlePopoverOpenBonus(e, item);
+                  }}
+                  onMouseLeave={handlePopoverClose}
+                >
+                  InActive
+                </Typography>
+              </>
+            ) : (
+              <Typography>Processing</Typography>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      field: `AgentCode`,
+      headerName: "Agent Code",
+      width: 100,
+    },
+  ];
+
   // const columns = [
   //   {
   //     field: "CustomerAccNo",
@@ -583,16 +591,15 @@ function InspectEditCustomerData() {
     },
   ];
   const NavigateToPaymentHistory = () => {
-    if (scid.length !== 1)
-    {
-      setParams({alert:true,warning:"Select 1 Customer Account."})
-    }
-    else {
+    if (scid.length !== 1) {
+      setParams({ alert: true, warning: "Select 1 Customer Account." });
+    } else {
       navigate("/customer/custpaymenthistory", {
-        state: { SchemeRegId: scid[0] },
+        state: { SchemeRegId: scid[0] },replace:true
       });
+      // navigate("/executive");
     }
-}
+  };
   const BlockUser = (event) => {
     event.preventDefault();
     const UserData = {

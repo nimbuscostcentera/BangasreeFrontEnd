@@ -1,4 +1,4 @@
-import React ,{ useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
@@ -104,7 +104,7 @@ export default function ManageDesignation() {
   }
 
   return (
-    <Grid container ml={2} mt={5} columnGap={3}>
+    <Grid container ml={2} mt={3} columnGap={3}>
       <ToastContainer autoClose={8000} />
       <Grid
         item
@@ -139,7 +139,7 @@ export default function ManageDesignation() {
               flexDirection: "row",
               justifyContent: "flex-start",
               flexWrap: "wrap",
-              alignItems: "center"
+              alignItems: "center",
             }}
             component={"form"}
             onSubmit={SubmitHandler}
@@ -152,7 +152,7 @@ export default function ManageDesignation() {
               label="Designation"
               variant="outlined"
               size="small"
-              sx={{ mr: 2,mt:1, width:350}}
+              sx={{ mr: 2, mt: 1, width: 350 }}
             />
             <IconButton
               size="large"
@@ -175,7 +175,7 @@ export default function ManageDesignation() {
           getRowId={(item) => {
             return item?.Did;
           }}
-          sx={{height:350,width:"100%"}}
+          sx={{ height: 350, width: "100%" }}
           checkboxSelection
         />
       </Grid>

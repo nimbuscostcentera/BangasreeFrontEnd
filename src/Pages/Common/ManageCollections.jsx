@@ -44,6 +44,7 @@ import ReusableDialogue from "../../Components/Global/ReusableDialogue";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
 import EditIcon from "@mui/icons-material/Edit";
+import PersonIcon from "@mui/icons-material/Person";
 
 import {
   ClearState29,
@@ -463,43 +464,87 @@ function ManageCollections() {
   };
   const HandleSubmitCollection = (e) => {
     e.preventDefault();
-    console.log("hi", count?.totalColl, subData?.CollectedAmt);
-    if (count?.totalColl == subData?.CollectedAmt) {
-      let paymentIDdata = {
-        ids: PaymentID,
-        AgentCode: userInfo?.details?.AgentCode,
-        CollDate: currentdate,
-        status: 2,
-      };
-      let SubAmtFormData = new FormData();
-      for (let key in subData) {
-        if (subData.hasOwnProperty(key)) {
-          SubAmtFormData.append(key, subData[key]);
+    let array = PaymentDetails?.filter((item) =>
+      PaymentID?.includes(item?.CollectionId)
+    );
+    console.log(array);
+
+    let flag = true;
+    array?.sort((a, b) => {
+      if (a?.AgentCode !== b?.AgentCode) {
+        flag = false;
+      }
+    });
+    if (flag == false) {
+      setParams({
+        ...params,
+        alert: true,
+        warning: "Select Collection of a Specific Agent for Bulk Submission",
+      });
+    } else {
+      if (count?.totalColl == subData?.CollectedAmt) {
+        let paymentIDdata = {
+          ids: PaymentID,
+          AgentCode: userInfo?.details?.AgentCode || Filters?.AgentCode,
+          CollDate: currentdate,
+          status: 2,
+        };
+        let SubAmtFormData = new FormData();
+        for (let key in subData) {
+          if (subData.hasOwnProperty(key)) {
+            SubAmtFormData.append(key, subData[key]);
+          }
         }
-      }
-      for (let key in paymentIDdata) {
-        if (paymentIDdata.hasOwnProperty(key)) {
-          SubAmtFormData.append(key, paymentIDdata[key]);
+        for (let key in paymentIDdata) {
+          if (paymentIDdata.hasOwnProperty(key)) {
+            SubAmtFormData.append(key, paymentIDdata[key]);
+          }
         }
-      }
-      for (let key in global) {
-        if (global.hasOwnProperty(key)) {
-          SubAmtFormData.append(key, global[key]);
+        for (let key in global) {
+          if (global.hasOwnProperty(key)) {
+            SubAmtFormData.append(key, global[key]);
+          }
         }
+        for (let [key, value] of SubAmtFormData.entries()) {
+          console.log(`${key}: ${value}`);
+        }
+        dispatch(LotEntryFunc(SubAmtFormData));
+      } else {
+        setParams({
+          ...params,
+          alert: true,
+          warning: "Selected Collection and submitted Amount is not same",
+        });
       }
-      for (let [key, value] of SubAmtFormData.entries()) {
-        console.log(`${key}: ${value}`);
+    }
+  };
+  const NavigateToCustomer = () => {
+    if (PaymentID && PaymentID.length == 1) {
+      let data = PaymentDetails?.filter(
+        (item) => item?.CollectionId == PaymentID[0]
+      );
+      console.log(data);
+      if (Array.isArray(data)) {
+        navigate("/superuser/vieweditcustomer", {
+          state: { CustUUid: data[0]?.CustUUid },
+        })
       }
-      dispatch(LotEntryFunc(SubAmtFormData));
+      else {
+        setParams({
+          ...params,
+          alert: true,
+          warning: "No customer Found",
+        });
+      }
     } else {
       setParams({
         ...params,
         alert: true,
-        warning:
-          "Selected Customer's Collection and submitted Amount is not same",
+        warning: "Select One Customer Account to View Details",
       });
     }
   };
+
   let currentdate = moment().format("YYYY-MM-DD");
 
   //column
@@ -685,7 +730,7 @@ function ManageCollections() {
               props={[
                 { title: "Home", link: "/executive", icon: "home" },
                 {
-                  title: "Collection Summery",
+                  title: "Collection Summary",
                   link: "/superuser/collection-summary",
                   icon: "savings",
                 },
@@ -981,6 +1026,10 @@ function ManageCollections() {
                     return 0;
                   }
             }
+            h2={"Customer Details"}
+            Tooltip2={"Customer Details"}
+            icon2={<PersonIcon fontSize="medium" />}
+            funcTrigger2={NavigateToCustomer}
           />
         </Box>
       </Grid>
@@ -992,7 +1041,7 @@ function ManageCollections() {
         md={12}
         lg={2.4}
         xl={2.3}
-        color={"grey"}
+        color={"#5b5b5b "}
         sx={{
           display: "flex",
           justifyContent: {
@@ -1005,27 +1054,13 @@ function ManageCollections() {
           alignItems: "center",
         }}
       >
-        <Typography sx={{ fontSize: "18px" }}>
+        <Typography sx={{ fontSize: "18px", mt: 2 }}>
           Submit Collection Here :
         </Typography>
       </Grid>
-      <Grid
-        item
-        sm={12}
-        xs={12}
-        md={5.5}
-        lg={2.3}
-        xl={2.5}
-        display={"flex"}
-        flexDirection={"row"}
-        alignItems={"center"}
-        justifyContent={"flex-start"}
-        flexWrap={"wrap"}
-        my={2}
-        mr={1}
-      >
+      <Grid item sm={12} xs={12} md={5.5} lg={2.3} xl={2.5} mt={2}>
         <TextField
-          label="Submission Amtount"
+          label="Submission Amount "
           name="CollectedAmt"
           type="number"
           value={subData?.CollectedAmt || ""}
@@ -1040,26 +1075,29 @@ function ManageCollections() {
         sm={12}
         xs={12}
         md={5.5}
-        lg={2.8}
+        lg={3.8}
         xl={3.5}
-        display={"flex"}
-        flexDirection={"row"}
-        alignItems={"center"}
-        justifyContent={"flex-start"}
-        flexWrap={"wrap"}
-        my={2}
+        sx={{ color: "#5b5b5b", ml: 2 }}
       >
-        <Input
-          label="receiptPic"
-          name="receiptPic"
-          type="file"
-          size="small"
-          fullWidth
-          ref={ImageRef}
-          InputLabelProps={{ shrink: true }}
-          placeholder="Submission Amt."
-          onChange={HandleChangePic}
-        />
+        <label>
+          Upload Cheque/Transaction Details/Others*
+          <br />
+          <input
+            label="receiptPic"
+            name="receiptPic"
+            type="file"
+            size="small"
+            style={{
+              width: "90%",
+              padding: "5px",
+              borderBottom: "1px solid grey",
+            }}
+            ref={ImageRef}
+            InputLabelProps={{ shrink: true }}
+            placeholder="Submission Amt."
+            onChange={HandleChangePic}
+          />
+        </label>
       </Grid>
       <Grid item sm={12} xs={12} md={12} lg={2.3} xl={2} my={2} mx={2}>
         <Box
@@ -1092,7 +1130,7 @@ function ManageCollections() {
         </Box>
       </Grid>
       {/**Table */}
-      <Grid item sm={12} xs={12} md={12} mt={0.5}>
+      <Grid item sm={12} xs={12} md={12} mt={2}>
         <div style={{ height: 400, width: "100%" }}>
           <DataGrid
             loading={isloading29}

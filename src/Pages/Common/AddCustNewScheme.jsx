@@ -1114,7 +1114,7 @@ function AddCustNewScheme() {
                 </Grid>
                 <Grid item xs={12} sm={12} md={11.6} lg={11.6} color={"black"}>
                   Upload Id Proof of Nominee (Passport/Aadhar card / voter ID
-                  card /Driving license) :{"\t\t"}
+                  card /Driving license) :{"\n"}
                   {/* <CameraComponent cameraKey="second" />
             <ImageDisplay cameraKey="second" /> */}
                   <Input

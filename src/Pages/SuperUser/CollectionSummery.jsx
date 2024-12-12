@@ -27,7 +27,7 @@ import ReusableDropDown4 from "../../Components/Global/ReusableDropDown4";
 import ReusableBreadcrumbs from "../../Components/Global/ReusableBreadcrumbs";
 import IconOnOffButton from "../../Components/Global/IconOnOffButton";
 
-import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
@@ -205,7 +205,19 @@ export default function CollectionSummary() {
               open={params?.openModal}
               onClose={HandleCloseModal}
             >
-              <DialogTitle>{"Img"}</DialogTitle>
+              <DialogTitle
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography>Receipt of Submission</Typography>
+                <IconButton onClick={HandleCloseModal}>
+                  <CloseIcon/>
+                </IconButton>
+              </DialogTitle>
+              <Divider />
               <DialogContent
                 sx={{
                   display: "flex",
@@ -394,7 +406,7 @@ export default function CollectionSummary() {
               />
             }
             icon2={
-              <CancelOutlinedIcon
+              <CloseIcon
                 fontSize="medium"
                 color={LotID && LotID.length == 0 ? "disabled" : "error"}
               />
