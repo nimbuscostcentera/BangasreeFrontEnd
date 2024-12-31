@@ -11,27 +11,29 @@ function useFetchAcode(obj = {}, dep = [], uniquekey) {
   const { global } = UseFetchLogger();
 var at = localStorage.getItem("AccessToken");
 
+
   useEffect(() => {
+    console.log(uniquekey, obj, dep, "up");
      if (
-      at !== undefined &&
-       Object.keys(obj).length !== 0 &&
+       at !== undefined &&
+       uniquekey == "" &&
+       uniquekey == null &&
        uniquekey == undefined
      ) {
-       dispatch(AgentCodeList({ ...global, ...obj }));
-     } else if (
-      at !== undefined &&
-       Object.keys(obj).length == 0 &&
-       uniquekey == undefined
-     ) {
-       dispatch(AgentCodeList(global));
-     } else if (
-      at !== undefined &&
-       Object.keys(obj).length !== 0 &&
+       dispatch(AgentCodeList({ ...global }));
+     }
+     else if (
+       at !== undefined &&
+       uniquekey !== "" &&
+       uniquekey !== null &&
+       uniquekey !== undefined &&
+       obj[uniquekey] !== "" &&
+       obj[uniquekey] !== null &&
        obj[uniquekey] !== undefined
      ) {
        dispatch(AgentCodeList({ ...global, ...obj }));
      }
-  }, [...dep]);
+  }, dep);
 
   const { isloading1, isSuccess1, isError1, error1, Resp1 } = useSelector(
     (state) => state.AgentCodeList

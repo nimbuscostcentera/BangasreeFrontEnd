@@ -174,7 +174,7 @@ function AddCustNewScheme() {
   useEffect(() => {
     dispatch(AgentPBList({ ...global, AgentID: CustUUid?.AgentID }));
   }, [isSuccess60, isSuccess51, isSuccess61]);
-  //console.log(AgentPassbook);
+  //AgentPassbook set to hook;
   useEffect(() => {
     if (isSuccess49 && !isloadin49) {
       let passbook = [...Resp49];

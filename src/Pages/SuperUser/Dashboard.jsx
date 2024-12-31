@@ -202,7 +202,7 @@ const Dashboard = () => {
     let value = e.target.value;
     setFilter({ ...Filter, [key]: value });
   };
- // console.log(Filter, "dashboard");
+  // console.log(Filter, "dashboard");
   return (
     <Grid container maxWidth={"xl"} columnGap={2} rowGap={2} ml={2} mt={5}>
       <ToastContainer autoClose={8000} />
@@ -363,7 +363,7 @@ const Dashboard = () => {
         {!loading ? (
           <StatBox
             title={" ₹ " + `${TotalCollection ? TotalCollection : 0}` + "/-"}
-            subtitle="Total Collections"
+            subtitle="Today's Total Collection"
             // progress="0.50"
             // increase="+21%"
             stcolor={"#fafafa"}
@@ -395,52 +395,24 @@ const Dashboard = () => {
         onClick={() => {
           if (userInfo?.details?.Utype == 1 && AgentPermission?.ViewPage == 1) {
             navigate("/superuser/agentmanagement");
-          } else if (
-            userInfo?.details?.Utype == 2 &&
-            Collectionpermission?.ViewPage == 1
-          ) {
-            navigate("/executive/managecollections");
           }
         }}
       >
-        {userInfo?.details?.Utype == 1 ? (
-          <>
-            {loading ? (
-              <Box my={3}>
-                <Loader />
-              </Box>
-            ) : (
-              <StatBox
-                title={TotalAgent}
-                subtitle="Total Agents"
-                // progress="0.30"
-                // increase="+5%"
-                stcolor={"#fafafa"}
-                icon={
-                  <SupportAgentIcon
-                    sx={{ color: "#fafafa", fontSize: "30px" }}
-                  />
-                }
-              />
-            )}
-          </>
+        {loading ? (
+          <Box my={3}>
+            <Loader />
+          </Box>
         ) : (
-          <>
-            {!loading ? (
-              <StatBox
-                title={`${Commission} % `}
-                subtitle="Commission Percentage"
-                stcolor={"#fafafa"}
-                icon={
-                  <PaymentsIcon sx={{ color: "#fafafa", fontSize: "30px" }} />
-                }
-              />
-            ) : (
-              <Box my={3}>
-                <Loader />
-              </Box>
-            )}
-          </>
+          <StatBox
+            title={TotalAgent}
+            subtitle="Total Agents"
+            // progress="0.30"
+            // increase="+5%"
+            stcolor={"#fafafa"}
+            icon={
+              <SupportAgentIcon sx={{ color: "#fafafa", fontSize: "30px" }} />
+            }
+          />
         )}
       </Grid>
       <Grid
@@ -462,56 +434,24 @@ const Dashboard = () => {
         onClick={() => {
           if (userInfo?.details?.Utype == 1 && SuperPermission?.ViewPage == 1) {
             navigate("/superuser/superusermanagement");
-          } else if (
-            userInfo?.details?.Utype == 2 &&
-            Collectionpermission?.ViewPage == 1
-          ) {
-            navigate("/executive/managecollections");
           }
         }}
       >
-        {userInfo?.details?.Utype == 1 ? (
-          <>
-            {loading ? (
-              <Box my={3}>
-                <Loader />
-              </Box>
-            ) : (
-              <StatBox
-                title={TotalSuperUser}
-                subtitle="Total SuperUser"
-                stcolor={"#fafafa"}
-                // progress="0.30"
-                // increase="+5%"
-                icon={
-                  <ManageAccountsIcon
-                    sx={{ color: "#fafafa", fontSize: "30px" }}
-                  />
-                }
-              />
-            )}
-          </>
+        {loading ? (
+          <Box my={3}>
+            <Loader />
+          </Box>
         ) : (
-          <>
-            {!loading ? (
-              <StatBox
-                title={`₹ ${totalcom} /-`}
-                subtitle="Agent Commission in Rupees"
-                stcolor={"#fafafa"}
-                // progress="0.30"
-                // increase="+5%"
-                icon={
-                  <CurrencyRupeeIcon
-                    sx={{ color: "#fafafa", fontSize: "30px" }}
-                  />
-                }
-              />
-            ) : (
-              <Box my={3}>
-                <Loader />
-              </Box>
-            )}
-          </>
+          <StatBox
+            title={TotalSuperUser}
+            subtitle="Total SuperUser"
+            stcolor={"#fafafa"}
+            // progress="0.30"
+            // increase="+5%"
+            icon={
+              <ManageAccountsIcon sx={{ color: "#fafafa", fontSize: "30px" }} />
+            }
+          />
         )}
       </Grid>
 

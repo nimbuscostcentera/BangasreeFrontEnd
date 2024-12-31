@@ -104,7 +104,7 @@ function InspectEditCustomerData() {
   const dispatch = useDispatch();
   const location = useLocation();
   var { CustUUid } = location.state;
-  console.log(location);
+  //console.log(location);
 
   let datetime = moment().format("DD/MM/YYYY HH:mm:SS");
   const [sub, setSub] = useState([]);
@@ -216,9 +216,14 @@ function InspectEditCustomerData() {
   useEffect(() => {
     setOpen(true);
     let timer = setTimeout(() => {
-      if (custList?.length !== 0 && CustUUid == custList[0]?.UUid) {
+      if (
+        custList?.length !== 0 &&
+        CustUUid == custList[0]?.UUid &&
+        isSuccess6
+      ) {
         setData(custList[0]);
         setEditData(custList[0]);
+
         dispatch(
           CollectionList({
             ...global,
@@ -227,21 +232,12 @@ function InspectEditCustomerData() {
         )
           .then(async (resp) => {
             setSub(resp?.payload);
-            console.log(resp?.payload, "hi");
+            //console.log(resp?.payload, "hi");
           })
           .catch((err) => {
             console.log(err);
           });
-        // dispatch(
-        //   PaymentDetailList({
-        //     ...global,
-        //     CustomerID:custList[0]?.CustomerID,
-        //   })).then(async (resp) => {
-        //     setPaymentDetail(resp?.payload);
-        //     console.log(resp?.payload,"hi");
-        //   }).catch((err)=>{console.log(err);
-        //   })
-      } else if (custList?.length == 0) {
+      } else if (custList?.length == 0 && isSuccess6) {
         setData({
           CustomerName: null,
           Guardian: null,
@@ -266,16 +262,15 @@ function InspectEditCustomerData() {
       }
     }, 1500);
     return () => clearTimeout(timer);
-  }, [custList, CustUUid, isSuccess11, navigate, Edit]);
+  }, [isSuccess6, CustUUid, isSuccess11, Edit]);
 
   //agent code
   const { AgentCode } = useFetchAgentCode(
     {
-      ...global,
       Status: 1,
       BranchId: EditData?.BranchId || data?.BranchId,
     },
-    [EditData?.BranchId],
+    [EditData?.BranchId, data?.BranchId],
     "BranchId"
   );
 
@@ -591,13 +586,13 @@ function InspectEditCustomerData() {
     },
   ];
   const NavigateToPaymentHistory = () => {
-    if (scid.length !== 1) {
-      setParams({ alert: true, warning: "Select 1 Customer Account." });
-    } else {
+    if (scid.length == 1) {
       navigate("/customer/custpaymenthistory", {
-        state: { SchemeRegId: scid[0] },replace:true
+        state: { SchemeRegId: scid[0] },
+        replace: true,
       });
-      // navigate("/executive");
+    } else {
+      setParams({ alert: true, warning: "Select 1 Customer Account." });
     }
   };
   const BlockUser = (event) => {

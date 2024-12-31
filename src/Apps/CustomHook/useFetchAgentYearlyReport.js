@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useMemo } from "react";
 import UseFetchLogger from "./UseFetchLogger";
 import { useSelector, useDispatch } from "react-redux";
-import { AgentPerformancefunc, ClearState72 } from "../../Slice/Dashboard/AgentPerformanceSlice";
+import {
+  AgentPerformancefunc,
+  ClearState72,
+} from "../../Slice/Dashboard/AgentPerformanceSlice";
 
 function useFetchAgentYearlyReport(obj = {}, dep = []) {
   const dispatch = useDispatch();
@@ -16,7 +19,7 @@ function useFetchAgentYearlyReport(obj = {}, dep = []) {
       dispatch(AgentPerformancefunc({ ...global, ...obj }));
     }
   }, [...dep]);
-console.log(Resp72,"in hook 1");
+  //console.log(resp72,"in hook 1");
   let data = useMemo(() => {
     if (isSuccess72 && Resp72) {
       let Linedata = [];
@@ -32,12 +35,11 @@ console.log(Resp72,"in hook 1");
         }
       });
       return Linedata;
-    }
-    else {
+    } else {
       return [];
     }
   }, [Resp72, ...dep]);
-//console.log(data);
+  //console.log(data);
   return { data };
 }
 

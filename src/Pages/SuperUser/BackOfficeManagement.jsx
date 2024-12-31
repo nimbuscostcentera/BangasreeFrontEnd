@@ -176,7 +176,7 @@ export default function SuperUserManagement() {
   if (storedData && storedData.length !== 0) {
     let parray = JSON.parse(storedData);
     var myPermission =
-      parray && parray.filter((i) => i?.PageName == "Manage SuperUser")[0];
+      parray && parray.filter((i) => i?.PageName == "Manage Backoffice")[0];
   }
 
   useEffect(() => {
@@ -279,7 +279,7 @@ export default function SuperUserManagement() {
               props={[
                 { title: "Home", link: "/executive", icon: "home" },
                 {
-                  title: "Manage SuperUser",
+                  title: "Manage Backoffice",
                   link: "/superuser/SuperUsermanagement",
                   icon: "manage_accounts",
                 },

@@ -74,6 +74,11 @@ const CustomFooter = ({ count }) => {
         backgroundColor: "#0f45ba",
         color: "white",
         minHeight: "fit-content!important",
+        overflow: "auto",
+        "::-webkit-scrollbar": {
+          height: "5px",
+          bgcolor: "grey",
+        },
       }}
     >
       <Table size="small">

@@ -33,7 +33,7 @@ import {
 
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
 import useFetchCustomer from "../../Apps/CustomHook/useFetchCustomer";
-
+import useFetchGoldRateList from "../../Apps/CustomHook/useFetchGoldRateList";
 function CollectionEntryForm() {
   let currentdate = moment().format("YYYY-MM-DD");
   //hooks
@@ -42,6 +42,10 @@ function CollectionEntryForm() {
   const [SchemeData, setSchemeData] = useState([]);
   const [autoCom, setAutoCom] = useState(null);
   const [open, setOpen] = useState(false);
+  //User Details
+  const { userInfo, global } = UseFetchLogger();
+  //gold rate
+  const { rateList, isSuccess79 } = useFetchGoldRateList({ ID_PURITY: 1 });
 
   const [formData, setformData] = useState({
     CollectedAmt: 0,
@@ -49,7 +53,10 @@ function CollectionEntryForm() {
     ID: null,
     PaymentType: 2,
     CollectionDate: currentdate,
+    gold_rate: 0.0,
   });
+  console.log(formData?.gold_rate, rateList[0]?.GOLD_RATE);
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -63,9 +70,6 @@ function CollectionEntryForm() {
   const { isloading24, Response, isError24, error24, isSuccess24 } =
     useSelector((state) => state.CollectionEntry);
 
-  //User Details
-  const { userInfo, global } = UseFetchLogger();
-
   //Customer list
   const { custList } = useFetchCustomer(
     { Status: 1, AgentCode: userInfo?.details?.AgentCode },
@@ -76,7 +80,7 @@ function CollectionEntryForm() {
   //access token
   var at = localStorage.getItem("AccessToken");
 
-  //column
+ 
   var date = new Date();
   var dateString = date.toISOString();
   date = dateString.split("T", 1);
@@ -86,8 +90,7 @@ function CollectionEntryForm() {
     { value: "EMI", PaymentType: 2 },
   ];
 
-  //api call
-//  console.log(formData);
+
   //Scheme List
   useEffect(() => {
     if (
@@ -120,7 +123,7 @@ function CollectionEntryForm() {
         CustUUid: null,
         ID: null,
         PaymentType: 2,
-        CollectionDate:currentdate
+        CollectionDate: currentdate,
       });
       setAutoCom(null);
       setOpen(false);
@@ -132,9 +135,15 @@ function CollectionEntryForm() {
     dispatch(ClearState24());
   }, [isError24, isSuccess24]);
 
-  //required functions
+  //gold rate
+  useEffect(() => {
+    setformData({ ...formData, gold_rate: 0.00 });
+    setformData((prev) => {
+      return { ...prev, gold_rate: rateList[0]?.GOLD_RATE };
+    });
+  }, [rateList[0]?.GOLD_RATE, isSuccess79]);
 
-  //input handler
+  //Regfees handler
   useEffect(() => {
     console.log(
       "hi",
@@ -158,6 +167,8 @@ function CollectionEntryForm() {
   const OnsubmitHandler = (e) => {
     e.preventDefault();
     let obj = {};
+    console.log(formData);
+    
     if (global?.Utype !== 2) {
       obj.AgentCode = userInfo?.details?.AgentCode;
       dispatch(CollectionEntryfunc({ ...global, ...formData, ...obj }));
@@ -169,9 +180,8 @@ function CollectionEntryForm() {
   };
 
   //permission List data Fetch
-  var parray = JSON.parse(window.localStorage.getItem("loggerPermission"));
-  var myPermission =
-    parray && parray.filter((i) => i?.PageName == "Manage Collections")[0];
+  // var parray = JSON.parse(window.localStorage.getItem("loggerPermission"));
+  // var myPermission = parray && parray.filter((i) => i?.PageName == "Manage Collections")[0];
 
   return (
     <Grid container maxtype={"xl"} mt={1} ml={2} columnGap={2} rowGap={2}>

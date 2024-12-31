@@ -92,7 +92,7 @@ export default function EditLeadCust() {
       Status: 1,
       BranchId: rawData?.BranchId,
     },
-    [rawData?.BranchId, rawData?.AreaID],
+    [rawData?.BranchId],
     "BranchId"
   );
 

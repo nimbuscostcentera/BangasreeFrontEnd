@@ -13,8 +13,7 @@ function useFetchSuperUser(obj = {}, dep = []) {
   );
   var at = localStorage.getItem("AccessToken");
   let array = [];
-  for (const key in obj)
-  {
+  for (const key in obj) {
     array.push = obj[key];
   }
 
@@ -24,7 +23,7 @@ function useFetchSuperUser(obj = {}, dep = []) {
         SuperUserList({ ...global, ...obj, BranchCode: global?.LoggerBranchId })
       );
     }
-  }, [...dep,...array]);
+  }, [...dep, ...array]);
 
   let buList = useMemo(() => {
     if (Resp36 && Resp36?.length !== 0) {
@@ -32,9 +31,9 @@ function useFetchSuperUser(obj = {}, dep = []) {
     } else {
       return [];
     }
-  }, [Resp36, ...dep,...array]);
+  }, [Resp36, ...dep, ...array]);
   let bucount = buList?.length || 0;
-  //console.log(Resp36);
+  ////console.log(resp36);
   return { bucount, buList, isError36, error36, isSuccess36, isloading36 };
 }
 
