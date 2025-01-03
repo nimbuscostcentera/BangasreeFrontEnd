@@ -16,7 +16,7 @@ function useFetchLineChartData(obj = {}, dep = []) {
     if (at && StartDate && EndDate) {
       dispatch(LineChartsfunc({ ...global, ...obj }));
     }
-  }, [StartDate, EndDate]);
+  }, dep);
 
   let data = useMemo(() => {
     if (Resp67 && Resp67?.length !== 0) {
@@ -36,7 +36,7 @@ function useFetchLineChartData(obj = {}, dep = []) {
     } else {
       return [];
     }
-  }, [isSuccess67, StartDate, EndDate]);
+  }, [isSuccess67, ...dep]);
  
   
   return { data };

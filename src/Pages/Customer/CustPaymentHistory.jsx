@@ -29,30 +29,36 @@ function CustPaymentHistory() {
   const componentRef = useRef(null);
   const [open, setOpen] = useState(true);
   const [pay, setPay] = useState([]);
-  const [CustomerDetail, setCustomerDetail] = useState({
-    BranchName: null,
-    AreaName: null,
-    Duration: null,
-    frequency: null,
-    EMI: null,
-    SchemeTitle: null,
-    Address: null,
-    PhoneNumber: null,
-    AgentCode: null,
-    CustomerAccNo: null,
-    CustomerName: null,
-  });
+  // const [CustomerDetail, setCustomerDetail] = useState({
+  //   BranchName: null,
+  //   AreaName: null,
+  //   Duration: null,
+  //   frequency: null,
+  //   EMI: null,
+  //   SchemeTitle: null,
+  //   Address: null,
+  //   PhoneNumber: null,
+  //   AgentCode: null,
+  //   CustomerAccNo: null,
+  //   CustomerName: null,
+  // });
   const [printableRow, setPrintableRow] = useState([]);
   const location = useLocation();
   const { SchemeRegId = null } = location.state || {};
 
-  const handlePrint = useReactToPrint({ content: () => componentRef.current });
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current, 
+     pageStyle: ` @page {
+      size: potrate;
+      margin: 10mm;
+    }`,
+  });
   // const handlePrint = useReactToPrint({
   //   content: () => componentRef.current,
-  //   pageStyle: ` @page {
-  //     size: potrate;
-  //     margin: 10mm;
-  //   }
+    // pageStyle: ` @page {
+    //   size: potrate;
+    //   margin: 10mm;
+    // }
   //   @media print {
   //     body {
   //       -webkit-print-color-adjust: exact;
@@ -82,19 +88,19 @@ function CustPaymentHistory() {
       setOpen(false);
       setPay(Resp29);
       let arr = [...Resp29];
-      setCustomerDetail({
-        BranchName: arr[0]?.BranchName,
-        AreaName: arr[0]?.AreaName,
-        Duration: arr[0]?.Duration,
-        frequency: arr[0]?.frequency,
-        EMI: arr[0]?.EMI,
-        SchemeTitle: arr[0]?.SchemeTitle,
-        Address: arr[0]?.Address,
-        PhoneNumber: arr[0]?.PhoneNumber,
-        AgentCode: arr[0]?.AgentCode,
-        CustomerAccNo: arr[0]?.CustomerAccNo,
-        CustomerName: arr[0]?.CustomerName,
-      });
+      // setCustomerDetail({
+      //   BranchName: arr[0]?.BranchName,
+      //   AreaName: arr[0]?.AreaName,
+      //   Duration: arr[0]?.Duration,
+      //   frequency: arr[0]?.frequency,
+      //   EMI: arr[0]?.EMI,
+      //   SchemeTitle: arr[0]?.SchemeTitle,
+      //   Address: arr[0]?.Address,
+      //   PhoneNumber: arr[0]?.PhoneNumber,
+      //   AgentCode: arr[0]?.AgentCode,
+      //   CustomerAccNo: arr[0]?.CustomerAccNo,
+      //   CustomerName: arr[0]?.CustomerName,
+      // });
 
       let modifiedArr = arr.map((item) => {
         let obj = { ...item };
@@ -195,8 +201,8 @@ function CustPaymentHistory() {
             {item?.row?.PaymentType === 1
               ? "Reg.fees"
               : item?.row?.PaymentType === 2
-              ? "EMI"
-              : null}
+                ? "EMI"
+                : null}
           </Box>
         );
       },
@@ -213,12 +219,12 @@ function CustPaymentHistory() {
             {item?.row?.PaymentStatus === 1
               ? "Collected"
               : item?.row?.PaymentStatus === 2
-              ? "Submitted"
-              : item?.row?.PaymentStatus === 3
-              ? "Approved"
-              : item?.row?.PaymentStatus === 4
-              ? "rejected"
-              : ""}
+                ? "Submitted"
+                : item?.row?.PaymentStatus === 3
+                  ? "Approved"
+                  : item?.row?.PaymentStatus === 4
+                    ? "rejected"
+                    : ""}
           </>
         );
       },
@@ -345,16 +351,7 @@ function CustPaymentHistory() {
               ]}
             />
           )}
-          <ReusableBreadcrumbs
-            props={[
-              { title: "Home", link: "/customer", icon: "home" },
-              {
-                title: "Payment History",
-                link: "#",
-                icon: "manage_accounts",
-              },
-            ]}
-          />
+         
         </Box>
         <Divider />
       </Grid>
@@ -398,227 +395,11 @@ function CustPaymentHistory() {
       <Grid item xs={12} xl={12}>
         <div ref={componentRef}>
           <PrintableTable row={printableRow} Col={ColPrint} />
-
-          {/* <Grid
-        item
-        xs={12}
-        sm={6}
-        md={4.7}
-        lg={3.8}
-        xl={3.8}
-        sx={{
-          color: "grey",
-        }}
-      >
-        <div style={{ maxWidth: "250px", maxHeight: "80px" }}>
-          <img src={Banga} width={"100%"} height={"100%"} />
-        </div>
-        <br /> <br />
-        <br />
-        <div style={{ width: "80%", marginTop: 2, marginLeft: 2 }}>
-          <Typography>ACCOUNT HISTORY</Typography>
-          <hr />
-          <table>
-            <tbody>
-              <tr>
-                <td>Transaction Period:</td>
-                <td>
-                  {startDate} to {endDate}
-                </td>
-              </tr>
-            </tbody>
-          </table>{" "}
-        </div>
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        sm={6}
-        md={3.6}
-        lg={4.4}
-        xl={4.5}
-        sx={{
-          padding: 0,
-          color: "grey",
-          display: "flex",
-
-          justifyContent: {
-            xl: "center",
-            lg: "center",
-            md: "center",
-            sm: "end",
-            xs: "start",
-          },
-        }}
-      >
-        <table>
-          <tbody>
-            <tr>
-              <td>Customer:</td>
-              <td style={{ padding: "0 0 0 5px" }}>
-                {CustomerDetail?.CustomerName}
-              </td>
-            </tr>
-            <tr>
-              <td>A/C. No:</td>
-              <td style={{ padding: "0 0 0 5px" }}>
-                {CustomerDetail?.CustomerAccNo}
-              </td>
-            </tr>
-            <tr>
-              <td>Agent Code:</td>
-              <td style={{ padding: "0 0 0 5px" }}>
-                {CustomerDetail?.AgentCode}
-              </td>
-            </tr>
-            <tr>
-              <td>Phone:</td>
-              <td style={{ padding: "0 0 0 5px" }}>
-                {CustomerDetail?.PhoneNumber}
-              </td>
-            </tr>
-            <tr>
-              <td style={{ alignItems: "flex-start", display: "flex" }}>
-                Address:
-              </td>
-              <td
-                style={{
-                  minWidth: "100px",
-                  padding: "0 0 0 5px",
-                  textWrap: "wrap",
-                }}
-              >
-                {CustomerDetail?.Address}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </Grid>{" "}
-      <Grid
-        item
-        xs={12}
-        sm={12}
-        md={3.5}
-        lg={3.8}
-        xl={3.5}
-        sx={{
-          color: "grey",
-          display: "flex",
-          justifyContent: {
-            xl: "end",
-            lg: "center",
-            md: "center",
-            sm: "center",
-            xs: "start",
-          },
-        }}
-      >
-        <table>
-          <tbody>
-            <tr>
-              <td>Scheme Name:</td>
-              <td style={{ padding: "0 0 0 5px" }}>
-                {CustomerDetail?.SchemeTitle}
-              </td>
-            </tr>
-            <tr>
-              <td>Installment Amount:</td>
-              <td style={{ padding: "0 0 0 5px" }}>₹{CustomerDetail?.EMI}/-</td>
-            </tr>
-            <tr>
-              <td>Installment Schedule:</td>
-              <td style={{ padding: "0 0 0 5px" }}>
-                {CustomerDetail?.frequency}
-              </td>
-            </tr>
-            <tr>
-              <td>Plan Tenure:</td>
-              <td style={{ padding: "0 0 0 5px" }}>
-                {CustomerDetail?.Duration}
-              </td>
-            </tr>
-            <tr>
-              <td>Area : </td>
-              <td style={{ padding: "0 0 0 5px" }}>
-                {CustomerDetail?.AreaName}
-              </td>
-            </tr>{" "}
-            <tr>
-              <td>Branch Code:</td>
-              <td style={{ padding: "0 0 0 5px" }}>
-                {CustomerDetail?.BranchName}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </Grid>
-      <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-        <Box
-          sx={{
-            maxHeight: "400px", // Set a maximum height for the table container
-            overflow: "auto", // Enable scrolling
-            border: "1px solid lightgrey",
-            "::-webkit-scrollbar": {
-              height: "5px",
-              bgcolor: "grey",
-            },
-          }}
-        >
-          <Table size="small" sx={{ overflow: "auto" }}>
-            <TableHead>
-              <TableRow
-                sx={{
-                  border: "1px solid lightgrey",
-                }}
-              >
-                {ColPrint?.map((header, index) => {
-                  return (
-                    <TableCell key={index}>
-                      <Typography sx={{ fontSize: "16px" }}>
-                        {header?.PrintHeaderName}
-                      </Typography>
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            </TableHead>
-            <TableBody sx={{ border: "1px solid lightgrey" }}>
-              {printableRow?.map((item, index) => {
-                return (
-                  <TableRow key={index}>
-                    {ColPrint?.map((celldata, index) => {
-                      return (
-                        <TableCell
-                          sx={{ width: celldata?.printWidth }}
-                          key={index}
-                        >
-                          {celldata?.field == "CollDate" ? (
-                            <Typography sx={{ fontSize: "15px" }}>
-                              {moment(item[celldata?.field]).format(
-                                "DD/MM/YYYY"
-                              )}
-                            </Typography>
-                          ) : (
-                            <Typography sx={{ fontSize: "15px" }}>
-                              {item[celldata?.field]}
-                            </Typography>
-                          )}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </Box>{" "}
-      </Grid> */}
         </div>
       </Grid>
     </Grid>
   );
 }
-
 const PrintableTable = ({ row, Col }) => {
   var startDate = moment(row[0]?.StartDate).format("DD/MM/YYYY");
   var endDate = moment(row[0]?.StartDate)

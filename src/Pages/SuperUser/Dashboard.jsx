@@ -42,47 +42,65 @@ import useFetchBarChartData from "../../Apps/CustomHook/useFetchBarChartData";
 import useFetchLineChartData from "../../Apps/CustomHook/useFetchLineChartData";
 import useFetchBranch from "../../Apps/CustomHook/useFetchBranch";
 import useFetchAgent from "../../Apps/CustomHook/useFetchAgent";
+import useFetchAcode from "../../Apps/CustomHook/useFetchAcode";
 import useFetchArea from "../../Apps/CustomHook/useFetchArea";
 const Dashboard = () => {
-  const currentdate = moment();
+  const currentyear = moment().format("YYYY");
+  const nextyear = moment().add(12, "months").format("YYYY");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { userInfo, toasterBool } = UseFetchLogger();
   const [loading, setLoading] = useState(true);
   const [Filter, setFilter] = useState({
     AgentCode: null,
-    year: null,
-    monthe: null,
-    BranchCode: null,
+    BranchId: null,
     AreaID: null,
   });
   const [SessionData, setSessionData] = useState({
-    StartDate: "2023-03-31",
-    EndDate: "2024-04-01",
+    StartDate: `${currentyear}-03-31`,
+    EndDate: `${nextyear}-04-01`,
   });
   const [sid, setSid] = useState(3);
   let obj = {};
 
   if (userInfo?.details?.Utype == 1) {
     obj.SuperUserID = userInfo?.details?.SuperUserID;
-    obj.StartDate = currentdate;
-    obj.EndDate = currentdate;
-    obj.today = currentdate;
+    obj.StartDate = `${currentyear}-03-31`;
+    obj.StartDate = `${nextyear}-04-01`;
+    obj.today = moment().format("YYYY-MM-DD");
   } else if (userInfo?.details?.Utype == 2) {
     obj.AgentID = userInfo?.details?.AgentID;
     obj.AgentCode = userInfo?.details?.AgentCode;
-    obj.StartDate = currentdate;
-    obj.EndDate = currentdate;
-    obj.today = currentdate;
+    obj.StartDate = `${currentyear}-03-31`;
+    obj.StartDate = `${nextyear}-04-01`;
+    obj.today = moment().format("YYYY-MM-DD");
   }
-
-  const { CardData } = useFetchCards(obj, [], "");
-
-  const { duepaycust } = useFetchSubscription(obj, [], "");
+  //card data fetch
+  const { CardData } = useFetchCards(
+    {
+      ...obj,
+      AgentCode: Filter?.AgentCode,
+      BranchId: Filter?.BranchId,
+      AreaID: Filter?.AreaID,
+    },
+    [Filter?.AreaID, Filter?.BranchId, Filter?.AgentCode],
+    ""
+  );
+  //multicard data fetch
+  const { duepaycust } = useFetchSubscription(
+    {
+      ...obj,
+      AgentCode: Filter?.AgentCode,
+      BranchId: Filter?.BranchId,
+      AreaID: Filter?.AreaID,
+    },
+    [Filter?.AreaID, Filter?.BranchId, Filter?.AgentCode],
+    ""
+  );
 
   const { branch } = useFetchBranch(obj, [], "");
 
-  const { agentList } = useFetchAgent(obj, [], "");
+  const { AgentCode } = useFetchAcode(obj, [], "");
 
   const { session } = useFetchSession();
 
@@ -98,6 +116,7 @@ const Dashboard = () => {
     ((TotalCollection && TotalCollection) * Commission) / 100
   );
 
+  //set session data
   useEffect(() => {
     let sarray = session?.filter((item) => item?.SessionID == sid);
     setSessionData({
@@ -106,8 +125,8 @@ const Dashboard = () => {
     });
   }, [sid]);
 
+  //Loader
   useEffect(() => {
-    //all non 0 for superuser
     if (
       userInfo?.details?.Utype == 1 &&
       TotalCust > 0 &&
@@ -182,20 +201,34 @@ const Dashboard = () => {
     }
     dispatch(ClearToaster());
   }, [toasterBool]);
-
+  //LineChart
   const { data } = useFetchLineChartData(
     {
+      AgentCode: Filter?.AgentCode,
+      BranchId: Filter?.BranchId,
+      AreaID: Filter?.AreaID,
       StartDate: SessionData?.StartDate,
       EndDate: SessionData?.EndDate,
+      ...obj,
     },
-    [SessionData],
+    [SessionData, Filter?.AreaID, Filter?.BranchId, Filter?.AgentCode]
   );
-
+  //BarChart
   const {
     bardata = [],
     nameArray = [],
     isloading69,
-  } = useFetchBarChartData({}, []);
+  } = useFetchBarChartData(
+    {
+      AgentCode: Filter?.AgentCode,
+      BranchId: Filter?.BranchId,
+      AreaID: Filter?.AreaID,
+      StartDate: SessionData?.StartDate,
+      EndDate: SessionData?.EndDate,
+      ...obj,
+    },
+    [Filter?.AreaID, Filter?.BranchId, Filter?.AgentCode]
+  );
 
   const onChangeHandler = (e) => {
     let key = e.target.name;
@@ -218,15 +251,15 @@ const Dashboard = () => {
       </Grid>
       <Grid item md={5.8} lg={2.5} sm={12} xs={12}>
         <ReusableDropDown4
-          Field={Filter?.BranchCode}
+          Field={Filter?.BranchId}
           ObjectKey={["BranchCode"]}
           data={branch}
           deselectvalue={true}
           disabled={false}
-          id={"BranchCode"}
+          id={"BranchId"}
           label={"Branch"}
           onChange={onChangeHandler}
-          uniquekey={"BranchCode"}
+          uniquekey={"BranchId"}
           key={1}
         />
       </Grid>
@@ -234,7 +267,7 @@ const Dashboard = () => {
         <ReusableDropDown4
           Field={Filter?.AgentCode}
           ObjectKey={["Name", "AgentCode"]}
-          data={agentList || []}
+          data={AgentCode || []}
           deselectvalue={true}
           disabled={false}
           id={"AgentCode"}

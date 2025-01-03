@@ -59,8 +59,7 @@ import {
   ClearStateLotEntry,
 } from "../../Slice/Collection/LotEntrySlice";
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
-import useFetchAgent from "../../Apps/CustomHook/useFetchAgent";
-
+import useFetchAcode from "../../Apps/CustomHook/useFetchAcode";
 const CustomFooter = ({ count }) => {
   const {
     totalColl: totCol,
@@ -261,7 +260,7 @@ function ManageCollections() {
   const { global, userInfo } = UseFetchLogger();
 
   //AgentCode
-  const { agentList } = useFetchAgent({ Status: 1 }, [], "");
+  const { AgentCode } = useFetchAcode({ Status: 1 });
 
   // collection List
   const { isloading29, isSuccess29 } = useSelector(
@@ -353,7 +352,7 @@ function ManageCollections() {
           Filters?.AgentCode !== null &&
           Filters?.AgentCode !== ""
         ) {
-          arr = agentList.filter((i) => i?.AgentCode == Filters?.AgentCode);
+          arr = AgentCode.filter((i) => i?.AgentCode == Filters?.AgentCode);
           percentage = arr[0]?.Commision;
 
           // setcomper(arr[0]?.Commission);
@@ -974,7 +973,7 @@ function ManageCollections() {
             setState={setFilters}
             state={Filters}
             label={"Agent"}
-            data={agentList}
+            data={AgentCode}
             id={"arial_status"}
             disabled={false}
             ObjectKey={["Name", "AgentCode"]}

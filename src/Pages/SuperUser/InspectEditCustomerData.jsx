@@ -232,7 +232,6 @@ function InspectEditCustomerData() {
         )
           .then(async (resp) => {
             setSub(resp?.payload);
-            //console.log(resp?.payload, "hi");
           })
           .catch((err) => {
             console.log(err);

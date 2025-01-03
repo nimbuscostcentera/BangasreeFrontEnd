@@ -19,7 +19,6 @@ function useFetchAgentYearlyReport(obj = {}, dep = []) {
       dispatch(AgentPerformancefunc({ ...global, ...obj }));
     }
   }, [...dep]);
-  //console.log(resp72,"in hook 1");
   let data = useMemo(() => {
     if (isSuccess72 && Resp72) {
       let Linedata = [];

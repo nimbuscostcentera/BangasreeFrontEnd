@@ -33,7 +33,6 @@ function useFetchSuperUser(obj = {}, dep = []) {
     }
   }, [Resp36, ...dep, ...array]);
   let bucount = buList?.length || 0;
-  ////console.log(resp36);
   return { bucount, buList, isError36, error36, isSuccess36, isloading36 };
 }
 
