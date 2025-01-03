@@ -185,10 +185,10 @@ const Dashboard = () => {
 
   const { data } = useFetchLineChartData(
     {
-      StartDate: SessionData?.StartDate || "2024-04-01",
-      EndDate: SessionData?.EndDate || "2025-03-31",
+      StartDate: SessionData?.StartDate,
+      EndDate: SessionData?.EndDate,
     },
-    [SessionData]
+    [SessionData],
   );
 
   const {
@@ -566,10 +566,22 @@ const Dashboard = () => {
                 p="15px"
               >
                 <Box>
-                  <Typography color={"#059669"} fontWeight="500">
-                    {i?.CustomerName}
+                  <Typography
+                    color={"#059669"}
+                    fontWeight="500"
+                    onClick={() => {
+                      navigate("/superuser/vieweditcustomer", {
+                        state: {
+                          CustUUid: i?.CustomerUUid,
+                        },
+                      });
+                    }}
+                  >
+                    {i?.CustomerName}({i?.CustomerAccNo})
                   </Typography>
-                  <Typography color={"#374151"}>{i?.AgentCode}</Typography>
+                  <Typography color={"#374151"}>
+                    Agent ({i?.AgentCode})
+                  </Typography>
                 </Box>
                 <Box color={"#374151"} textAlign={"right"} display={"flex"}>
                   <Box color={"#374151"} textAlign={"right"} mr={1}>
@@ -589,13 +601,18 @@ const Dashboard = () => {
                     borderRadius="4px"
                     onClick={() => {
                       if (CustPermission?.Edit == 1) {
-                        navigate("/superuser/vieweditcustomer", {
-                          state: { CustUUid: i?.CustomerUUid },
+                        navigate("/executive/collectionentry", {
+                          state: {
+                            CustUUid: i?.CustomerUUid,
+                            dueAmt: i?.dueAmt,
+                            ID: i?.SchemeRegId,
+                            CustomerName: i?.CustomerName,
+                          },
                         });
                       }
                     }}
                   >
-                    ₹{i?.amttobepaid}
+                    ₹{i?.dueAmt}
                   </Box>
                 </Box>
               </Box>

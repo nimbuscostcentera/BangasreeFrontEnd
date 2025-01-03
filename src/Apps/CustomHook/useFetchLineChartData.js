@@ -8,40 +8,35 @@ import {
 function useFetchLineChartData(obj = {}, dep = []) {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
+  let { StartDate, EndDate } = obj;
   const { isloading67, Resp67, isError67, error67, isSuccess67 } = useSelector((state)=> state.Line);
   var at = localStorage.getItem("AccessToken");
 
   useEffect(() => {
-    if (at !== undefined) {
-      dispatch(LineChartsfunc({ ...global,...obj}));
+    if (at && StartDate && EndDate) {
+      dispatch(LineChartsfunc({ ...global, ...obj }));
     }
-  }, [...dep]);
+  }, [StartDate, EndDate]);
 
   let data = useMemo(() => {
-    if (Resp67 && Resp67?.length!==0) {
+    if (Resp67 && Resp67?.length !== 0) {
       let Linedata = [];
       Resp67?.map((item) => {
-        if (item?.id == "001")
-        {
+        if (item?.id == "001") {
           Linedata.push({ ...item, color: "blue" });
-        } else if (item?.id == "002")
-        {
+        } else if (item?.id == "002") {
           Linedata.push({ ...item, color: "red" });
-        } else if (item?.id == "003")
-        {
+        } else if (item?.id == "003") {
           Linedata.push({ ...item, color: "green" });
-        }
-        else
-        {
+        } else {
           Linedata.push({ ...item, color: "grey" });
         }
-      })
+      });
       return Linedata;
-    }
-    else {
+    } else {
       return [];
     }
-  }, [Resp67, ...dep]);
+  }, [isSuccess67, StartDate, EndDate]);
  
   
   return { data };

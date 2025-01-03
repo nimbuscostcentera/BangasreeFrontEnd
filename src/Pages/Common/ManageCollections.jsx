@@ -67,6 +67,7 @@ const CustomFooter = ({ count }) => {
     totalSub: totSub,
     com: CommissionPer,
     comper: TotComission,
+    rowSelected,
   } = count;
   return (
     <GridFooterContainer
@@ -91,8 +92,27 @@ const CustomFooter = ({ count }) => {
                 borderRight: "1px solid #8c8c8c",
               }}
             >
+              <Typography>count</Typography>
+            </TableCell>
+            <TableCell
+              sx={{
+                textAlign: "end",
+                color: "white",
+                borderRight: "1px solid #8c8c8c",
+              }}
+            >
+              {rowSelected}
+            </TableCell>
+            <TableCell
+              sx={{
+                textAlign: "end",
+                color: "white",
+                borderRight: "1px solid #8c8c8c",
+              }}
+            >
               <Typography>Total Collection</Typography>
             </TableCell>
+
             <TableCell
               sx={{
                 textAlign: "end",
@@ -203,6 +223,7 @@ const CustomGridToolBar = () => {
     </GridToolbarContainer>
   );
 };
+
 function ManageCollections() {
   const ImageRef = useRef();
   const dispatch = useDispatch();
@@ -226,6 +247,7 @@ function ManageCollections() {
     totalSub: 0,
     com: 0,
     comper: 0,
+    rowSelected: 0,
   });
   const [Filters, setFilters] = useState({
     startDate: "",
@@ -365,6 +387,7 @@ function ManageCollections() {
         totalSub: totsub,
         com: cr,
         comper: percentage,
+        rowSelected: PaymentID?.length,
       });
     } else if (PaymentID && PaymentID.length == 0) {
       setCount({
@@ -372,6 +395,7 @@ function ManageCollections() {
         totalSub: 0,
         com: 0,
         comper: 0,
+        rowSelected:0,
       });
     }
   }, [Filters, PaymentID]);
@@ -532,9 +556,8 @@ function ManageCollections() {
       if (Array.isArray(data)) {
         navigate("/superuser/vieweditcustomer", {
           state: { CustUUid: data[0]?.CustUUid },
-        })
-      }
-      else {
+        });
+      } else {
         setParams({
           ...params,
           alert: true,
@@ -1008,6 +1031,7 @@ function ManageCollections() {
                 totalSub: 0,
                 com: 0,
                 comper: 0,
+                rowSelected: 0
               });
             }}
           />

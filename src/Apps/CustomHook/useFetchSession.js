@@ -15,17 +15,17 @@ function useFetchSession() {
 
   useEffect(() => {
     if (at !== undefined) {
-      dispatch(SessionListfunc({ ...global}));
+      dispatch(SessionListfunc({ ...global }));
     }
   }, []);
 
   let session = useMemo(() => {
-    if (Resp71 && Resp71?.length !== 0) {
+    if (isSuccess71 && Resp71?.length !== 0) {
       return Resp71;
     } else {
       return [];
     }
-  }, [Resp71]);
+  }, [isSuccess71]);
 
   return { isError71, session, error71, isSuccess71, isloading71 };
 }

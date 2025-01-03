@@ -1,6 +1,4 @@
 import * as React from "react";
-import { useState } from "react";
-import { styled } from "@mui/system";
 import {
   DataGrid,
   GridToolbarContainer,
@@ -11,11 +9,7 @@ import {
   GridToolbarExport,
 } from "@mui/x-data-grid";
 
-const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
-  "& .RedColor": {
-    backgroundColor: "#ff8275",
-  },
-}));
+
 const CustomGridToolBar = () => {
   return (
     <GridToolbarContainer sx={{ justifyContent: "space-between" }}>
@@ -55,16 +49,14 @@ export default function ReusableUnCheckedTable({
   uniqueid,
   columns,
   rows,
-  state,
-  setState,
   width = "100%",
-  height,isloading
+  height,
+  isloading
 }) {
   return (
     <div style={{ height: height || 400, width: width }}>
-      <StyledDataGrid
+      <DataGrid
         loading={isloading}
-        selectRow
         getRowId={(rows) => {
           if (!rows) {
             return -1;
@@ -90,14 +82,7 @@ export default function ReusableUnCheckedTable({
           },
         }}
         pageSizeOptions={[10, 15]}
-        onRowSelectionModelChange={(id) => {
-          const SelectedIDs = new Set(id);
-          const IDarr = Array.from(SelectedIDs);
-          setState(IDarr);
-        }}
-        getRowClassName={(params) => {
-          return params.row.red ? `RedColor` : "";
-        }}
+       
         slots={{ toolbar: CustomGridToolBar }}
         slotProps={{
           toolbar: {

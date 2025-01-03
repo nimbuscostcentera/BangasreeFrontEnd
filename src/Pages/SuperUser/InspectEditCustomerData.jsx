@@ -586,6 +586,8 @@ function InspectEditCustomerData() {
     },
   ];
   const NavigateToPaymentHistory = () => {
+    console.log(scid);
+    
     if (scid.length == 1) {
       navigate("/customer/custpaymenthistory", {
         state: { SchemeRegId: scid[0] },

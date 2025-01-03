@@ -34,9 +34,13 @@ import {
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
 import useFetchCustomer from "../../Apps/CustomHook/useFetchCustomer";
 import useFetchGoldRateList from "../../Apps/CustomHook/useFetchGoldRateList";
+import { useLocation,useNavigate } from "react-router-dom";
 function CollectionEntryForm() {
   let currentdate = moment().format("YYYY-MM-DD");
   //hooks
+  const navigate=useNavigate()
+  const location = useLocation();
+  const { ID, dueAmt, CustUUid, CustomerName } = location?.state || {};
   const dispatch = useDispatch();
   const [input, setInput] = useState({ CollectedAmt: true });
   const [SchemeData, setSchemeData] = useState([]);
@@ -48,14 +52,14 @@ function CollectionEntryForm() {
   const { rateList, isSuccess79 } = useFetchGoldRateList({ ID_PURITY: 1 });
 
   const [formData, setformData] = useState({
-    CollectedAmt: 0,
-    CustUUid: null,
-    ID: null,
+    CollectedAmt: dueAmt || 0.0,
+    CustUUid: CustUUid || null,
+    ID: ID || null,
     PaymentType: 2,
     CollectionDate: currentdate,
     gold_rate: 0.0,
   });
-  console.log(formData?.gold_rate, rateList[0]?.GOLD_RATE);
+  // console.log(formData?.gold_rate, rateList[0]?.GOLD_RATE);
 
   const handleClose = () => {
     setOpen(false);
@@ -80,7 +84,6 @@ function CollectionEntryForm() {
   //access token
   var at = localStorage.getItem("AccessToken");
 
- 
   var date = new Date();
   var dateString = date.toISOString();
   date = dateString.split("T", 1);
@@ -89,7 +92,6 @@ function CollectionEntryForm() {
     { value: "Registration Fees", PaymentType: 1 },
     { value: "EMI", PaymentType: 2 },
   ];
-
 
   //Scheme List
   useEffect(() => {
@@ -118,6 +120,18 @@ function CollectionEntryForm() {
     if (isSuccess24 && !isloading24) {
       toast.success(`${Response}`, { positions: toast.POSITION.TOP_RIGHT });
       document.getElementById("CollectionForm").reset();
+      if (CustUUid) {
+        navigate(location.pathname, {
+          replace: true,
+          state: {
+            CollectedAmt: 0,
+            CustUUid: null,
+            ID: null,
+            PaymentType: 2,
+            CollectionDate: currentdate,
+          },
+        });
+      }
       setformData({
         CollectedAmt: 0,
         CustUUid: null,
@@ -137,7 +151,7 @@ function CollectionEntryForm() {
 
   //gold rate
   useEffect(() => {
-    setformData({ ...formData, gold_rate: 0.00 });
+    setformData({ ...formData, gold_rate: 0.0 });
     setformData((prev) => {
       return { ...prev, gold_rate: rateList[0]?.GOLD_RATE };
     });
@@ -145,21 +159,20 @@ function CollectionEntryForm() {
 
   //Regfees handler
   useEffect(() => {
-    console.log(
-      "hi",
-      formData?.PaymentType === 1,
-      formData?.CustUUid,
-      formData?.ID
-    );
-    if (formData?.PaymentType === 1 && formData?.CustUUid && formData?.ID) {
+    if (
+      formData?.PaymentType === 1 &&
+      formData?.CustUUid &&
+      formData?.ID &&
+      !dueAmt
+    ) {
       const selectedScheme = SchemeData.find(
         (scheme) => scheme.ID === formData.ID
       );
-      console.log(selectedScheme);
+      //   console.log(selectedScheme);
 
       setformData({ ...formData, CollectedAmt: selectedScheme?.Regfees });
     } else {
-      setformData({ ...formData, CollectedAmt: null });
+      setformData({ ...formData, CollectedAmt: dueAmt || 0.0 });
     }
   }, [formData?.ID, formData?.PaymentType]);
 
@@ -167,8 +180,8 @@ function CollectionEntryForm() {
   const OnsubmitHandler = (e) => {
     e.preventDefault();
     let obj = {};
-    console.log(formData);
-    
+    // console.log(formData);
+
     if (global?.Utype !== 2) {
       obj.AgentCode = userInfo?.details?.AgentCode;
       dispatch(CollectionEntryfunc({ ...global, ...formData, ...obj }));
@@ -182,6 +195,7 @@ function CollectionEntryForm() {
   //permission List data Fetch
   // var parray = JSON.parse(window.localStorage.getItem("loggerPermission"));
   // var myPermission = parray && parray.filter((i) => i?.PageName == "Manage Collections")[0];
+  console.log(location.state);
 
   return (
     <Grid container maxtype={"xl"} mt={1} ml={2} columnGap={2} rowGap={2}>
@@ -262,32 +276,42 @@ function CollectionEntryForm() {
         >
           <Grid container columnGap={5} rowGap={3}>
             <Grid item md={5.7} sm={12} xs={12} lg={5.7} mt={1} mb={2}>
-              <Autocomplete
-                options={custList}
-                componentName="CustUUid"
-                isOptionEqualToValue={(option, value) => {
-                  return option?.UUid === value?.value;
-                }}
-                defaultValue={custList}
-                getOptionLabel={(option) => {
-                  return `${option?.CustomerName}:${option?.PhoneNumber}`;
-                }}
-                onChange={(e, newvalue) => {
-                  setAutoCom(newvalue);
-                  setformData({ ...formData, CustUUid: newvalue?.UUid });
-                }}
-                value={autoCom}
-                fullWidth
-                size="small"
-                sx={{ border: "0px" }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    placeholder="Customer"
-                    name="CustUUid"
-                  />
-                )}
-              />
+              {CustUUid ? (
+                <TextField
+                  value={CustomerName}
+                  label={"Custome Name"}
+                  InputLabelProps={{ shrink: true }}
+                  size="small"
+                  fullWidth
+                />
+              ) : (
+                <Autocomplete
+                  options={custList}
+                  componentName="CustUUid"
+                  isOptionEqualToValue={(option, value) => {
+                    return option?.UUid === value?.value;
+                  }}
+                  defaultValue={custList}
+                  getOptionLabel={(option) => {
+                    return `${option?.CustomerName}:${option?.PhoneNumber}`;
+                  }}
+                  onChange={(e, newvalue) => {
+                    setAutoCom(newvalue);
+                    setformData({ ...formData, CustUUid: newvalue?.UUid });
+                  }}
+                  value={autoCom}
+                  fullWidth
+                  size="small"
+                  sx={{ border: "0px" }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder="Customer"
+                      name="CustUUid"
+                    />
+                  )}
+                />
+              )}
             </Grid>
             <Grid item md={5.7} sm={12} xs={12} lg={5.7}>
               <ReusableDropDown4

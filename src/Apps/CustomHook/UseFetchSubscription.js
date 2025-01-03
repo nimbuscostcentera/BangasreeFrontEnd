@@ -9,7 +9,7 @@ const useFetchSupscription = (obj = {}, dep = [], uniquekey = "") => {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
   let sub = [],
-    duepaycust = null,
+    duepaycust = [],
     maturity = 0;
   //Collection List for Table
   const { isloading23, Response, isError23, error23, isSuccess23 } =
@@ -29,8 +29,17 @@ const useFetchSupscription = (obj = {}, dep = [], uniquekey = "") => {
       return Response;
     }
   }, [isSuccess23]);
-  duepaycust = sub && sub?.filter((i) => i?.red == 1);
-  sub && sub?.map((i) => {
+  sub?.map((i) => {
+    if (i?.red == 1) {
+      let obj = { ...i };
+      obj.dueAmt = i?.PaybaleAmt - i?.totcollected;
+      duepaycust.push(obj);
+    }
+  });
+  console.log(duepaycust);
+
+  sub &&
+    sub?.map((i) => {
       if (i.MaturityStatus == 3) {
         maturity = maturity + 1;
       }
