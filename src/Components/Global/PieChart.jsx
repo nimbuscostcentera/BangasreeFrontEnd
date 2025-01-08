@@ -2,8 +2,8 @@ import { ResponsivePie } from "@nivo/pie";
 import useFetchPieChartData from "../../Apps/CustomHook/useFetchPie";
 import { Box } from "@mui/system";
 
-const PieChart = () => {
-  const { data } = useFetchPieChartData({}, []);
+const PieChart = ({data}) => {
+ 
   return (
     <Box sx={{ height:320, width: 300 }}>
       <ResponsivePie

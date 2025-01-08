@@ -29,6 +29,7 @@ import SuperUserEditSlice from "../Slice/BackofficeUser/SuperUserEditSlice";
 import SuperUserStatusSlice from "../Slice/BackofficeUser/SuperUserStatusSlice";
 import DesignationListSlice from "../Slice/BackofficeUser/DesignationListSlice";
 import SuperUserListSlice from "../Slice/BackofficeUser/BackofficeUserListSlice";
+import  LogBookListSlice from "../Slice/BackofficeUser/LogListSlice";
 
 import ListEditSlice from "../Slice/PortableCustomer/LeadEditSlice";
 import LeadCustListSlice from "../Slice/PortableCustomer/PortableCustListSlice";
@@ -207,6 +208,7 @@ const rootReducer = combineReducers({
   schemeHist: SchemeHistorySlice,
   alllots: LotListSlice,
   lotentry: LotEntryslice,
+  logs: LogBookListSlice,
 });
 const persistConfig = {
   key: "root",

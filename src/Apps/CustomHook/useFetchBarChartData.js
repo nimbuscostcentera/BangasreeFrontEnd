@@ -3,7 +3,7 @@ import UseFetchLogger from "./UseFetchLogger";
 import { useSelector, useDispatch } from "react-redux";
 import { BarChartsfunc, ClearState69 } from "../../Slice/Dashboard/BarChart";
 import { color } from "@mui/system";
-function useFetchBarChartData() {
+function useFetchBarChartData(obj = {},dep=[]) {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
   const { isloading69, Resp69, isError69, error69, isSuccess69 } = useSelector(
@@ -13,9 +13,9 @@ function useFetchBarChartData() {
 
   useEffect(() => {
     if (at !== undefined) {
-      dispatch(BarChartsfunc(global));
+      dispatch(BarChartsfunc({...global,...obj}));
     }
-  }, []);
+  }, dep);
     let transArray = [];
     Resp69?.map((item) => {
         let arr = Object.keys(item);
@@ -39,7 +39,7 @@ function useFetchBarChartData() {
       });
       return Bardata;
     }
-  }, [isSuccess69]);
+  }, [isSuccess69,...dep]);
 
   return { bardata, nameArray, isloading69 };
 }

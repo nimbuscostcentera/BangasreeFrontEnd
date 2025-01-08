@@ -13,7 +13,7 @@ var at = localStorage.getItem("AccessToken");
 
 
   useEffect(() => {
-    console.log(uniquekey, obj, dep, "up");
+   // console.log(uniquekey, obj, dep, "up");
      if (
        at !== undefined && !uniquekey
      ) {

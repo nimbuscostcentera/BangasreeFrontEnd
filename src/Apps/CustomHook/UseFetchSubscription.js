@@ -17,18 +17,19 @@ const useFetchSupscription = (obj = {}, dep = [], uniquekey = "") => {
 
   var at = localStorage.getItem("AccessToken");
 
+
   //Collection List
   useEffect(() => {
     if (at !== undefined) {
       dispatch(CollectionList({ ...global, ...obj }));
     }
-  }, [...dep]);
+  }, dep);
 
   sub = useMemo(() => {
-    if (isSuccess23 && !isloading23 && at !== undefined) {
+    if (isSuccess23) {
       return Response;
     }
-  }, [isSuccess23]);
+  }, [isSuccess23,...dep]);
   sub?.map((i) => {
     if (i?.red == 1) {
       let obj = { ...i };
@@ -36,7 +37,6 @@ const useFetchSupscription = (obj = {}, dep = [], uniquekey = "") => {
       duepaycust.push(obj);
     }
   });
-  console.log(duepaycust);
 
   sub &&
     sub?.map((i) => {

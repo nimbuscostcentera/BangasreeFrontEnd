@@ -17,23 +17,22 @@ function useFetchPieChartData(obj = {}, dep = []) {
     if (at !== undefined) {
       dispatch(PieChartsfunc({ ...global, ...obj }));
     }
-  }, [...dep]);
+  }, dep);
   let data = useMemo(() => {
-      if (Resp68 && Resp68?.length !== 0) {
-          let piedata = [];
-          Resp68.map((item, index) => {
-              if (index == 0) {
-                  piedata.push({ ...item, color: "red" });
-              } else {
-                  piedata.push({ ...item, color: "green" });
-              }
-          
-          });
-          return piedata;
+    if (Resp68 && Resp68?.length !== 0) {
+      let piedata = [];
+      Resp68.map((item, index) => {
+        if (index == 0) {
+          piedata.push({ ...item, color: "red" });
+        } else {
+          piedata.push({ ...item, color: "green" });
+        }
+      });
+      return piedata;
     } else {
       return [];
     }
-  }, [Resp68, ...dep]);
+  }, [isSuccess68, ...dep]);
 
   return {data};
 }

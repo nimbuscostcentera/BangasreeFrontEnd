@@ -8,15 +8,17 @@ import {
 function useFetchLineChartData(obj = {}, dep = []) {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
-  let { StartDate, EndDate } = obj;
+  
   const { isloading67, Resp67, isError67, error67, isSuccess67 } = useSelector((state)=> state.Line);
   var at = localStorage.getItem("AccessToken");
 
+
   useEffect(() => {
-    if (at && StartDate && EndDate) {
+    // console.log(AreaID, dep, obj, StartDate, EndDate, "area");
+    if (at) {
       dispatch(LineChartsfunc({ ...global, ...obj }));
     }
-  }, dep);
+  },dep);
 
   let data = useMemo(() => {
     if (Resp67 && Resp67?.length !== 0) {

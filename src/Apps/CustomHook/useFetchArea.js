@@ -3,7 +3,7 @@ import UseFetchLogger from "./UseFetchLogger";
 import { useSelector, useDispatch } from "react-redux";
 import { ClearState5, getAreaList } from "../../Slice/Area/AreaListSlice";
 
-function useFetchArea(obj = {}) {
+function useFetchArea(obj = {},dep=[]) {
 const dispatch = useDispatch();
 const { global } = UseFetchLogger();
 const { isloading5, areaList, isError5, error5, isSuccess5 } = useSelector(

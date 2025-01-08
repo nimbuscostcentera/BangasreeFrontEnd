@@ -1,24 +1,14 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState,useCallback } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import {
-  Box,
-  Button,
-  Container,
-  IconButton,
-  Typography,
-  Divider,
-} from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Grid from "@mui/system/Unstable_Grid/Grid";
 import PersonIcon from "@mui/icons-material/Person";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import BeenhereIcon from "@mui/icons-material/Beenhere";
-import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
-import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
-import PaymentsIcon from "@mui/icons-material/Payments";
 
 import Header from "../../Components/Global/Header";
 import LineChart from "../../Components/Global/LineChart";
@@ -41,70 +31,111 @@ import useFetchSubscription from "../../Apps/CustomHook/UseFetchSubscription";
 import useFetchBarChartData from "../../Apps/CustomHook/useFetchBarChartData";
 import useFetchLineChartData from "../../Apps/CustomHook/useFetchLineChartData";
 import useFetchBranch from "../../Apps/CustomHook/useFetchBranch";
-import useFetchAgent from "../../Apps/CustomHook/useFetchAgent";
 import useFetchAcode from "../../Apps/CustomHook/useFetchAcode";
 import useFetchArea from "../../Apps/CustomHook/useFetchArea";
+import useFetchPieChartData from "../../Apps/CustomHook/useFetchPie";
 const Dashboard = () => {
-  const currentyear = moment().format("YYYY");
-  const nextyear = moment().add(12, "months").format("YYYY");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { AreaList = [] } = useFetchArea();
   const { userInfo, toasterBool } = UseFetchLogger();
   const [loading, setLoading] = useState(true);
-  const [Filter, setFilter] = useState({
-    AgentCode: null,
-    BranchId: null,
-    AreaID: null,
-  });
-  const [SessionData, setSessionData] = useState({
-    StartDate: `${currentyear}-03-31`,
-    EndDate: `${nextyear}-04-01`,
-  });
-  const [sid, setSid] = useState(3);
-  let obj = {};
+  const currentdate = moment();
+  const currentyear = currentdate.year();
+  const prevyear = moment().subtract(1, "year").year();
+  const nextyear = moment().add(1, "year").year();
+  const aprend = moment(`${currentyear}-04-01`, "YYYY-MM-DD");
 
-  if (userInfo?.details?.Utype == 1) {
-    obj.SuperUserID = userInfo?.details?.SuperUserID;
-    obj.StartDate = `${currentyear}-03-31`;
-    obj.StartDate = `${nextyear}-04-01`;
-    obj.today = moment().format("YYYY-MM-DD");
-  } else if (userInfo?.details?.Utype == 2) {
-    obj.AgentID = userInfo?.details?.AgentID;
-    obj.AgentCode = userInfo?.details?.AgentCode;
-    obj.StartDate = `${currentyear}-03-31`;
-    obj.StartDate = `${nextyear}-04-01`;
-    obj.today = moment().format("YYYY-MM-DD");
-  }
+  const [Filter, setFilter] = useState({
+    BranchId:"",
+    AreaID:"",
+    AgentID: userInfo?.details?.AgentID || "",
+    AgentCode: "",
+    SuperUserID: userInfo?.details?.SuperUserID || "",
+    StartDate: currentdate.isSameOrAfter(aprend)
+      ? moment(`${currentyear}-04-01`).format("YYYY-MM-DD")
+      : moment(`${prevyear}-04-01`).format("YYYY-MM-DD"),
+    EndDate: currentdate.isSameOrAfter(aprend)
+      ? moment(`${nextyear}-03-31`).format("YYYY-MM-DD")
+      : moment(`${currentyear}-03-31`).format("YYYY-MM-DD"),
+    today: currentdate.format("YYYY-MM-DD"),
+    SessionID: "",
+  });
+  const calculateFiscalDates = useCallback(() => {
+    if (currentdate.isSameOrAfter(aprend)) {
+      return {
+        sdate: moment(`${currentyear}-04-01`).format("YYYY-MM-DD"),
+        edate: moment(`${nextyear}-03-31`).format("YYYY-MM-DD"),
+      };
+    } else {
+      return {
+        sdate: moment(`${prevyear}-04-01`).format("YYYY-MM-DD"),
+        edate: moment(`${currentyear}-03-31`).format("YYYY-MM-DD"),
+      };
+    }
+  }, [currentyear, prevyear, nextyear, aprend]);
+
+  const { branch } = useFetchBranch({Status:1}, [], "");
+
+  const { AgentCode } = useFetchAcode({}, [], "");
+
+  const { session } = useFetchSession();
+  //console.log(Filter?.StartDate, Filter?.EndDate, sdate, edate);
+
+  //set session id according to filter date when the page refresh
+  useEffect(() => {
+    const { sdate, edate } = calculateFiscalDates();
+
+    let checkSdate = moment(sdate);
+    let checkEdate = moment(edate);
+
+    const matchingSession = session.find((item) => {
+      let StartDate = moment(item?.StartDate);
+      let EndDate = moment(item?.EndDate);
+      return (
+        checkSdate.isSame(StartDate, "day") &&
+        checkEdate.isSame(EndDate, "day") &&
+        item
+      );
+    });
+console.log(matchingSession);
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      StartDate: sdate,
+      EndDate: edate,
+      SessionID: matchingSession?.SessionID || "",
+    }));
+  }, [session]);
+
+  // Set StartDate and EndDate when SessionID is updated
+  useEffect(() => {
+    if (Filter.SessionID) {
+      const sessionData = session.find(
+        (item) => item?.SessionID === Filter.SessionID
+      );
+
+      if (sessionData) {
+        setFilter((prevFilter) => ({
+          ...prevFilter,
+          StartDate: sessionData.StartDate,
+          EndDate: sessionData.EndDate,
+        }));
+      }
+    }
+  }, [Filter.SessionID, session]);
+
   //card data fetch
   const { CardData } = useFetchCards(
-    {
-      ...obj,
-      AgentCode: Filter?.AgentCode,
-      BranchId: Filter?.BranchId,
-      AreaID: Filter?.AreaID,
-    },
+    Filter,
     [Filter?.AreaID, Filter?.BranchId, Filter?.AgentCode],
     ""
   );
   //multicard data fetch
   const { duepaycust } = useFetchSubscription(
-    {
-      ...obj,
-      AgentCode: Filter?.AgentCode,
-      BranchId: Filter?.BranchId,
-      AreaID: Filter?.AreaID,
-    },
+    Filter,
     [Filter?.AreaID, Filter?.BranchId, Filter?.AgentCode],
     ""
   );
-
-  const { branch } = useFetchBranch(obj, [], "");
-
-  const { AgentCode } = useFetchAcode(obj, [], "");
-
-  const { session } = useFetchSession();
-
-  const { AreaList = [] } = useFetchArea(obj);
 
   let TotalCust = CardData?.TotalCust;
   let TotalAgent = CardData?.TotalAgent;
@@ -118,12 +149,17 @@ const Dashboard = () => {
 
   //set session data
   useEffect(() => {
-    let sarray = session?.filter((item) => item?.SessionID == sid);
-    setSessionData({
-      StartDate: sarray[0]?.StartDate,
-      EndDate: sarray[0]?.EndDate,
+    let sarray = session?.filter(
+      (item) => item?.SessionID == Filter?.SessionID
+    );
+    setFilter((prevstate) => {
+      return {
+        ...prevstate,
+        StartDate: sarray[0]?.StartDate,
+        EndDate: sarray[0]?.EndDate
+      }
     });
-  }, [sid]);
+  }, [Filter?.SessionID]);
 
   //Loader
   useEffect(() => {
@@ -192,7 +228,7 @@ const Dashboard = () => {
     parray && parray.filter((i) => i?.PageName == "Manage Backoffice")[0];
   var SubscriptionPermission =
     parray && parray.filter((i) => i?.PageName == "Manage Subscriptions")[0];
-
+  //toaster
   useEffect(() => {
     if (toasterBool) {
       toast.success(`${userInfo?.response}`, {
@@ -201,41 +237,39 @@ const Dashboard = () => {
     }
     dispatch(ClearToaster());
   }, [toasterBool]);
+
   //LineChart
-  const { data } = useFetchLineChartData(
-    {
-      AgentCode: Filter?.AgentCode,
-      BranchId: Filter?.BranchId,
-      AreaID: Filter?.AreaID,
-      StartDate: SessionData?.StartDate,
-      EndDate: SessionData?.EndDate,
-      ...obj,
-    },
-    [SessionData, Filter?.AreaID, Filter?.BranchId, Filter?.AgentCode]
-  );
+  const { data } = useFetchLineChartData(Filter, [
+    Filter?.AreaID,
+    Filter?.BranchId,
+    Filter?.AgentCode,
+    Filter?.SessionID,
+  ]);
+
   //BarChart
   const {
     bardata = [],
     nameArray = [],
     isloading69,
-  } = useFetchBarChartData(
-    {
-      AgentCode: Filter?.AgentCode,
-      BranchId: Filter?.BranchId,
-      AreaID: Filter?.AreaID,
-      StartDate: SessionData?.StartDate,
-      EndDate: SessionData?.EndDate,
-      ...obj,
-    },
-    [Filter?.AreaID, Filter?.BranchId, Filter?.AgentCode]
-  );
+  } = useFetchBarChartData(Filter, [
+    Filter?.AreaID,
+    Filter?.BranchId,
+    Filter?.AgentCode,
+  ]);
+
+  // console.log(Filter);
 
   const onChangeHandler = (e) => {
     let key = e.target.name;
     let value = e.target.value;
     setFilter({ ...Filter, [key]: value });
   };
-  // console.log(Filter, "dashboard");
+  //console.log(Filter?.SessionID, "dashboard");
+  const { data: pieData } = useFetchPieChartData(Filter, [
+    Filter?.AgentCode,
+    Filter.AreaID,
+    Filter?.BranchId,
+  ]);
   return (
     <Grid container maxWidth={"xl"} columnGap={2} rowGap={2} ml={2} mt={5}>
       <ToastContainer autoClose={8000} />
@@ -525,16 +559,14 @@ const Dashboard = () => {
               />
             </IconButton> */}
             <ReusableDropDown4
-              Field={sid}
+              Field={Filter?.SessionID}
               data={session}
               disabled={false}
               ObjectKey={["Session"]}
               deselectvalue={false}
               id={"arial"}
               label={"Session"}
-              onChange={(e) => {
-                setSid(e.target.value);
-              }}
+              onChange={onChangeHandler}
               uniquekey={"SessionID"}
             />
           </Box>
@@ -685,7 +717,7 @@ const Dashboard = () => {
           mt="20px"
           color={"#000000"}
         >
-          <PieChart />
+          <PieChart data={pieData} />
         </Box>
       </Grid>
       {/**Bar graph */}
@@ -716,7 +748,7 @@ const Dashboard = () => {
           ml={2}
           mt={2}
         >
-          Top 5 Agent's Area Wise Collection
+          Top 5 Agent Area Wise Collection
         </Typography>
         <BarChart
           data={bardata}

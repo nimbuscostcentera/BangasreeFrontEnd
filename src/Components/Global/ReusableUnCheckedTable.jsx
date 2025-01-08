@@ -51,7 +51,8 @@ export default function ReusableUnCheckedTable({
   rows,
   width = "100%",
   height,
-  isloading
+  isloading,
+  onClicksingleCell,
 }) {
   return (
     <div style={{ height: height || 400, width: width }}>
@@ -82,13 +83,13 @@ export default function ReusableUnCheckedTable({
           },
         }}
         pageSizeOptions={[10, 15]}
-       
         slots={{ toolbar: CustomGridToolBar }}
         slotProps={{
           toolbar: {
             showQuickFilter: true,
           },
         }}
+        onCellClick={onClicksingleCell}
       />
     </div>
   );

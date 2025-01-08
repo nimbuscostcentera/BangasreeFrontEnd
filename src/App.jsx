@@ -174,6 +174,14 @@ function App() {
         element={<PrivateRoute authenticated={AccessToken} />}
       >
         <Route
+          path="logbooks"
+          element={
+            <UserPrivateLayout>
+              <ViewLogs />
+            </UserPrivateLayout>
+          }
+        />
+        <Route
           path="purity-metal"
           element={
             <UserPrivateLayout>
@@ -346,14 +354,6 @@ function App() {
           element={
             <UserPrivateLayout>
               <EditSchemeReg />
-            </UserPrivateLayout>
-          }
-        />
-        <Route
-          path="view-logs"
-          element={
-            <UserPrivateLayout>
-              <ViewLogs />
             </UserPrivateLayout>
           }
         />
