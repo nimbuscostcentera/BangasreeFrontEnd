@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useMemo,
-  useCallback,
-  useRef,
-} from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import moment from "moment";
@@ -28,7 +22,6 @@ import {
 } from "@mui/material";
 
 import Loader from "../../Components/Global/loader";
-import ReusableDropDown4 from "../../Components/Global/ReusableDropDown4";
 import ReusableDropDown3 from "../../Components/Global/ReusableDropDown3";
 import ReusableBreadcrumbs from "../../Components/Global/ReusableBreadcrumbs";
 import OnOffButton from "../../Components/Global/OnOffButton";
@@ -255,8 +248,8 @@ export default function CustomerRegForm() {
       freshData.BranchId = a?.BranchId || userInfo?.details?.BranchId;
     }
 
-    if (typeof a == "object") {
-      finalobj = { ...a, ...global, ...freshData, ...pic };
+    if (typeof x == "object") {
+      finalobj = { ...x, ...global, ...freshData, ...pic };
     } else {
       finalobj = { ...global, ...freshData, ...pic };
     }
@@ -406,7 +399,7 @@ export default function CustomerRegForm() {
               <TextField
                 size="small"
                 required
-                value={rawData?.CustomerName || a?.CustomerName}
+                value={rawData?.CustomerName || a?.CustomerName || ""}
                 id="CustomerName"
                 name="CustomerName"
                 label="Applicant's Name"
@@ -436,7 +429,7 @@ export default function CustomerRegForm() {
               <TextField
                 size="small"
                 required
-                value={rawData?.Guardian}
+                value={rawData?.Guardian || ""}
                 InputLabelProps={{ shrink: true }}
                 id="Guardian"
                 name="Guardian"
@@ -470,7 +463,7 @@ export default function CustomerRegForm() {
                 name="PhoneNumber"
                 label="Phone Number"
                 fullWidth
-                value={rawData?.PhoneNumber || a?.PhoneNumber}
+                value={rawData?.PhoneNumber || a?.PhoneNumber || ""}
                 InputLabelProps={{ shrink: true }}
                 type="tel"
                 error={!input?.phn}
@@ -499,7 +492,7 @@ export default function CustomerRegForm() {
             <Grid item lg={5.7} md={5.2} sm={12} xs={12}>
               <TextField
                 size="small"
-                value={rawData?.AlternateNo}
+                value={rawData?.AlternateNo || ""}
                 id="AlternateNo"
                 type="tel"
                 name="AlternateNo"
@@ -536,7 +529,7 @@ export default function CustomerRegForm() {
                 name="EmailId"
                 label="Email ID"
                 fullWidth
-                value={rawData?.EmailId || a?.EmailId}
+                value={rawData?.EmailId || a?.EmailId || ""}
                 InputLabelProps={{ shrink: true }}
                 variant="outlined"
                 type="email"
@@ -559,7 +552,7 @@ export default function CustomerRegForm() {
               <TextField
                 size="small"
                 id="Occupation"
-                value={rawData?.Occupation}
+                value={rawData?.Occupation || ""}
                 name="Occupation"
                 label="Occupation"
                 InputLabelProps={{ shrink: true }}
@@ -570,7 +563,6 @@ export default function CustomerRegForm() {
                 onChange={(e) => {
                   if (e.target.value !== "") {
                     var res = AlphabetOnly(e.target.value);
-
                     setInput({ ...input, ["Occupation"]: res });
                   } else if (e.target.value == "") {
                     setInput({ ...input, ["Occupation"]: true });
@@ -589,7 +581,7 @@ export default function CustomerRegForm() {
                 Date of Birth*
                 <Input
                   required
-                  value={rawData?.DOB}
+                  value={rawData?.DOB || ""}
                   InputLabelProps={{ shrink: true }}
                   id="DOB"
                   name="DOB"
@@ -673,7 +665,7 @@ export default function CustomerRegForm() {
               <TextField
                 size="small"
                 required
-                value={rawData?.LocalBody}
+                value={rawData?.LocalBody || ""}
                 InputLabelProps={{ shrink: true }}
                 id="PMC"
                 label="Panchayat / Municipality / Corporation"
@@ -681,11 +673,10 @@ export default function CustomerRegForm() {
                 variant="outlined"
                 name="LocalBody"
                 error={!input?.LocalBody}
-                inputProps={{ maxLength: 30 }}
+                inputProps={{ maxLength: 200 }}
                 onChange={(e) => {
                   if (e.target.value !== "") {
                     var res = AlphabetOnly(e.target.value);
-
                     setInput({ ...input, ["LocalBody"]: res });
                   } else if (e.target.value == "") {
                     setInput({ ...input, ["LocalBody"]: true });
@@ -702,7 +693,7 @@ export default function CustomerRegForm() {
             <Grid item lg={5.7} md={5.2} sm={12} xs={12}>
               <TextField
                 required
-                value={rawData?.LandMark}
+                value={rawData?.LandMark || ""}
                 size="small"
                 id="LandMark"
                 name="LandMark"
@@ -711,12 +702,12 @@ export default function CustomerRegForm() {
                 fullWidth
                 variant="outlined"
                 type="text"
-                inputProps={{ maxLength: 30 }}
+                inputProps={{ maxLength: 200 }}
               />
             </Grid>
             <Grid item lg={12} md={12} sm={12} xs={12} mt={1}>
               <TextField
-                value={rawData?.Geolocation}
+                value={rawData?.Geolocation || ""}
                 size="small"
                 id="GeoLocation"
                 name="GeoLocation"
@@ -755,7 +746,7 @@ export default function CustomerRegForm() {
                   </IconButton>
 
                   <TextField
-                    value={a?.BranchName}
+                    value={a?.BranchName || ""}
                     label="Branch"
                     size="small"
                     id="Branch"
@@ -767,7 +758,7 @@ export default function CustomerRegForm() {
                   />
 
                   <TextField
-                    value={a?.AgentCode}
+                    value={a?.AgentCode || ""}
                     label="AgentCode"
                     size="small"
                     id="AgentCode"
@@ -778,7 +769,7 @@ export default function CustomerRegForm() {
                     sx={{ mb: 1, mr: 3, mt: 2 }}
                   />
                   <TextField
-                    value={a?.AreaName}
+                    value={a?.AreaName || ""}
                     label="Area"
                     size="small"
                     id="AreaName"
@@ -895,7 +886,7 @@ export default function CustomerRegForm() {
                       label="BranchCode"
                       name="Branch"
                       disabled={true}
-                      value={userInfo?.details?.BranchName}
+                      value={userInfo?.details?.BranchName || ""}
                       InputLabelProps={{ shrink: true }}
                       style={{ marginTop: 8 }}
                     />

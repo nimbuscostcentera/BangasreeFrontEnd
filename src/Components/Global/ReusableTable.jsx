@@ -66,17 +66,22 @@ export default function ReusableDataTable({
   const [isloading1, setIsLoading1] = useState(true);
   useEffect(() => {
    if (Array.isArray(rows) && rows?.length !== 0) {
-      const delay2 = setTimeout(() => {
-        setIsLoading1(false);
-      }, 500); // 2000 milliseconds delay
-      return () => clearTimeout(delay2);
-   }else
-   { const delay2 = setTimeout(() => {
+     const delay2 = setTimeout(() => {
        setIsLoading1(false);
-      }, 1000); // 2000 milliseconds delay
-      return () => clearTimeout(delay2); 
+     }, 500); // 2000 milliseconds delay
+     return () => clearTimeout(delay2);
+   } else if (isloading && Array.isArray(rows) && rows?.length == 0) {
+     const delay2 = setTimeout(() => {
+       setIsLoading1(false);
+     }, 4000); // 2000 milliseconds delay
+     return () => clearTimeout(delay2);
     }
+    else if (!isloading)
+   {
+     setIsLoading1(true)
+     }
   }, [rows, isloading]);
+  console.log(isloading1)
   return (
     <StyledDataGrid
       loading={isloading1}

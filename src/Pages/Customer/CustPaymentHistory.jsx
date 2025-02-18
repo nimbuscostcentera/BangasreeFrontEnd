@@ -9,7 +9,7 @@ import ReusableBreadcrumbs from "../../Components/Global/ReusableBreadcrumbs";
 import LocalPrintshopIcon from "@mui/icons-material/LocalPrintshop";
 import { PaymentDetailList } from "../../Slice/PaymentDetails/PaymentDetailsSlice";
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
-import Banga from "../../assets/BangaLogo_color2.png";
+import Banga from "../../assets/BangaLogo_updated8Feb.png";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
@@ -39,7 +39,8 @@ function CustPaymentHistory() {
         let obj = { ...item };
         obj.Purity = "916 HUID";
         obj.gold_rate = `${(item?.gold_rate || 0).toFixed(2)}/-`;
-        obj.PaymentMode =item?.PaymentMode == "1"
+        obj.PaymentMode =
+          item?.PaymentMode == "1"
             ? "Cash"
             : item?.PaymentMode == "2"
             ? "Online Bank"
@@ -191,125 +192,114 @@ function CustPaymentHistory() {
     },
     // { field: "Name", headerName: "Agent", width: 150, printWidth: 100 },
   ];
+
   const generatePDF = () => {
     const doc = new jsPDF({
-      orientation: "portrait", // A4 Portrait
+      orientation: "portrait",
       unit: "mm",
       format: "a4",
     });
 
-    const pageWidth = doc.internal.pageSize.width; // 210mm (A4 width)
-    const pageHeight = doc.internal.pageSize.height; // 297mm (A4 height)
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+    const footerHeight = 30;
+    const maxTableHeight = pageHeight - footerHeight - 15;
+    const ROWS_PER_PAGE = 23;
 
-    // Add border with reduced margins
     doc.setDrawColor(0);
     doc.setLineWidth(0.3);
     doc.rect(5, 5, pageWidth - 10, pageHeight - 10);
 
-    // Add logo (adjusted size for A4)
     const logo = new Image();
     logo.src = Banga;
-    doc.addImage(logo, "PNG", 10, 7, 60, 27); // Reduced size
+    doc.addImage(logo, "PNG", 10, 7, 60, 27);
 
-    // Header: "Payment Details" (Right-aligned)
     doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
     doc.setTextColor(139, 36, 36);
-    const headerText = "Payment History";
+    doc.text("Payment History", pageWidth - 50, 15);
 
-    const headerTextWidth = doc.getTextWidth(headerText);
-    doc.text(headerText, pageWidth - headerTextWidth - 15, 15); // Adjusted alignment
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(0, 0, 0);
     doc.setFontSize(9);
-    doc.text(
-      `Area: ${printableRow[0]?.AreaName}`,
-      pageWidth - headerTextWidth - 10,
-      20
-    );
-    doc.text(
-      `Branch: ${printableRow[0]?.BranchName}`,
-      pageWidth - headerTextWidth - 10,
-      24
-    );
-    //  Title
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Area: ${printableRow[0]?.AreaName}`, pageWidth - 50, 20);
+    doc.text(`Branch: ${printableRow[0]?.BranchName}`, pageWidth - 50, 24);
+
     doc.setFontSize(10);
-    doc.setFont("helvetica", "bold"); // Add padding
-    const textHeight = 6; // Adjust height as needed
-    const rectX = 10; // Center align
-    const rectY = 32; // Adjust Y position
-
-    doc.setFillColor(245, 245, 245); // Light grey background
-    doc.rect(rectX, rectY, pageWidth - 20, textHeight, "F"); // "F" fills the rectangle
-
-    // Add the text
-    doc.setTextColor(0, 0, 0); // Set text color to black
-    doc.text("Customer Details", pageWidth / 2, 36, {
-      align: "center",
-    });
-
-    // Customer Details Table
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
+    doc.setFont("helvetica", "bold");
+    doc.setFillColor(245, 245, 245);
+    doc.rect(10, 32, pageWidth - 20, 6, "F");
+    doc.setTextColor(0, 0, 0);
+    doc.text("Customer Details", pageWidth / 2, 36, { align: "center" });
+    // Customer Details Title
     const CustDetails = [
       ["Customer Name", printableRow[0]?.CustomerName],
       ["Phone", printableRow[0]?.PhoneNumber],
       ["Address", printableRow[0]?.Address],
-      ["Account No", printableRow[0]?.CustomerAccNo],
+      ["A/C No.", printableRow[0]?.CustomerAccNo],
     ];
 
     doc.autoTable({
       startY: 40,
-      startX: 10, // Left-aligned
-      head: false,
       body: CustDetails,
       theme: "grid",
+      headStyles: { fillColor: "#8b2424" },
       columnStyles: {
-        0: { fillColor: [245, 245, 245] }, // Grey background
-        1: { fillColor: [255, 255, 255] }, // White background
+        0: { fillColor: [245, 245, 245] },
+        1: { fillColor: [255, 255, 255] },
       },
-      styles: { fontSize: 9, cellPadding: 2 },
+      didParseCell: function (data) {
+        if (data.row.index === 2) {
+          // Address row
+          data.cell.styles.minCellHeight = 4 * 5.5; // Each line = 5px height
+        }
+      },
+      styles: { fontSize: 9, cellPadding: 2.3 },
       margin: { left: 10, right: 10 },
-      tableWidth: 90, // Set width to control spacing
+      tableWidth: 90,
     });
 
-    // Account Details Title
-    doc.setFontSize(10); // Move title to the right
-    doc.setFont("helvetica", "normal");
+    let custTableHeight = doc.autoTable.previous.finalY;
 
     // Account Details Table
     const accountDetails = [
+      ["Scheme Name", printableRow[0]?.SchemeTitle],
       ["Plan Tenure", `${printableRow[0]?.Duration} months`],
       ["Installment Schedule", printableRow[0]?.frequency],
       [
-        "Date of Starting",
+        "Starting Date",
         moment(printableRow[0]?.StartDate).format("DD/MM/YYYY"),
+      ],
+      [
+        "Ending Date",
+        moment(printableRow[0]?.StartDate)
+          .add(printableRow[0]?.Duration, "months")
+          .format("DD/MM/YYYY"),
       ],
       ["Installment Amount", `${(printableRow[0]?.EMI || 0).toFixed(2)}/-`],
     ];
 
     doc.autoTable({
       startY: 40,
-      startX: 110, // Move to the right side
-      head: false,
+      startX: 110,
       body: accountDetails,
       theme: "grid",
+      headStyles: { fillColor: "#8b2424" },
       columnStyles: {
-        0: { fillColor: [245, 245, 245] }, // Grey background
-        1: { fillColor: [255, 255, 255] }, // White background
+        0: { fillColor: [245, 245, 245] },
+        1: { fillColor: [255, 255, 255] },
       },
-      styles: { fontSize: 9, cellPadding: 2 },
-      margin: { left: 110 }, // Ensures correct positioning
-      tableWidth: 90, // Keep width consistent
+      styles: { fontSize: 9, cellPadding: 2.1 },
+      margin: { left: 110 },
+      tableWidth: 90,
     });
-    // Payment History Table (Smaller font to fit 12 rows)
 
+    custTableHeight = Math.max(doc.autoTable.previous.finalY, custTableHeight);
     const paymentHistoryColumns = [
       { header: "Date", dataKey: "CollDate" },
       { header: "Purity", dataKey: "Purity" },
       { header: "Gold Rate", dataKey: "gold_rate" },
       { header: "Paid Amt.", dataKey: "Collection" },
-      // { header: "Due", dataKey: "Remaining" },
       { header: "Payment Mode", dataKey: "PaymentMode" },
       { header: "Agent", dataKey: "AgentCode" },
     ];
@@ -319,112 +309,58 @@ function CustPaymentHistory() {
       Purity: item.Purity,
       gold_rate: item.gold_rate,
       Collection: item.Collection,
-      // Remaining: `${(item.EMI - item.totcolection || 0).toFixed(2)}/-`,
       PaymentMode: item?.PaymentMode,
       AgentCode: item?.AgentCode,
     }));
 
-    doc.autoTable({
-      startY: doc.autoTable.previous.finalY + 3,
-      head: [paymentHistoryColumns.map((col) => col.header)],
-      body: paymentHistoryRows.map((row) =>
-        paymentHistoryColumns.map((col) => row[col.dataKey])
-      ),
-      headStyles: { fillColor: "#8b2424" },
-      theme: "grid",
-      styles: { fontSize: 9, cellPadding: 1.5, lineHeight: 1 },
-      margin: { left: 10, right: 10 },
-      pageBreak: "auto",
-    });
-
-    // Footer
-
-    doc.setFontSize(8);
-
-    // Define attributes and values (two per row)
-    let finalY = pageHeight - 25;
-    let centerX = pageWidth / 2;
-    let lineSpacing = 5; // Adjust line spacing to prevent overlap
-
-    doc.setFontSize(8);
-    const details = [
-      {
-        label1: "Regd. Office:",
-        value1: "361, A. P. Nagar, Sonarpur Bazar More, Kolkata 700150",
-        label2: "Mail:",
-        value2: "contact.us@bangasreejewellers.com",
-      },
-      {
-        label1: "Phone:",
-        value1: "+91-8585023758 / +91-9874823963",
-        label2: "Website:",
-        value2: "www.bangasreejewellers.com",
-      },
-      {
-        label1: "GSTIN:",
-        value1: "19AAHCB0947P1Z4",
-        label2: "CIN:",
-        value2: "U74999WB2017PTC219632",
-        label3: "BIS Hallmark Registration:",
-        value3: "519014511",
-      },
-    ];
-    // Define attributes and values (two per row, three in the last row)
-    details.forEach((item, index) => {
-      let yPos = finalY + index * lineSpacing;
-
-      // Calculate total text width dynamically
-      let totalWidth =
-        doc.getTextWidth(item.label1 + " ") +
-        doc.getTextWidth(item.value1 + "  |  ") +
-        doc.getTextWidth(item.label2 + " ") +
-        doc.getTextWidth(item.value2);
-
-      if (item.label3) {
-        totalWidth +=
-          doc.getTextWidth("  |  ") +
-          doc.getTextWidth(item.label3 + " ") +
-          doc.getTextWidth(item.value3);
+    let startY = custTableHeight + 10;
+    let rowsPerPage = ROWS_PER_PAGE;
+    for (let i = 0; i < paymentHistoryRows.length; i += rowsPerPage) {
+      if (i !== 0) {
+        doc.addPage();
+        doc.setDrawColor(0);
+        doc.setLineWidth(0.3);
+        doc.rect(5, 5, pageWidth - 10, pageHeight - 10);
+        startY = 20;
       }
+      rowsPerPage = i == 0 ? ROWS_PER_PAGE : 35;
+      doc.autoTable({
+        startY: startY,
+        head: [paymentHistoryColumns.map((col) => col.header)],
+        body: paymentHistoryRows
+          .slice(i, i + rowsPerPage)
+          .map((row) => paymentHistoryColumns.map((col) => row[col.dataKey])),
+        theme: "grid",
+        headStyles: { fillColor: "#8b2424" },
+        styles: { fontSize: 9, cellPadding: 1.5 },
+        margin: { left: 10, right: 10 },
+        pageBreak: "auto",
+        didDrawPage: function (data) {
+          let pageNumber = doc.internal.getNumberOfPages();
+          let footerY = doc.internal.pageSize.height - 18;
+          addFooter(doc, footerY, pageNumber);
+        },
+      });
+    }
 
-      // Set xPos to center-align the entire row
-      let xPos = centerX - totalWidth / 2;
-
-      // First column (Bold Label + Normal Value)
+    function addFooter(doc, footerY, pageNumber) {
+      let pageWidth = doc.internal.pageSize.width;
       doc.setFont("helvetica", "bold");
-      doc.text(item.label1, xPos, yPos);
-      xPos += doc.getTextWidth(item.label1 + " ");
+      doc.setFontSize(8);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Page ${pageNumber}`, pageWidth / 2, footerY - 5, {
+        align: "center",
+      });
+      const footerLines = [
+        "Regd. Office: 361, A. P. Nagar, Sonarpur Bazar More, Kolkata 700150 | Mail : contact.us@bangasreejewellers.com",
+        "Phone: +91-8585023758 / +91-9874823963 | Website: www.bangasreejewellers.com",
+        "GSTIN: 19AAHCB0947P1Z4  CIN: U74999WB2017PTC219632 BIS Hallmark Registration: 5190141511 ",
+      ];
+      footerLines.forEach((line, index) => {
+        doc.text(line, pageWidth / 2, footerY + index * 5, { align: "center" });
+      });
+    }
 
-      doc.setFont("helvetica", "normal");
-      doc.text(item.value1 + "  |  ", xPos, yPos);
-      xPos += doc.getTextWidth(item.value1 + "  |  ");
-
-      // Second column (Bold Label + Normal Value)
-      doc.setFont("helvetica", "bold");
-      doc.text(item.label2, xPos, yPos);
-      xPos += doc.getTextWidth(item.label2 + " ");
-
-      doc.setFont("helvetica", "normal");
-      doc.text(item.value2, xPos, yPos);
-      xPos += doc.getTextWidth(item.value2);
-
-      // If a third column exists, add it
-      if (item.label3) {
-        doc.setFont("helvetica", "normal");
-        doc.text("  |  ", xPos, yPos);
-        xPos += doc.getTextWidth("  |  ");
-
-        doc.setFont("helvetica", "bold");
-        doc.text(item.label3, xPos, yPos);
-        xPos += doc.getTextWidth(item.label3 + " ");
-
-        doc.setFont("helvetica", "normal");
-        doc.text(item.value3, xPos, yPos);
-      }
-    });
-    // Save PDF
-    // doc.save("Account_Statement.pdf");
-    // Convert PDF to Blob URL and Print
     const pdfBlob = doc.output("blob");
     const url = URL.createObjectURL(pdfBlob);
     window.open(url);

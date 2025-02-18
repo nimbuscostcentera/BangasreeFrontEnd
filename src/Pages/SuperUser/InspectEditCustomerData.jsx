@@ -212,8 +212,9 @@ function InspectEditCustomerData() {
         CustUUid == custList[0]?.UUid &&
         isSuccess6
       ) {
-        setData(custList[0]);
-        setEditData(custList[0]);
+        let apidata= custList[0];
+        setData({ ...apidata, IdProofNumber: custList[0]?.IDProofNumber });
+        setEditData({ ...apidata, IdProofNumber: custList[0]?.IDProofNumber });
 
         dispatch(
           CollectionList({
@@ -685,7 +686,7 @@ function InspectEditCustomerData() {
                       LocalBody: data?.LocalBody,
                       LandMark: data?.LandMark,
                       IdProofType: data?.IdProofType,
-                      IdProofNumber: data?.IdProofNumber,
+                      IdProofNumber: data?.IDProofNumber,
                     });
                     setEdit(!Edit);
                     setCheck(true);
@@ -1277,7 +1278,7 @@ function InspectEditCustomerData() {
                   name="LocalBody"
                   type="text"
                   id="LocalBody"
-                  inputProps={{ maxLength: 30 }}
+                  inputProps={{ maxLength: 200 }}
                   error={!input?.LocalBody}
                   label="Local Body"
                   onChange={(e) => {
@@ -1310,7 +1311,7 @@ function InspectEditCustomerData() {
                   label="LandMark"
                   type="text"
                   id="LandMark"
-                  inputProps={{ maxLength: 30 }}
+                  inputProps={{ maxLength:200 }}
                   error={!input?.LandMark}
                   onChange={(e) => {
                     if (e.target.value == "") {
