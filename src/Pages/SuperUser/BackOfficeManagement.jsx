@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import moment from "moment";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -52,7 +51,12 @@ const CustomTheme = createTheme({
 export default function SuperUserManagement() {
   //console.log("SuperUser");
   const location = useLocation();
-  const { AgentCode = "", BranchId = "", AreaID = "" } = location.state || {};
+  const {
+    AgentCode = "",
+    BranchId = "",
+    AreaID = "",
+    stat = "",
+  } = location.state || {};
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [ids, setIds] = useState([]);
@@ -61,7 +65,7 @@ export default function SuperUserManagement() {
     warMsg: "",
   });
   const [Filters, setFilters] = useState({
-    Status: null,
+    Status: stat || "",
     startDate: null,
     endDate: null,
     AgentCode: AgentCode || "",

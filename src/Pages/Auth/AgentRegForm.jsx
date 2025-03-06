@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import { useEffect, useState,useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import {
@@ -478,7 +478,7 @@ console.log(Data,"agent");
                 Date of Birth*
                 <br />
                 <Input
-                  value={Data?.DOB}
+                  value={Data?.DOB||""}
                   fullWidth
                   type="date"
                   name="DOB"
@@ -503,7 +503,7 @@ console.log(Data,"agent");
                     <RadioGroup
                       aria-labelledby="demo-controlled-radio-buttons-group"
                       name="Sex"
-                      value={Data?.Sex}
+                      value={Data?.Sex||""}
                       onChange={handleInput}
                       row
                       aria-required
@@ -712,7 +712,7 @@ console.log(Data,"agent");
               <TextField
                 size="small"
                 fullWidth
-                value={Data?.Commision}
+                value={Data?.Commision||""}
                 margin="normal"
                 error={!input?.Commission}
                 name="Commision"
@@ -829,7 +829,7 @@ console.log(Data,"agent");
             </Grid>{" "}
             <Grid item lg={3.5} md={3.5} sm={12} xs={12}>
               <label>
-                Upload photo of applicant's Signature*
+                {"Upload photo of applicant's Signature*"}
                 <br />
                 <input
                   type="file"

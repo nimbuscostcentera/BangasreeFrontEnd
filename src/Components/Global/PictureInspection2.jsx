@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import NoImage from "../../assets/html.jpg";
-import { Divider, Grid, Box, Typography, Input } from "@mui/material";
+import { Divider, Grid, Box, Typography} from "@mui/material";
 
 function PictureInspection2({
   data,
@@ -35,7 +35,7 @@ function PictureInspection2({
       ) : null}
 
       <Grid container rowGap={2} columnGap={0.5}>
-        {Image.map((item, index) => {
+        {Image?.map((item, index) => {
           return (
             <Grid
               item
@@ -78,12 +78,13 @@ function PictureInspection2({
                 {Edit ? (
                   <>
                     <br />
-                    <Input
+                    <input
                       type="file"
+                      capture="camera"
                       name={item.field}
                       accept="image/png, image/jpeg"
                       onChange={handleImageChange} // Use modified handler
-                      sx={{
+                      style={{
                         my: 1,
                       }}
                     />

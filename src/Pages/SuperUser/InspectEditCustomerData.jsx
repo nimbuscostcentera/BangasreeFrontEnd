@@ -105,7 +105,6 @@ function InspectEditCustomerData() {
   const [comment, setComment] = useState({ Comment: "" });
   const [Edit, setEdit] = useState(false);
   const [open, setOpen] = useState(false);
-  const [check, setCheck] = useState(true);
   const [EditPic, setEditPic] = useState({
     IdProofPhoto: null,
     AplicantPhoto: null,
@@ -270,7 +269,6 @@ function InspectEditCustomerData() {
     if (isSuccess11 && !isloading11) {
       toast.success(`${Msg11}`, { positions: toast.POSITION.TOP_RIGHT });
       setEdit(false);
-      setCheck(true);
       dispatch(ClearState11());
     }
     if (isError11 && !isloading11) {
@@ -478,7 +476,6 @@ function InspectEditCustomerData() {
       }
     }
     setEditData({ ...EditData, [key]: value });
-    setCheck(false);
   };
 
   const IdProofValidation = (a) => {
@@ -523,7 +520,6 @@ function InspectEditCustomerData() {
     } else {
       setEditData({ ...EditData, IdProofType: value });
     }
-    setCheck(false);
   };
 
   const custAge = MaxMinDate(18);
@@ -540,7 +536,7 @@ function InspectEditCustomerData() {
       setOpen(false);
     }
   }, [isloading11, isloading10, data]);
-
+  
   return (
     <ThemeProvider theme={CustomTheme}>
       <Grid container ml={3} mt={2} maxWidth={"xl"}>
@@ -662,7 +658,6 @@ function InspectEditCustomerData() {
                       IdProofNumber: data?.IdProofNumber,
                     });
                     setEdit(!Edit);
-                    setCheck(true);
                   } else {
                     setEditPic({
                       IdProofPhoto: data?.IdProofPhoto,
@@ -689,7 +684,6 @@ function InspectEditCustomerData() {
                       IdProofNumber: data?.IDProofNumber,
                     });
                     setEdit(!Edit);
-                    setCheck(true);
                   }
                 }}
                 funcTrigger2={() => {
@@ -1141,7 +1135,6 @@ function InspectEditCustomerData() {
                             BranchId: Value,
                           });
                         }
-                        setCheck(false);
                       }}
                     />
                   </Grid>
@@ -1476,8 +1469,7 @@ function InspectEditCustomerData() {
                       yes={"Update"}
                       type1={"submit"}
                       disabled1={
-                        !Edit ||
-                        check ||
+                        !Edit||
                         !(
                           EditData?.CustomerName !== "" &&
                           EditData?.Guardian !== "" &&
@@ -1493,8 +1485,8 @@ function InspectEditCustomerData() {
                           EditData?.LocalBody !== "" &&
                           EditData?.LandMark !== "" &&
                           EditData?.IdProofType !== "" &&
-                          EditData?.IdProofNumber !== "" &&
-                          EditData?.IdProofNumber !== null
+                         ( EditData?.IdProofNumber !== "" ||
+                          EditData?.IdProofNumber !== null)
                         ) ||
                         !(
                           input?.CustomerName &&

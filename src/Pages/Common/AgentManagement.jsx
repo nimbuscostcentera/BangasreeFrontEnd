@@ -50,7 +50,12 @@ const CustomTheme = createTheme({
 
 export default function AgentManagement() {
     const location = useLocation();
-    const { AgentCode = "", BranchId = "", AreaID = "" } = location.state || {};
+    const {
+      AgentCode = "",
+      BranchId = "",
+      AreaID = "",
+      Status=null,
+    } = location.state || {};
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [params, setParams] = useState({
@@ -59,7 +64,7 @@ export default function AgentManagement() {
   });
   const [ids, setIds] = useState([]);
   const [Filters, setFilters] = useState({
-    Status: null,
+    Status:Status|| null,
     startDate: "",
     endDate: "",
     AgentCode: AgentCode || "",

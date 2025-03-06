@@ -54,7 +54,7 @@ function ViewLogs() {
     {
       field: `Description`,
       headerName: "Description",
-      width:275,
+      width:150,
       hideable: false,
     },
     {

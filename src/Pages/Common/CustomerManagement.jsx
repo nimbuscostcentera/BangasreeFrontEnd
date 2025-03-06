@@ -487,7 +487,7 @@ export default function CustomerManagement() {
             }}
           />
 
-          {myPermission?.Edit == 1 ? (
+          {myPermission?.Edit == 1 && global?.Utype!==2 ? (
             <>
               {" "}
               <IconOnOffButton

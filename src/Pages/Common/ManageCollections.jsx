@@ -1,4 +1,4 @@
-import  { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -15,7 +15,7 @@ import {
   Table,
   TableBody,
   TableRow,
-  TableCell
+  TableCell,
 } from "@mui/material";
 import Grid from "@mui/system/Unstable_Grid/Grid";
 import {
@@ -42,9 +42,7 @@ import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
 import EditIcon from "@mui/icons-material/Edit";
 import PersonIcon from "@mui/icons-material/Person";
 
-import {
-  PaymentDetailList,
-} from "../../Slice/PaymentDetails/PaymentDetailsSlice";
+import { PaymentDetailList } from "../../Slice/PaymentDetails/PaymentDetailsSlice";
 import {
   DeleteCollFunc,
   ClearState75,
@@ -59,8 +57,8 @@ const CustomFooter = ({ count }) => {
   const {
     totalColl: totCol,
     totalSub: totSub,
-    com: CommissionPer,
-    comper: TotComission,
+    comper: CommissionPer,
+    com: TotComission,
     rowSelected,
   } = count;
   return (
@@ -95,7 +93,7 @@ const CustomFooter = ({ count }) => {
                 borderRight: "1px solid #8c8c8c",
               }}
             >
-              {rowSelected}
+              {rowSelected || 0}
             </TableCell>
             <TableCell
               sx={{
@@ -119,7 +117,7 @@ const CustomFooter = ({ count }) => {
                   textAlign: "end",
                   color: "white",
                 }}
-              >{`₹${totCol}/-`}</Typography>
+              >{`₹${totCol || 0}/-`}</Typography>
             </TableCell>
 
             <TableCell
@@ -138,7 +136,7 @@ const CustomFooter = ({ count }) => {
                 borderRight: "1px solid #8c8c8c",
               }}
             >
-              <Typography>{`₹${totSub}/-`}</Typography>
+              <Typography>{`₹${totSub || 0}/-`}</Typography>
             </TableCell>
             <TableCell
               sx={{
@@ -147,7 +145,7 @@ const CustomFooter = ({ count }) => {
                 borderRight: "1px solid #8c8c8c",
               }}
             >
-              <Typography>Comission Percentage</Typography>
+              <Typography>Commission Percentage</Typography>
             </TableCell>
             <TableCell
               sx={{
@@ -156,7 +154,7 @@ const CustomFooter = ({ count }) => {
                 borderRight: "1px solid #8c8c8c",
               }}
             >
-              <Typography>{`${CommissionPer}%`}</Typography>
+              <Typography>{`${CommissionPer || 0}%`}</Typography>
             </TableCell>
             <TableCell
               sx={{
@@ -165,7 +163,7 @@ const CustomFooter = ({ count }) => {
                 borderRight: "1px solid #8c8c8c",
               }}
             >
-              <Typography>Comission</Typography>{" "}
+              <Typography>Commission</Typography>{" "}
             </TableCell>
             <TableCell
               sx={{
@@ -174,7 +172,7 @@ const CustomFooter = ({ count }) => {
                 borderRight: "1px solid #8c8c8c",
               }}
             >
-              <Typography>{`₹${TotComission}/-`}</Typography>
+              <Typography>{`₹${TotComission || 0}/-`}</Typography>
             </TableCell>
           </TableRow>
         </TableBody>
@@ -227,6 +225,8 @@ function ManageCollections() {
     AgentCode: acode,
     BranchId = "",
     AreaID = "",
+    StartDate="",
+    EndDate="",
   } = location?.state || {};
   const LotId = location?.state?.LotId || null;
   const [subData, setSubData] = useState({
@@ -249,8 +249,8 @@ function ManageCollections() {
     rowSelected: 0,
   });
   const [Filters, setFilters] = useState({
-    startDate: "",
-    endDate: "",
+    startDate:StartDate|| "",
+    endDate:EndDate|| "",
     PaymentStatus: null,
     AgentCode: acode || null,
     PaymentType: null,
@@ -265,9 +265,7 @@ function ManageCollections() {
   const { AgentCode } = useFetchAcode({ Status: 1 });
 
   // collection List
-  const { isloading29 } = useSelector(
-    (state) => state.CustPayDetails
-  );
+  const { isloading29 } = useSelector((state) => state.CustPayDetails);
 
   const {
     isLotEntryLoading,
@@ -284,7 +282,6 @@ function ManageCollections() {
   var parray = JSON.parse(window.localStorage.getItem("loggerPermission"));
   var myPermission =
     parray && parray.filter((i) => i?.PageName == "Manage Collections")[0];
-
 
   //Delete coll toaster response
   useEffect(() => {
@@ -336,14 +333,26 @@ function ManageCollections() {
         });
     };
     fetchPaymentDetails();
-  }, [Filters, isSuccess75, isLotEntrySuccess]);
+  }, [
+    Filters?.AgentCode,
+    Filters?.AreaID,
+    Filters?.BranchId,
+    Filters?.NotAgentPayment,
+    Filters?.PaymentStatus,
+    Filters?.PaymentType,
+    Filters?.startDate,
+    Filters?.endDate,
+    isSuccess75,
+    isLotEntrySuccess,
+  ]);
 
   //commission calculation
   useEffect(() => {
     var arr = [];
+    var element = {};
     let percentage = 0;
     var totalcollection = 0;
-    var agentCommission = 0;
+    var cr = 0;
     var totsub = 0;
     //console.log("calculation true");
     if (PaymentDetails?.length !== 0) {
@@ -355,14 +364,11 @@ function ManageCollections() {
           Filters?.AgentCode !== null &&
           Filters?.AgentCode !== ""
         ) {
-          arr = AgentCode.filter((i) => i?.AgentCode == Filters?.AgentCode);
-          percentage = arr[0]?.Commision;
-
+          element = AgentCode.find((i) => i?.AgentCode == Filters?.AgentCode);
+          percentage = element?.Commission;
+console.log(element);
           // setcomper(arr[0]?.Commission);
-        } else {
-          percentage = 0;
-          // setcomper(0);
-        }
+        } 
       } //agent
       else if (global?.Utype == 2) {
         percentage = userInfo?.details?.Commision;
@@ -371,11 +377,10 @@ function ManageCollections() {
       PaymentDetails.map((i) => {
         PaymentID.map((j) => {
           if (i?.CollectionId == j) {
+              cr = cr + i?.Commission;
             if (i?.PaymentStatus != 4) {
               totalcollection = totalcollection + i?.totcolection;
-              if (i?.PaymentType == 2) {
-                agentCommission = agentCommission + i?.Commission;
-              }
+            
               if (i?.PaymentStatus == 2 || i?.PaymentStatus == 3) {
                 totsub = totsub + i?.totcolection;
               }
@@ -383,11 +388,11 @@ function ManageCollections() {
           }
         });
       });
-      let cr = totalcollection * (percentage / 100) || 0;
+     // let cr = totalcollection * (percentage / 100) || 0;
       setCount({
         totalColl: totalcollection,
         totalSub: totsub,
-        com: cr,
+        com: cr ||0,
         comper: percentage,
         rowSelected: PaymentID?.length,
       });
@@ -400,7 +405,17 @@ function ManageCollections() {
         rowSelected: 0,
       });
     }
-  }, [Filters, PaymentID]);
+  }, [
+    Filters?.AgentCode,
+    Filters?.AreaID,
+    Filters?.BranchId,
+    Filters?.NotAgentPayment,
+    Filters?.PaymentStatus,
+    Filters?.PaymentType,
+    Filters?.startDate,
+    Filters?.endDate,
+    PaymentID,
+  ]);
 
   //handle filter
   const FilterHandler = (e) => {
@@ -586,7 +601,7 @@ function ManageCollections() {
     {
       field: "CustomerAccNo",
       headerName: "Account no.",
-      width: 130,
+      width: 140,
       hideable: false,
     },
     {
@@ -594,18 +609,14 @@ function ManageCollections() {
       headerName: "Customer Name",
       width: 140,
     },
-    { field: "SchemeTitle", headerName: "SchemeTitle", width: 120 },
+    { field: "SchemeTitle", headerName: "SchemeTitle", width: 170 },
     {
       field: "CollDate",
       headerName: "Coll. Date",
       width: 100,
       hideable: false,
       renderCell: (item) => {
-        return (
-          <span>
-            {moment(item.row.CollDate).format("DD/MM/YYYY")}
-          </span>
-        );
+        return <span>{moment(item.row.CollDate).format("DD/MM/YYYY")}</span>;
       },
     },
     {
@@ -616,7 +627,6 @@ function ManageCollections() {
       renderCell: (item) => {
         return (
           <Typography sx={{ textAlign: "end", width: "100%" }}>
-           
             ₹ {item.row.totcolection} /-
           </Typography>
         );
@@ -662,12 +672,12 @@ function ManageCollections() {
     {
       field: "AreaName",
       headerName: "Area",
-      width: 90,
+      width: 120,
     },
     {
       field: "BranchName",
       headerName: "Branch",
-      width: 80,
+      width: 140,
     },
     {
       field: "PaymentType",
@@ -693,7 +703,7 @@ function ManageCollections() {
         return (
           <Typography sx={{ textAlign: "center", width: "100%" }}>
             {" "}
-            ₹ {item.row.Commission} /-
+            ₹ {(item.row.Commission).toFixed(2)} /-
           </Typography>
         );
       },
@@ -1013,38 +1023,40 @@ function ManageCollections() {
           }}
           flexWrap={"wrap"}
         >
-          {myPermission?.Edit==1 ?<IconOnOffButton
-            h1={global?.Utype == 1 ? "Edit" : null}
-            Tooltip1={global?.Utype == 1 ? "Edit" : null}
-            icon1={global?.Utype == 1 ? <EditIcon fontSize="small" /> : null}
-            funcTrigger1={
-              global?.Utype == 1
-                ? GoToEditCollection
-                : () => {
-                    return 0;
-                  }
-            }
-            h2={global?.Utype == 1 ? "Delete" : null}
-            Tooltip2={global?.Utype == 1 ? "Delete" : null}
-            icon2={
-              global?.Utype == 1 ? (
-                <DeleteIcon
-                  fontSize="small"
-                  sx={{
-                    color: PaymentID?.length == 1 ? "red" : "grey",
-                  }}
-                />
-              ) : null
-            }
-            funcTrigger2={
-              global?.Utype == 1 && PaymentID?.length == 1
-                ? DeleteCollection
-                : () => {
-                    return 0;
-                  }
-            }
-          /> :null}
-          
+          {myPermission?.Edit == 1 ? (
+            <IconOnOffButton
+              h1={global?.Utype == 1 ? "Edit" : null}
+              Tooltip1={global?.Utype == 1 ? "Edit" : null}
+              icon1={global?.Utype == 1 ? <EditIcon fontSize="small" /> : null}
+              funcTrigger1={
+                global?.Utype == 1
+                  ? GoToEditCollection
+                  : () => {
+                      return 0;
+                    }
+              }
+              h2={global?.Utype == 1 ? "Delete" : null}
+              Tooltip2={global?.Utype == 1 ? "Delete" : null}
+              icon2={
+                global?.Utype == 1 ? (
+                  <DeleteIcon
+                    fontSize="small"
+                    sx={{
+                      color: PaymentID?.length == 1 ? "red" : "grey",
+                    }}
+                  />
+                ) : null
+              }
+              funcTrigger2={
+                global?.Utype == 1 && PaymentID?.length == 1
+                  ? DeleteCollection
+                  : () => {
+                      return 0;
+                    }
+              }
+            />
+          ) : null}
+
           <IconOnOffButton
             h1={"Filter Out"}
             Tooltip1={"Filter Out"}

@@ -38,7 +38,7 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { AreaList = [] } = useFetchArea();
-  const { userInfo, toasterBool } = UseFetchLogger();
+  const { userInfo, toasterBool, global } = UseFetchLogger();
   const [loading, setLoading] = useState(true);
   const currentdate = moment();
   const currentyear = currentdate.year();
@@ -273,8 +273,20 @@ const Dashboard = () => {
   return (
     <Grid container maxWidth={"xl"} columnGap={2} rowGap={2} ml={2} mt={5}>
       <ToastContainer autoClose={8000} />
-      {/* HEADER */}
-      <Grid item lg={3.5} md={12} xs={12} sm={12}>
+      <Grid
+        item
+        xl={12}
+        lg={12}
+        md={12}
+        sm={12}
+        xs={12}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
         <Header
           title="DASHBOARD"
           subtitle={`Welcome ${
@@ -282,55 +294,164 @@ const Dashboard = () => {
           }`}
           editable={false}
         />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          {/* Dropdown filter */}
+          {global?.SuperUserType == 1 ? (
+            <div style={{ width: "200px", margin: "0 8px 15px 8px" }}>
+              <ReusableDropDown4
+                Field={Filter?.BranchId}
+                ObjectKey={["BranchCode", "BranchName"]}
+                data={branch || []}
+                deselectvalue={true}
+                disabled={false}
+                id={"BranchId"}
+                label={"Branch"}
+                onChange={onChangeHandler}
+                uniquekey={"BranchId"}
+                key={"BranchId"}
+              />{" "}
+            </div>
+          ) : null}
+
+          <div style={{ width: "200px", margin: "0 8px 15px 8px" }}>
+            <ReusableDropDown4
+              Field={Filter?.AgentCode}
+              ObjectKey={["Name", "AgentCode"]}
+              data={AgentCode || []}
+              deselectvalue={true}
+              disabled={false}
+              id={"AgentCode"}
+              label={"Agent"}
+              onChange={onChangeHandler}
+              uniquekey={"AgentCode"}
+              key={"AgentCode"}
+            />
+          </div>
+
+          <div style={{ width: "200px", margin: "0px 8px 15px 8px" }}>
+            <ReusableDropDown4
+              Field={Filter?.AreaID}
+              ObjectKey={["AreaName"]}
+              data={AreaList || []}
+              deselectvalue={true}
+              disabled={false}
+              id={"AreaID"}
+              label={"Area"}
+              onChange={onChangeHandler}
+              uniquekey={"AreaID"}
+              key={"AreaID"}
+            />
+          </div>
+        </div>
       </Grid>
-      <Grid item md={5.8} lg={2.5} sm={12} xs={12}>
-        <ReusableDropDown4
-          Field={Filter?.BranchId}
-          ObjectKey={["BranchCode", "BranchName"]}
-          data={branch}
-          deselectvalue={true}
-          disabled={false}
-          id={"BranchId"}
-          label={"Branch"}
-          onChange={onChangeHandler}
-          uniquekey={"BranchId"}
-          key={1}
-        />
-      </Grid>
-      <Grid item md={5.8} lg={2.5} sm={12} xs={12}>
-        <ReusableDropDown4
-          Field={Filter?.AgentCode}
-          ObjectKey={["Name", "AgentCode"]}
-          data={AgentCode || []}
-          deselectvalue={true}
-          disabled={false}
-          id={"AgentCode"}
-          label={"Agent"}
-          onChange={onChangeHandler}
-          uniquekey={"AgentCode"}
-          key={1}
-        />
-      </Grid>
-      <Grid item md={11.9} lg={2.5} sm={12} xs={12}>
-        <ReusableDropDown4
-          Field={Filter?.AreaID}
-          ObjectKey={["AreaName"]}
-          data={AreaList}
-          deselectvalue={true}
-          disabled={false}
-          id={"AreaID"}
-          label={"Area"}
-          onChange={onChangeHandler}
-          uniquekey={"AreaID"}
-          key={1}
-        />
-      </Grid>
+
       {/**cards */}
+      {/*super user */}
       <Grid
         item
         lg={2.2}
-        md={5.8}
-        sm={12}
+        md={3.7}
+        sm={3.7}
+        xs={12}
+        p={2}
+        sx={{
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${black})`,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundSize: "cover",
+          borderRadius: 3,
+          boxShadow:
+            "0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.1)",
+        }}
+        onClick={() => {
+          if (userInfo?.details?.Utype == 1 && SuperPermission?.ViewPage == 1) {
+            navigate("/superuser/superusermanagement", {
+              state: {
+                AgentCode: Filter?.AgentCode,
+                BranchId: Filter?.BranchId,
+                AreaID: Filter?.AreaID,
+                stat:1
+              },
+            });
+          }
+        }}
+      >
+        {loading ? (
+          <Box my={3}>
+            <Loader />
+          </Box>
+        ) : (
+          <StatBox
+            title={TotalSuperUser}
+            subtitle="Total SuperUser"
+            stcolor={"#fafafa"}
+            // progress="0.30"
+            // increase="+5%"
+            icon={
+              <ManageAccountsIcon sx={{ color: "#fafafa", fontSize: "30px" }} />
+            }
+          />
+        )}
+      </Grid>
+      {/*Agent */}
+      <Grid
+        item
+        lg={2.2}
+        md={3.7}
+        sm={3.7}
+        xs={12}
+        p={2}
+        sx={{
+          backgroundImage: `linear-gradient(135deg,#0062ff,#4300b0)`,
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: 3,
+          boxShadow:
+            "0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.1)",
+        }}
+        onClick={() => {
+          if (userInfo?.details?.Utype == 1 && AgentPermission?.ViewPage == 1) {
+            navigate("/superuser/agentmanagement", {
+              state: {
+                AgentCode: Filter?.AgentCode,
+                BranchId: Filter?.BranchId,
+                AreaID: Filter?.AreaID,
+                Status:1
+              },
+            });
+          }
+        }}
+      >
+        {loading ? (
+          <Box my={3}>
+            <Loader />
+          </Box>
+        ) : (
+          <StatBox
+            title={TotalAgent}
+            subtitle="Total Agents"
+            // progress="0.30"
+            // increase="+5%"
+            stcolor={"#fafafa"}
+            icon={
+              <SupportAgentIcon sx={{ color: "#fafafa", fontSize: "30px" }} />
+            }
+          />
+        )}
+      </Grid>
+      {/*Customer */}
+      <Grid
+        item
+        lg={2.2}
+        md={3.7}
+        sm={3.7}
         xs={12}
         p={2}
         sx={{
@@ -344,13 +465,13 @@ const Dashboard = () => {
         }}
         onClick={() => {
           if (CustPermission?.ViewPage == 1) {
-            navigate("/superuser/customermanagement",{
+            navigate("/superuser/customermanagement", {
               state: {
                 AgentCode: Filter?.AgentCode,
                 BranchId: Filter?.BranchId,
                 AreaID: Filter?.AreaID,
               },
-            }); 
+            });
           }
         }}
       >
@@ -376,54 +497,12 @@ const Dashboard = () => {
           </Box>
         )}
       </Grid>
+      {/*Collection */}
       <Grid
         item
         lg={2.2}
-        md={5.8}
-        sm={12}
-        xs={12}
-        p={2}
-        sx={{
-          backgroundImage: `linear-gradient(135deg,#ff461c,#f58505)`,
-          alignItems: "center",
-          justifyContent: "center",
-          borderRadius: 3,
-          boxShadow:
-            "0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.1)",
-        }}
-        onClick={() => {
-          if (SubscriptionPermission?.ViewPage == 1) {
-            navigate("/executive/managesubscriptions", {
-              state: {
-                AgentCode: Filter?.AgentCode,
-                BranchId: Filter?.BranchId,
-                AreaID: Filter?.AreaID,
-                MaturityStatus:3,
-              },
-            });
-          }
-        }}
-      >
-        {!loading ? (
-          <StatBox
-            title={TotalMaturedAcc}
-            subtitle="Total Maturity"
-            // progress="0.75"
-            // increase="+14%"
-            stcolor={"#fafafa"}
-            icon={<BeenhereIcon sx={{ color: "#fafafa", fontSize: "35px" }} />}
-          />
-        ) : (
-          <Box my={3}>
-            <Loader />
-          </Box>
-        )}
-      </Grid>
-      <Grid
-        item
-        lg={2.2}
-        md={5.8}
-        sm={12}
+        md={6}
+        sm={6.3}
         xs={12}
         p={2}
         sx={{
@@ -441,6 +520,8 @@ const Dashboard = () => {
                 AgentCode: Filter?.AgentCode,
                 BranchId: Filter?.BranchId,
                 AreaID: Filter?.AreaID,
+                EndDate: currentdate.format("YYYY-MM-DD"),
+                StartDate: currentdate.format("YYYY-MM-DD"),
               },
             });
           }
@@ -463,15 +544,16 @@ const Dashboard = () => {
           </Box>
         )}
       </Grid>
+      {/*Maturity */}
       <Grid
         item
         lg={2.2}
-        md={5.8}
-        sm={12}
+        md={5.3}
+        sm={5}
         xs={12}
         p={2}
         sx={{
-          backgroundImage: `linear-gradient(135deg,#0062ff,#4300b0)`,
+          backgroundImage: `linear-gradient(135deg,#ff461c,#f58505)`,
           alignItems: "center",
           justifyContent: "center",
           borderRadius: 3,
@@ -479,77 +561,31 @@ const Dashboard = () => {
             "0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.1)",
         }}
         onClick={() => {
-          if (userInfo?.details?.Utype == 1 && AgentPermission?.ViewPage == 1) {
-            navigate("/superuser/agentmanagement", {
+          if (SubscriptionPermission?.ViewPage == 1) {
+            navigate("/executive/managesubscriptions", {
               state: {
                 AgentCode: Filter?.AgentCode,
                 BranchId: Filter?.BranchId,
                 AreaID: Filter?.AreaID,
+                MaturityStatus: 3,
               },
             });
           }
         }}
       >
-        {loading ? (
+        {!loading ? (
+          <StatBox
+            title={TotalMaturedAcc}
+            subtitle="Total Maturity"
+            // progress="0.75"
+            // increase="+14%"
+            stcolor={"#fafafa"}
+            icon={<BeenhereIcon sx={{ color: "#fafafa", fontSize: "35px" }} />}
+          />
+        ) : (
           <Box my={3}>
             <Loader />
           </Box>
-        ) : (
-          <StatBox
-            title={TotalAgent}
-            subtitle="Total Agents"
-            // progress="0.30"
-            // increase="+5%"
-            stcolor={"#fafafa"}
-            icon={
-              <SupportAgentIcon sx={{ color: "#fafafa", fontSize: "30px" }} />
-            }
-          />
-        )}
-      </Grid>
-      <Grid
-        item
-        lg={2.2}
-        md={12}
-        sm={12}
-        xs={12}
-        p={2}
-        sx={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${black})`,
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundSize: "cover",
-          borderRadius: 3,
-          boxShadow:
-            "0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.1)",
-        }}
-        onClick={() => {
-          if (userInfo?.details?.Utype == 1 && SuperPermission?.ViewPage == 1) {
-            navigate("/superuser/superusermanagement", {
-              state: {
-                AgentCode: Filter?.AgentCode,
-                BranchId: Filter?.BranchId,
-                AreaID: Filter?.AreaID,
-              },
-            });
-          }
-        }}
-      >
-        {loading ? (
-          <Box my={3}>
-            <Loader />
-          </Box>
-        ) : (
-          <StatBox
-            title={TotalSuperUser}
-            subtitle="Total SuperUser"
-            stcolor={"#fafafa"}
-            // progress="0.30"
-            // increase="+5%"
-            icon={
-              <ManageAccountsIcon sx={{ color: "#fafafa", fontSize: "30px" }} />
-            }
-          />
         )}
       </Grid>
 
@@ -728,7 +764,7 @@ const Dashboard = () => {
             "0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.1)",
         }}
         xl={5.9}
-        lg={5.8}
+        lg={5.7}
         md={12}
         sm={12}
         xs={12}
