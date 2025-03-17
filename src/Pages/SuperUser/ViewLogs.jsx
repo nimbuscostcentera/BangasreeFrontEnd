@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import moment from "moment";
 import Grid from "@mui/system/Unstable_Grid";
 import { Divider, TextField } from "@mui/material";
@@ -54,7 +54,7 @@ function ViewLogs() {
     {
       field: `Description`,
       headerName: "Description",
-      width:150,
+      width: 150,
       hideable: false,
     },
     {
@@ -63,13 +63,6 @@ function ViewLogs() {
       width: 500,
       hideable: false,
       renderCell: (item) => {
-        let {
-          CompanyCode = null,
-          Utype = null,
-          LoggerUUid = null,
-          CustUUid = null,
-          ...restall
-        } = item?.row;
         return <span>{item?.row?.Request}</span>;
       },
     },

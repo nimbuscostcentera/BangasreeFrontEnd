@@ -522,6 +522,7 @@ const Dashboard = () => {
                 AreaID: Filter?.AreaID,
                 EndDate: currentdate.format("YYYY-MM-DD"),
                 StartDate: currentdate.format("YYYY-MM-DD"),
+                PayType:2
               },
             });
           }

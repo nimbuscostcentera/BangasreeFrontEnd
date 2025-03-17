@@ -1,16 +1,13 @@
-import * as React from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import BgImg from "../../assets/jewellery.jpg";
 import Copyright from "../../Components/Global/CopyRight";
-import { Box } from "@mui/material";
 import { Outlet } from "react-router-dom";
 export default function AuthScreen() {
   //localStorage.clear();
   return (
-    <Box m={-2}>
-      <Grid container component="main" sx={{ height: "100vh" }}>
+      <Grid container component="main" sx={{ height: "91vh",m:"0px !important",p:"0px !important" }}>
         <CssBaseline />
         <Grid
           item
@@ -33,6 +30,5 @@ export default function AuthScreen() {
           <Copyright />
         </Grid>
       </Grid>
-    </Box>
   );
 }

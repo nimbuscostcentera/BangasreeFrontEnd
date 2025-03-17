@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { styled } from "@mui/system";
+import PropTypes from "prop-types";
 import {
   DataGrid,
   GridToolbarContainer,
@@ -7,15 +8,17 @@ import {
   GridToolbarFilterButton,
   GridToolbarDensitySelector,
   GridToolbarExport,
-  GridToolbarQuickFilter
+  GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
 
-const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+const StyledDataGrid = styled(DataGrid)(() => ({
   "& .RedColor": {
     backgroundColor: "#ff8275",
   },
 }));
-
+StyledDataGrid.propTypes = {
+  
+};
 const CustomGridToolBar = () => {
   return (
     <GridToolbarContainer sx={{ justifyContent: "space-between" }}>
@@ -64,21 +67,19 @@ export default function ReusableDataTable({
 }) {
   const [isloading1, setIsLoading1] = useState(true);
   useEffect(() => {
-   if (Array.isArray(rows) && rows?.length !== 0) {
-     const delay2 = setTimeout(() => {
-       setIsLoading1(false);
-     }, 500); // 2000 milliseconds delay
-     return () => clearTimeout(delay2);
-   } else if (!isloading && Array.isArray(rows) && rows?.length == 0) {
-     const delay2 = setTimeout(() => {
-       setIsLoading1(false);
-     }, 4000); // 2000 milliseconds delay
-     return () => clearTimeout(delay2);
+    if (Array.isArray(rows) && rows?.length !== 0) {
+      const delay2 = setTimeout(() => {
+        setIsLoading1(false);
+      }, 500); // 2000 milliseconds delay
+      return () => clearTimeout(delay2);
+    } else if (!isloading && Array.isArray(rows) && rows?.length == 0) {
+      const delay2 = setTimeout(() => {
+        setIsLoading1(false);
+      }, 4000); // 2000 milliseconds delay
+      return () => clearTimeout(delay2);
+    } else if (!isloading) {
+      setIsLoading1(true);
     }
-    else if (!isloading)
-   {
-     setIsLoading1(true)
-     }
   }, [rows, isloading]);
 
   return (
@@ -111,6 +112,7 @@ export default function ReusableDataTable({
       }}
       pageSizeOptions={[10, 15]}
       checkboxSelection
+      rowHeight={43}
       rowSelectionModel={state}
       onRowSelectionModelChange={(id) => {
         const SelectedIDs = new Set(id);
@@ -131,3 +133,14 @@ export default function ReusableDataTable({
     />
   );
 }
+ReusableDataTable.propTypes = {
+  uniqueid: PropTypes.string,
+  columns: PropTypes.array,
+  rows: PropTypes.array,
+  state: PropTypes.array,
+  setState: PropTypes.func,
+  width: PropTypes.string,
+  RedMark: PropTypes.bool,
+  height: PropTypes.number,
+  isloading: PropTypes.bool,
+};

@@ -16,8 +16,9 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  InputLabel,
+  Grid,
 } from "@mui/material";
-import Grid from "@mui/system/Unstable_Grid/Grid";
 import {
   DataGrid,
   GridToolbarContainer,
@@ -29,6 +30,7 @@ import {
   GridToolbarQuickFilter,
   GRID_CHECKBOX_SELECTION_COL_DEF,
 } from "@mui/x-data-grid";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -53,6 +55,7 @@ import {
 } from "../../Slice/Collection/LotEntrySlice";
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
 import useFetchAcode from "../../Apps/CustomHook/useFetchAcode";
+import PropTypes from "prop-types";
 const CustomFooter = ({ count }) => {
   const {
     totalColl: totCol,
@@ -60,6 +63,7 @@ const CustomFooter = ({ count }) => {
     comper: CommissionPer,
     com: TotComission,
     rowSelected,
+    agentcode,
   } = count;
   return (
     <GridFooterContainer
@@ -127,7 +131,7 @@ const CustomFooter = ({ count }) => {
                 borderRight: "1px solid #8c8c8c",
               }}
             >
-              <Typography>Total Submitted Amt.</Typography>{" "}
+              <Typography>Tot. Submitted Amt.</Typography>{" "}
             </TableCell>
             <TableCell
               sx={{
@@ -154,7 +158,7 @@ const CustomFooter = ({ count }) => {
                 borderRight: "1px solid #8c8c8c",
               }}
             >
-              <Typography>{`${CommissionPer || 0}%`}</Typography>
+              <Typography>{`${agentcode ? CommissionPer : 0}%`}</Typography>
             </TableCell>
             <TableCell
               sx={{
@@ -172,7 +176,9 @@ const CustomFooter = ({ count }) => {
                 borderRight: "1px solid #8c8c8c",
               }}
             >
-              <Typography>{`₹${TotComission || 0}/-`}</Typography>
+              <Typography>{`₹${
+                agentcode ? Math.floor(TotComission) : 0
+              }/-`}</Typography>
             </TableCell>
           </TableRow>
         </TableBody>
@@ -180,6 +186,35 @@ const CustomFooter = ({ count }) => {
     </GridFooterContainer>
   );
 };
+CustomFooter.propTypes = {
+  count: PropTypes.shape({
+    totalColl: PropTypes.number,
+    totalSub: PropTypes.number,
+    comper: PropTypes.number,
+    com: PropTypes.number,
+    rowSelected: PropTypes.number,
+    agentcode: PropTypes.string,
+  }).isRequired,
+};
+const CustomTheme = createTheme({
+  breakpoints: {
+    keys: ["xxs", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"],
+    values: {
+      xxs: 100,
+      xs: 200,
+      sm: 400,
+      mid: 550,
+      md: 813,
+      lg: 970,
+      l: 1060,
+      xl: 1175,
+      xxl: 1210,
+      xxxl: 1345,
+      Big: 1500,
+    },
+  },
+});
+
 const CustomGridToolBar = () => {
   return (
     <GridToolbarContainer sx={{ justifyContent: "space-between" }}>
@@ -225,8 +260,9 @@ function ManageCollections() {
     AgentCode: acode,
     BranchId = "",
     AreaID = "",
-    StartDate="",
-    EndDate="",
+    StartDate = "",
+    EndDate = "",
+    PayType = null,
   } = location?.state || {};
   const LotId = location?.state?.LotId || null;
   const [subData, setSubData] = useState({
@@ -247,13 +283,14 @@ function ManageCollections() {
     com: 0,
     comper: 0,
     rowSelected: 0,
+    agentcode: acode || null,
   });
   const [Filters, setFilters] = useState({
-    startDate:StartDate|| "",
-    endDate:EndDate|| "",
+    startDate: StartDate || "",
+    endDate: EndDate || "",
     PaymentStatus: null,
     AgentCode: acode || null,
-    PaymentType: null,
+    PaymentType: PayType || null,
     NotAgentPayment: null,
     BranchId: BranchId || null,
     AreaID: AreaID || null,
@@ -348,39 +385,28 @@ function ManageCollections() {
 
   //commission calculation
   useEffect(() => {
-    var arr = [];
-    var element = {};
-    let percentage = 0;
     var totalcollection = 0;
     var cr = 0;
     var totsub = 0;
-    //console.log("calculation true");
+    if (PaymentID?.length > 0 && (count?.agentcode==null ||count?.agentcode==undefined||count?.agentcode==""||count?.agentcode==-1) ) {
+      setParams({
+        ...params,
+        alert: true,
+        warning:
+          "If you want to check agent commission then you have to select agent from Filter .",
+      });
+    } else {
+      setParams({ ...params, alert: false, warning: "" });
+    }
+
     if (PaymentDetails?.length !== 0) {
-      //SuperUser
-      if (global?.Utype == 1) {
-        //console.log("hello", Filters?.AgentCode);
-        if (
-          Filters?.AgentCode !== undefined &&
-          Filters?.AgentCode !== null &&
-          Filters?.AgentCode !== ""
-        ) {
-          element = AgentCode.find((i) => i?.AgentCode == Filters?.AgentCode);
-          percentage = element?.Commission;
-console.log(element);
-          // setcomper(arr[0]?.Commission);
-        } 
-      } //agent
-      else if (global?.Utype == 2) {
-        percentage = userInfo?.details?.Commision;
-        // setcomper(userInfo?.details?.Commision);
-      }
       PaymentDetails.map((i) => {
         PaymentID.map((j) => {
           if (i?.CollectionId == j) {
-              cr = cr + i?.Commission;
+            cr = cr + i?.Commission;
             if (i?.PaymentStatus != 4) {
               totalcollection = totalcollection + i?.totcolection;
-            
+
               if (i?.PaymentStatus == 2 || i?.PaymentStatus == 3) {
                 totsub = totsub + i?.totcolection;
               }
@@ -388,24 +414,26 @@ console.log(element);
           }
         });
       });
-     // let cr = totalcollection * (percentage / 100) || 0;
-      setCount({
+      // let cr = totalcollection * (percentage / 100) || 0;
+      setCount((prev) => ({
+        ...prev,
         totalColl: totalcollection,
         totalSub: totsub,
-        com: cr ||0,
-        comper: percentage,
+        com: cr || 0,
         rowSelected: PaymentID?.length,
-      });
+      }));
     } else if (PaymentID && PaymentID.length == 0) {
-      setCount({
+      setCount((prev) => ({
+        ...prev,
         totalColl: 0,
         totalSub: 0,
         com: 0,
         comper: 0,
         rowSelected: 0,
-      });
+      }));
     }
   }, [
+    count?.agentcode,
     Filters?.AgentCode,
     Filters?.AreaID,
     Filters?.BranchId,
@@ -417,6 +445,28 @@ console.log(element);
     PaymentID,
   ]);
 
+  useEffect(() => {
+    if (
+      global?.Utype == 1 &&
+      Filters?.AgentCode !== undefined &&
+      Filters?.AgentCode !== null &&
+      Filters?.AgentCode !== ""
+    ) {
+      let element = AgentCode.find((i) => i?.AgentCode === Filters?.AgentCode);
+      console.log("hi", element);
+      setCount((prev) => ({
+        ...prev,
+        agentcode: Filters?.AgentCode,
+        comper: element?.Commision || 0,
+      }));
+    } else if (global?.Utype == 2) {
+      setCount((prev) => ({
+        ...prev,
+        agentcode: userInfo?.details?.AgentCode,
+        comper: userInfo?.details?.Commision,
+      }));
+    }
+  }, [PayType, Filters?.AgentCode]);
   //handle filter
   const FilterHandler = (e) => {
     var key = e.target.name;
@@ -424,7 +474,6 @@ console.log(element);
     console.log(key, value);
     setFilters({ ...Filters, [key]: value });
   };
-
   //Edit collection navigation
   const GoToEditCollection = () => {
     if (PaymentID && PaymentID.length == 1) {
@@ -455,7 +504,6 @@ console.log(element);
       });
     }
   };
-
   //delete wrong collection
   const DeleteCollection = () => {
     if (PaymentID && PaymentID.length == 1) {
@@ -537,17 +585,17 @@ console.log(element);
         };
         let SubAmtFormData = new FormData();
         for (let key in subData) {
-          if (subData.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(subData, key)) {
             SubAmtFormData.append(key, subData[key]);
           }
         }
         for (let key in paymentIDdata) {
-          if (paymentIDdata.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(paymentIDdata, key)) {
             SubAmtFormData.append(key, paymentIDdata[key]);
           }
         }
         for (let key in global) {
-          if (global.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(global, key)) {
             SubAmtFormData.append(key, global[key]);
           }
         }
@@ -589,9 +637,7 @@ console.log(element);
       });
     }
   };
-
   let currentdate = moment().format("YYYY-MM-DD");
-
   //column
   const columns = [
     {
@@ -601,13 +647,13 @@ console.log(element);
     {
       field: "CustomerAccNo",
       headerName: "Account no.",
-      width: 140,
+      width: 150,
       hideable: false,
     },
     {
       field: "CustomerName",
       headerName: "Customer Name",
-      width: 140,
+      width: 160,
     },
     { field: "SchemeTitle", headerName: "SchemeTitle", width: 170 },
     {
@@ -703,7 +749,7 @@ console.log(element);
         return (
           <Typography sx={{ textAlign: "center", width: "100%" }}>
             {" "}
-            ₹ {(item.row.Commission).toFixed(2)} /-
+            ₹ {item.row.Commission.toFixed(2)} /-
           </Typography>
         );
       },
@@ -726,258 +772,222 @@ console.log(element);
     },
   ];
   return (
-    <Grid
-      container
-      ml={2}
-      mt={2}
-      display={"flex"}
-      flexDirection={"row"}
-      alignItems={"center"}
-      justifyContent={{
-        xl: "flex-start",
-        lg: "flex-start",
-        md: "flex-start",
-        sm: "center",
-        xs: "center",
-      }}
-      flexWrap={"wrap"}
-    >
-      <ToastContainer autoClose={5000} />
+    <ThemeProvider theme={CustomTheme}>
       <Grid
-        item
-        sm={12}
-        xs={12}
-        md={12}
-        lg={12}
+        maxWidth={"l"}
+        container
+        ml={2}
+        mt={2}
         display={"flex"}
-        justifyContent={"space-between"}
+        flexDirection={"row"}
+        alignItems={"center"}
+        justifyContent={{
+          xl: "flex-start",
+          lg: "flex-start",
+          md: "flex-start",
+          sm: "center",
+          xs: "center",
+        }}
         flexWrap={"wrap"}
       >
-        <Box mr={3} mt={1}>
-          {userInfo?.details?.Utype == 2 ? (
-            <ReusableBreadcrumbs
-              props={[
-                {
-                  title: "Home",
-                  link: "/agent",
-                  icon: "home",
-                },
-                {
-                  title: "Collection List",
-                  link: "#",
-                  icon: "payments",
-                },
-              ]}
-            />
-          ) : (
-            <ReusableBreadcrumbs
-              props={[
-                {
-                  title: "Home",
-                  link: "/executive",
-                  icon: "home",
-                },
-                {
-                  title: "Collection Summary",
-                  link: "/superuser/collection-summary",
-                  icon: "savings",
-                },
-                {
-                  title: "Collection Details",
-                  link: "#",
-                  icon: "payments",
-                },
-              ]}
-            />
-          )}{" "}
-        </Box>
-        {myPermission?.Create ? (
-          <IconOnOffButton
-            h1={"Add Collection"}
-            icon1={<AddCircleOutlineIcon fontSize="medium" />}
-            Tooltip1={"ADD Collection"}
-            funcTrigger1={() => {
-              navigate("/executive/collectionentry");
-            }}
-          />
-        ) : null}
-      </Grid>
-      <Grid item md={12} lg={12} sm={12} xs={12}>
-        <Divider />
-      </Grid>
-      {params?.alert ? (
-        <Grid item md={12} sm={12} xs={12} lg={12}>
-          <Box display={"flex"} justifyContent={"space-between"}>
-            <Stack sx={{ width: "100%" }} spacing={2}>
-              <Alert
-                severity="error"
-                onClose={() => {
-                  setParams({ alert: false, warning: null });
-                }}
-              >
-                <AlertTitle>Warning</AlertTitle>
-                {params?.warning}
-              </Alert>
-            </Stack>
+        <ToastContainer autoClose={5000} />
+        <Grid
+          item
+          sm={12}
+          xs={12}
+          md={12}
+          lg={12}
+          display={"flex"}
+          justifyContent={"space-between"}
+          flexWrap={"wrap"}
+        >
+          <Box mr={3} mt={1}>
+            {userInfo?.details?.Utype == 2 ? (
+              <ReusableBreadcrumbs
+                props={[
+                  {
+                    title: "Home",
+                    link: "/agent",
+                    icon: "home",
+                  },
+                  {
+                    title: "Collection List",
+                    link: "#",
+                    icon: "payments",
+                  },
+                ]}
+              />
+            ) : (
+              <ReusableBreadcrumbs
+                props={[
+                  {
+                    title: "Home",
+                    link: "/executive",
+                    icon: "home",
+                  },
+                  {
+                    title: "Collection Summary",
+                    link: "/superuser/collection-summary",
+                    icon: "savings",
+                  },
+                  {
+                    title: "Collection Details",
+                    link: "#",
+                    icon: "payments",
+                  },
+                ]}
+              />
+            )}{" "}
           </Box>
+          {myPermission?.Create ? (
+            <IconOnOffButton
+              h1={"Add Collection"}
+              icon1={<AddCircleOutlineIcon fontSize="medium" />}
+              Tooltip1={"ADD Collection"}
+              funcTrigger1={() => {
+                navigate("/executive/collectionentry");
+              }}
+            />
+          ) : null}
         </Grid>
-      ) : null}
-      <Grid
-        item
-        sm={12}
-        xs={12}
-        md={12}
-        lg={4}
-        xl={4}
-        display={"flex"}
-        flexDirection={"row"}
-        alignItems={"center"}
-        justifyContent={{
-          xl: "flex-start",
-          lg: "flex-start",
-          md: "center",
-          sm: "center",
-          xs: "center",
-        }}
-        flexWrap={"wrap"}
-      >
-        <DateRangFilter2
-          state1={Filters?.startDate}
-          state2={Filters?.endDate}
-          name1={"startDate"}
-          name2={"endDate"}
-          MaxDate1={
-            Filters?.endDate !== undefined &&
-            Filters?.endDate !== null &&
-            Filters?.endDate !== ""
-              ? Filters?.endDate
-              : currentdate
-          }
-          MaxDate2={currentdate}
-          InputHandler={FilterHandler}
-        />
-      </Grid>
-      <Grid
-        item
-        sm={5.5}
-        xs={12}
-        md={2.8}
-        lg={1.7}
-        mr={1}
-        display={"flex"}
-        flexDirection={"row"}
-        alignItems={"center"}
-        justifyContent={{
-          xl: "flex-start",
-          lg: "flex-start",
-          md: "center",
-          sm: "center",
-          xs: "center",
-        }}
-        flexWrap={"wrap"}
-        mt={1.7}
-      >
-        <ReusableDropDown4
-          setState={setFilters}
-          state={Filters}
-          label={"Collected by"}
-          data={[
-            { NotAgentPayment: 1, value: "Backoffice" },
-            { NotAgentPayment: 0, value: "Agent" },
-          ]}
-          id={"arial_collector"}
-          disabled={false}
-          ObjectKey={["value"]}
-          Field={Filters?.NotAgentPayment}
-          uniquekey={"NotAgentPayment"}
-          deselectvalue={true}
-          onChange={FilterHandler}
-        />
-      </Grid>
-      <Grid
-        item
-        sm={5.5}
-        xs={12}
-        md={2.8}
-        lg={1.7}
-        mr={1}
-        display={"flex"}
-        flexDirection={"row"}
-        alignItems={"center"}
-        justifyContent={{
-          xl: "flex-start",
-          lg: "flex-start",
-          md: "center",
-          sm: "center",
-          xs: "center",
-        }}
-        flexWrap={"wrap"}
-        mt={1.7}
-      >
-        <ReusableDropDown4
-          setState={setFilters}
-          state={Filters}
-          label={"Payment Status"}
-          data={[
-            { PaymentStatus: 1, value: "Collected" },
-            { PaymentStatus: 2, value: "Submitted" },
-            { PaymentStatus: 3, value: "Approved" },
-            { PaymentStatus: 4, value: "Rejected" },
-          ]}
-          id={"arial_status"}
-          disabled={false}
-          ObjectKey={["value"]}
-          Field={Filters?.PaymentStatus}
-          uniquekey={"PaymentStatus"}
-          deselectvalue={true}
-          onChange={FilterHandler}
-        />
-      </Grid>
-      <Grid
-        item
-        sm={5.5}
-        xs={12}
-        md={2.8}
-        lg={1.7}
-        mr={1}
-        display={"flex"}
-        flexDirection={"row"}
-        alignItems={"center"}
-        justifyContent={{
-          xl: "space-between",
-          lg: "space-between",
-          md: "center",
-          sm: "center",
-          xs: "center",
-        }}
-        flexWrap={"wrap"}
-        mt={1.7}
-      >
-        <ReusableDropDown4
-          setState={setFilters}
-          state={Filters}
-          label={"Payment Type"}
-          data={[
-            { PaymentType: 1, value: "Registration Fees" },
-            { PaymentType: 2, value: "EMI" },
-          ]}
-          id={"arial_status"}
-          disabled={false}
-          ObjectKey={["value"]}
-          Field={Filters?.PaymentType}
-          uniquekey={"PaymentType"}
-          deselectvalue={true}
-          onChange={FilterHandler}
-        />
-      </Grid>
-
-      {global?.Utype == 1 ? (
+        <Grid item md={12} lg={12} sm={12} xs={12}>
+          <Divider />
+        </Grid>
+        {params?.alert ? (
+          <Grid item md={12} sm={12} xs={12} lg={12}>
+            <Box display={"flex"} justifyContent={"space-between"}>
+              <Stack sx={{ width: "100%" }} spacing={2}>
+                <Alert
+                  severity="error"
+                  onClose={() => {
+                    setParams({ alert: false, warning: null });
+                  }}
+                >
+                  <AlertTitle>Warning</AlertTitle>
+                  {params?.warning}
+                </Alert>
+              </Stack>
+            </Box>
+          </Grid>
+        ) : null}
+        <Grid
+          item
+          sm={12}
+          xs={12}
+          md={12}
+          lg={4}
+          xl={4}
+          display={"flex"}
+          flexDirection={"row"}
+          alignItems={"center"}
+          justifyContent={{
+            xl: "flex-start",
+            lg: "flex-start",
+            md: "center",
+            sm: "center",
+            xs: "center",
+          }}
+          flexWrap={"wrap"}
+        >
+          <DateRangFilter2
+            state1={Filters?.startDate}
+            state2={Filters?.endDate}
+            name1={"startDate"}
+            name2={"endDate"}
+            MaxDate1={
+              Filters?.endDate !== undefined &&
+              Filters?.endDate !== null &&
+              Filters?.endDate !== ""
+                ? Filters?.endDate
+                : currentdate
+            }
+            MaxDate2={currentdate}
+            InputHandler={FilterHandler}
+          />
+        </Grid>
         <Grid
           item
           sm={5.5}
           xs={12}
           md={2.8}
           lg={1.7}
+          mr={1}
+          display={"flex"}
+          flexDirection={"row"}
+          alignItems={"center"}
+          justifyContent={{
+            xl: "flex-start",
+            lg: "flex-start",
+            md: "center",
+            sm: "center",
+            xs: "center",
+          }}
+          flexWrap={"wrap"}
+          mt={1.7}
+        >
+          <ReusableDropDown4
+            setState={setFilters}
+            state={Filters}
+            label={"Collected by"}
+            data={[
+              { NotAgentPayment: 1, value: "Backoffice" },
+              { NotAgentPayment: 0, value: "Agent" },
+            ]}
+            id={"arial_collector"}
+            disabled={false}
+            ObjectKey={["value"]}
+            Field={Filters?.NotAgentPayment}
+            uniquekey={"NotAgentPayment"}
+            deselectvalue={true}
+            onChange={FilterHandler}
+          />
+        </Grid>
+        <Grid
+          item
+          sm={5.5}
+          xs={12}
+          md={2.8}
+          lg={1.7}
+          mr={1}
+          display={"flex"}
+          flexDirection={"row"}
+          alignItems={"center"}
+          justifyContent={{
+            xl: "flex-start",
+            lg: "flex-start",
+            md: "center",
+            sm: "center",
+            xs: "center",
+          }}
+          flexWrap={"wrap"}
+          mt={1.7}
+        >
+          <ReusableDropDown4
+            setState={setFilters}
+            state={Filters}
+            label={"Payment Status"}
+            data={[
+              { PaymentStatus: 1, value: "Collected" },
+              { PaymentStatus: 2, value: "Submitted" },
+              { PaymentStatus: 3, value: "Approved" },
+              { PaymentStatus: 4, value: "Rejected" },
+            ]}
+            id={"arial_status"}
+            disabled={false}
+            ObjectKey={["value"]}
+            Field={Filters?.PaymentStatus}
+            uniquekey={"PaymentStatus"}
+            deselectvalue={true}
+            onChange={FilterHandler}
+          />
+        </Grid>
+        <Grid
+          item
+          sm={5.5}
+          xs={12}
+          md={2.8}
+          lg={1.7}
+          mr={1}
           display={"flex"}
           flexDirection={"row"}
           alignItems={"center"}
@@ -994,146 +1004,189 @@ console.log(element);
           <ReusableDropDown4
             setState={setFilters}
             state={Filters}
-            label={"Agent"}
-            data={AgentCode}
+            label={"Payment Type"}
+            data={[
+              { PaymentType: 1, value: "Registration Fees" },
+              { PaymentType: 2, value: "EMI" },
+            ]}
             id={"arial_status"}
             disabled={false}
-            ObjectKey={["Name", "AgentCode"]}
-            Field={Filters?.AgentCode}
-            uniquekey={"AgentCode"}
+            ObjectKey={["value"]}
+            Field={Filters?.PaymentType}
+            uniquekey={"PaymentType"}
             deselectvalue={true}
             onChange={FilterHandler}
           />
         </Grid>
-      ) : null}
 
-      {/* Icon button */}
-
-      <Grid item sm={12} xs={12} md={12} lg={12} xl={12} px={1}>
-        <Box
-          minWidth={"20rem"}
-          display={"flex"}
-          flexDirection={"row"}
-          alignItems={"center"}
-          justifyContent={{
-            xl: "flex-start",
-            lg: "flex-start",
-            md: "center",
-            sm: "center",
-          }}
-          flexWrap={"wrap"}
-        >
-          {myPermission?.Edit == 1 ? (
-            <IconOnOffButton
-              h1={global?.Utype == 1 ? "Edit" : null}
-              Tooltip1={global?.Utype == 1 ? "Edit" : null}
-              icon1={global?.Utype == 1 ? <EditIcon fontSize="small" /> : null}
-              funcTrigger1={
-                global?.Utype == 1
-                  ? GoToEditCollection
-                  : () => {
-                      return 0;
-                    }
-              }
-              h2={global?.Utype == 1 ? "Delete" : null}
-              Tooltip2={global?.Utype == 1 ? "Delete" : null}
-              icon2={
-                global?.Utype == 1 ? (
-                  <DeleteIcon
-                    fontSize="small"
-                    sx={{
-                      color: PaymentID?.length == 1 ? "red" : "grey",
-                    }}
-                  />
-                ) : null
-              }
-              funcTrigger2={
-                global?.Utype == 1 && PaymentID?.length == 1
-                  ? DeleteCollection
-                  : () => {
-                      return 0;
-                    }
-              }
-            />
-          ) : null}
-
-          <IconOnOffButton
-            h1={"Filter Out"}
-            Tooltip1={"Filter Out"}
-            icon1={<FilterAltOffIcon fontSize="small" />}
-            funcTrigger1={() => {
-              setPaymentID([]);
-              setFilters({
-                startDate: "",
-                endDate: "",
-                PaymentStatus: null,
-                AgentCode: null,
-                PaymentType: null,
-                NotAgentPayment: null,
-              });
-              setCount({
-                totalColl: 0,
-                totalSub: 0,
-                com: 0,
-                comper: 0,
-                rowSelected: 0,
-              });
+        {global?.Utype == 1 ? (
+          <Grid
+            item
+            sm={5.5}
+            xs={12}
+            md={2.8}
+            lg={1.7}
+            display={"flex"}
+            flexDirection={"row"}
+            alignItems={"center"}
+            justifyContent={{
+              xl: "space-between",
+              lg: "space-between",
+              md: "center",
+              sm: "center",
+              xs: "center",
             }}
-            h2={"Customer Details"}
-            Tooltip2={"Customer Details"}
-            icon2={<PersonIcon fontSize="medium" />}
-            funcTrigger2={NavigateToCustomer}
+            flexWrap={"wrap"}
+            mt={1.7}
+          >
+            <ReusableDropDown4
+              setState={setFilters}
+              state={Filters}
+              label={"Agent"}
+              data={AgentCode}
+              id={"arial_status"}
+              disabled={false}
+              ObjectKey={["Name", "AgentCode"]}
+              Field={Filters?.AgentCode}
+              uniquekey={"AgentCode"}
+              deselectvalue={true}
+              onChange={FilterHandler}
+            />
+          </Grid>
+        ) : null}
+
+        {/* Icon button */}
+
+        <Grid item sm={12} xs={12} md={12} lg={12} xl={12} px={1}>
+          <Box
+            minWidth={"20rem"}
+            display={"flex"}
+            flexDirection={"row"}
+            alignItems={"center"}
+            justifyContent={{
+              xl: "flex-start",
+              lg: "flex-start",
+              md: "center",
+              sm: "center",
+            }}
+            flexWrap={"wrap"}
+          >
+            {myPermission?.Edit == 1 ? (
+              <IconOnOffButton
+                h1={global?.Utype == 1 ? "Edit" : null}
+                Tooltip1={global?.Utype == 1 ? "Edit" : null}
+                icon1={
+                  global?.Utype == 1 ? <EditIcon fontSize="small" /> : null
+                }
+                funcTrigger1={
+                  global?.Utype == 1
+                    ? GoToEditCollection
+                    : () => {
+                        return 0;
+                      }
+                }
+                h2={global?.Utype == 1 ? "Delete" : null}
+                Tooltip2={global?.Utype == 1 ? "Delete" : null}
+                icon2={
+                  global?.Utype == 1 ? (
+                    <DeleteIcon
+                      fontSize="small"
+                      sx={{
+                        color: PaymentID?.length == 1 ? "red" : "grey",
+                      }}
+                    />
+                  ) : null
+                }
+                funcTrigger2={
+                  global?.Utype == 1 && PaymentID?.length == 1
+                    ? DeleteCollection
+                    : () => {
+                        return 0;
+                      }
+                }
+              />
+            ) : null}
+
+            <IconOnOffButton
+              h1={"Filter Out"}
+              Tooltip1={"Filter Out"}
+              icon1={<FilterAltOffIcon fontSize="small" />}
+              funcTrigger1={() => {
+                setPaymentID([]);
+                setFilters({
+                  startDate: "",
+                  endDate: "",
+                  PaymentStatus: null,
+                  AgentCode: null,
+                  PaymentType: null,
+                  NotAgentPayment: null,
+                });
+                setCount({
+                  totalColl: 0,
+                  totalSub: 0,
+                  com: 0,
+                  comper: 0,
+                  rowSelected: 0,
+                  agentcode: null,
+                });
+              }}
+              h2={"Customer Details"}
+              Tooltip2={"Customer Details"}
+              icon2={<PersonIcon fontSize="medium" />}
+              funcTrigger2={NavigateToCustomer}
+            />
+          </Box>
+        </Grid>
+        {/*Form*/}
+        <Grid
+          item
+          sm={12}
+          xs={12}
+          md={12}
+          lg={2.4}
+          xl={2.3}
+          color={"#5b5b5b "}
+          sx={{
+            display: "flex",
+            justifyContent: {
+              xl: "flex-start",
+              lg: "flex-start",
+              md: "center",
+              sm: "center",
+              xs: "center",
+            },
+            alignItems: "center",
+          }}
+        >
+          <Typography sx={{ fontSize: "18px", mt: 2 }}>
+            Submit Collection Here :
+          </Typography>
+        </Grid>
+        <Grid item sm={12} xs={12} md={5.5} lg={2.3} xl={2.5} mt={2}>
+          <TextField
+            label="Submission Amount "
+            name="CollectedAmt"
+            type="number"
+            value={subData?.CollectedAmt || ""}
+            placeholder="Submission Amt."
+            size="small"
+            fullWidth
+            onChange={HandleChangeInput}
           />
-        </Box>
-      </Grid>
-      {/*Form*/}
-      <Grid
-        item
-        sm={12}
-        xs={12}
-        md={12}
-        lg={2.4}
-        xl={2.3}
-        color={"#5b5b5b "}
-        sx={{
-          display: "flex",
-          justifyContent: {
-            xl: "flex-start",
-            lg: "flex-start",
-            md: "center",
-            sm: "center",
-            xs: "center",
-          },
-          alignItems: "center",
-        }}
-      >
-        <Typography sx={{ fontSize: "18px", mt: 2 }}>
-          Submit Collection Here :
-        </Typography>
-      </Grid>
-      <Grid item sm={12} xs={12} md={5.5} lg={2.3} xl={2.5} mt={2}>
-        <TextField
-          label="Submission Amount "
-          name="CollectedAmt"
-          type="number"
-          value={subData?.CollectedAmt || ""}
-          placeholder="Submission Amt."
-          size="small"
-          fullWidth
-          onChange={HandleChangeInput}
-        />
-      </Grid>
-      <Grid
-        item
-        sm={12}
-        xs={12}
-        md={5.5}
-        lg={3.8}
-        xl={3.5}
-        sx={{ color: "#5b5b5b", ml: 2 }}
-      >
-        <label>
-          Upload Cheque/Transaction Details/Others*
+        </Grid>
+        <Grid
+          item
+          sm={12}
+          xs={12}
+          md={5.5}
+          lg={3.8}
+          xl={3.5}
+          sx={{ color: "#5b5b5b", ml: 2 }}
+        >
+          <InputLabel shrink={true}>
+            Upload Cheque/Transaction Details/Others*
+          </InputLabel>
+
           <br />
           <input
             label="receiptPic"
@@ -1146,90 +1199,89 @@ console.log(element);
               borderBottom: "1px solid grey",
             }}
             ref={ImageRef}
-            InputLabelProps={{ shrink: true }}
             placeholder="Submission Amt."
             onChange={HandleChangePic}
           />
-        </label>
-      </Grid>
-      <Grid item sm={12} xs={12} md={12} lg={2.3} xl={2} my={2} mx={2}>
-        <Box
-          display={"flex"}
-          flexDirection={"row"}
-          alignItems={"center"}
-          justifyContent={"space-evenly"}
-          flexWrap={"wrap"}
-        >
-          <Button
-            variant="contained"
-            color="success"
-            onClick={HandleSubmitCollection}
+        </Grid>
+        <Grid item sm={12} xs={12} md={12} lg={2.3} xl={2} my={2} mx={2}>
+          <Box
+            display={"flex"}
+            flexDirection={"row"}
+            alignItems={"center"}
+            justifyContent={"space-evenly"}
+            flexWrap={"wrap"}
           >
-            Submit
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              setSubData({
-                receiptPic: null,
-                CollectedAmt: null,
-              });
-              ImageRef.current.key = null;
-            }}
-          >
-            reset
-          </Button>
-        </Box>
-      </Grid>
-      {/**Table */}
-      <Grid item sm={12} xs={12} md={12} mt={2}>
-        <div style={{ height: 560, width: "100%" }}>
-          <DataGrid
-            loading={isloading29}
-            selectRow
-            getRowId={(row) => {
-              if (!row) {
-                return -1;
-              } else {
-                return row["CollectionId"];
-              }
-            }}
-            sx={{
-              ".css-wop1k0-MuiDataGrid-footerContainer": {
-                minHeight: "fit-content",
-              },
-              "& .MuiDataGrid-virtualScroller": {
-                "::-webkit-scrollbar": {
-                  height: "5px",
-                  bgcolor: "grey",
+            <Button
+              variant="contained"
+              color="success"
+              onClick={HandleSubmitCollection}
+            >
+              Submit
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => {
+                setSubData({
+                  receiptPic: null,
+                  CollectedAmt: null,
+                });
+                ImageRef.current.key = null;
+              }}
+            >
+              reset
+            </Button>
+          </Box>
+        </Grid>
+        {/**Table */}
+        <Grid item sm={12} xs={12} md={12} mt={2}>
+          <div style={{ height: "90vh", width: "100%" }}>
+            <DataGrid
+              loading={isloading29}
+              selectRow
+              getRowId={(row) => {
+                if (!row) {
+                  return -1;
+                } else {
+                  return row["CollectionId"];
+                }
+              }}
+              sx={{
+                ".css-wop1k0-MuiDataGrid-footerContainer": {
+                  minHeight: "fit-content",
                 },
-              },
-            }}
-            rows={PaymentDetails || []}
-            columns={columns}
-            rowHeight={45}
-            checkboxSelection
-            rowSelectionModel={PaymentID}
-            onRowSelectionModelChange={(id) => {
-              const SelectedIDs = new Set(id);
-              const IDarr = Array.from(SelectedIDs);
-              setPaymentID(IDarr);
-            }}
-            slots={{
-              toolbar: CustomGridToolBar,
-              footer: CustomFooter,
-            }}
-            slotProps={{
-              toolbar: {
-                showQuickFilter: true,
-              },
-              footer: { count },
-            }}
-          />
-        </div>
+                "& .MuiDataGrid-virtualScroller": {
+                  "::-webkit-scrollbar": {
+                    height: "5px",
+                    bgcolor: "grey",
+                  },
+                },
+              }}
+              rows={PaymentDetails || []}
+              columns={columns}
+              rowHeight={44}
+              checkboxSelection
+              rowSelectionModel={PaymentID}
+              onRowSelectionModelChange={(id) => {
+                const SelectedIDs = new Set(id);
+                const IDarr = Array.from(SelectedIDs);
+                setPaymentID(IDarr);
+              }}
+              slots={{
+                toolbar: CustomGridToolBar,
+                footer: CustomFooter,
+              }}
+              slotProps={{
+                toolbar: {
+                  showQuickFilter: true,
+                },
+                footer: { count },
+              }}
+            />
+          </div>
+        </Grid>
       </Grid>
-    </Grid>
+    </ThemeProvider>
   );
 }
 

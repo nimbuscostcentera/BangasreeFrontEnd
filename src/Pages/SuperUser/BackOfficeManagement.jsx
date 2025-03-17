@@ -40,6 +40,7 @@ const CustomTheme = createTheme({
       mid: 695,
       md: 825,
       lg: 960,
+      l:1060,
       xl: 1125,
       xxl: 1210,
       xxxl: 1345,
@@ -267,7 +268,7 @@ export default function SuperUserManagement() {
   let currentdate = moment().format("YYYY-MM-DD");
   return (
     <ThemeProvider theme={CustomTheme}>
-      <Grid container ml={3} mt={2} maxWidth={"xl"}>
+         <Grid container ml={2} mt={2} maxWidth={"l"}>
         <ToastContainer autoClose={3000} />
         <Grid
           item
@@ -466,7 +467,7 @@ export default function SuperUserManagement() {
             state={ids}
             setState={setIds}
             isloading={isloading36}
-            height={450}
+            height={"68vh"}
           />
         </Grid>
       </Grid>

@@ -6,9 +6,9 @@ import moment from "moment";
 import Grid from "@mui/system/Unstable_Grid/Grid";
 import { Box,Alert,AlertTitle,Stack,Divider} from "@mui/material";
 import { GRID_CHECKBOX_SELECTION_COL_DEF } from "@mui/x-data-grid";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ReusableDataTable from "../../Components/Global/ReusableTable";
 import ReusableBreadcrumbs from "../../Components/Global/ReusableBreadcrumbs";
 import DateRangFilter2 from "../../Components/Global/DateRangeFilter2";
@@ -22,6 +22,24 @@ import {
   LeadCustList,
 } from "../../Slice/PortableCustomer/PortableCustListSlice";
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
+const CustomTheme = createTheme({
+  breakpoints: {
+    keys: ["xxs", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"],
+    values: {
+      xxs: 100,
+      xs: 200,
+      sm: 400,
+      mid: 550,
+      md: 813,
+      lg: 970,
+      l: 1060,
+      xl: 1175,
+      xxl: 1210,
+      xxxl: 1345,
+      Big: 1500,
+    },
+  },
+});
 
 function LeadcustManage() {
   //console.log("Lead");
@@ -168,153 +186,155 @@ function LeadcustManage() {
   let currentdate = moment().format("YYYY-MM-DD");
 
   return (
-    <Grid container ml={2} mt={2}>
-      <ToastContainer autoClose={5000} />
-      <Grid
-        item
-        sm={12}
-        xs={12}
-        md={12}
-        lg={12}
-        display={"flex"}
-        justifyContent={"space-between"}
-        flexWrap={"wrap"}
-      >
-        <Box mt={1}>
-          <ReusableBreadcrumbs
-            props={[
-              {
-                title: "Home",
-                link: global.Utype == 1 ? "/executive" : "/agent",
-                icon: "home",
-              },
-              {
-                title: "Manage Lead Customer",
-                link: "#",
-                icon: "manage_accounts",
-              },
-            ]}
-          />{" "}
-        </Box>
-        {myPermission?.Create == 1 ? (
-          <>
-            {" "}
-            <IconOnOffButton
-              h1={"Add Lead Customers"}
-              icon1={<AddCircleOutlineIcon fontSize="medium" />}
-              Tooltip1={"Add Lead Customers"}
-              funcTrigger1={() => {
-                navigate("/executive/addleads");
-              }}
-            />
-          </>
-        ) : null}
-      </Grid>
-      <Grid item md={12} lg={12} sm={12} xs={12} my={0} py={0}>
-        <Divider />
-      </Grid>
-      {params?.alert ? (
-        <Grid item md={12} sm={12} xs={12} lg={12}>
-          <Box display={"flex"} justifyContent={"space-between"}>
-            <Stack sx={{ width: "100%" }} spacing={2}>
-              <Alert
-                severity="error"
-                onClose={() => {
-                  setParams({ alert: false, warning: "" });
-                }}
-              >
-                <AlertTitle>Warning</AlertTitle>
-                {params?.warning}
-              </Alert>
-            </Stack>
+    <ThemeProvider theme={CustomTheme}>
+      <Grid container ml={2} mt={2} maxWidth={"l"}>
+        <ToastContainer autoClose={5000} />
+        <Grid
+          item
+          sm={12}
+          xs={12}
+          md={12}
+          lg={12}
+          display={"flex"}
+          justifyContent={"space-between"}
+          flexWrap={"wrap"}
+        >
+          <Box mt={1}>
+            <ReusableBreadcrumbs
+              props={[
+                {
+                  title: "Home",
+                  link: global.Utype == 1 ? "/executive" : "/agent",
+                  icon: "home",
+                },
+                {
+                  title: "Manage Lead Customer",
+                  link: "#",
+                  icon: "manage_accounts",
+                },
+              ]}
+            />{" "}
           </Box>
+          {myPermission?.Create == 1 ? (
+            <>
+              {" "}
+              <IconOnOffButton
+                h1={"Add Lead Customers"}
+                icon1={<AddCircleOutlineIcon fontSize="medium" />}
+                Tooltip1={"Add Lead Customers"}
+                funcTrigger1={() => {
+                  navigate("/executive/addleads");
+                }}
+              />
+            </>
+          ) : null}
         </Grid>
-      ) : null}
-      <Grid
-        item
-        sm={12}
-        xs={12}
-        md={5.5}
-        lg={6}
-        display={"flex"}
-        justifyContent={{
-          xl: "flex-start",
-          lg: "flex-start",
-          md: "flex-start",
-          sm: "center",
-          xs: "center",
-        }}
-        flexWrap={"wrap"}
-        alignItems={"center"}
-      >
-        <DateRangFilter2
-          state1={Filters?.startDate}
-          state2={Filters?.endDate}
-          name1={"startDate"}
-          name2={"endDate"}
-          MaxDate1={
-            Filters?.endDate !== undefined &&
-            Filters?.endDate !== null &&
-            Filters?.endDate !== ""
-              ? Filters?.endDate
-              : currentdate
-          }
-          MaxDate2={currentdate}
-          InputHandler={FilterHandler}
-        />
-      </Grid>
-      <Grid
-        item
-        sm={12}
-        xs={12}
-        md={6}
-        lg={6}
-        display={"flex"}
-        justifyContent={{
-          xl: "flex-end",
-          lg: "flex-end",
-          md: "flex-end",
-          sm: "center",
-          xs: "center",
-        }}
-        flexWrap={"wrap"}
-        alignItems={"center"}
-      >
-        <IconOnOffButton
-          h1={myPermission?.ViewPage == 1 ? "View" : null}
-          icon1={
-            myPermission?.ViewPage == 1 ? (
-              <VisibilityIcon fontSize="medium" />
-            ) : null
-          }
-          disable1={LeadId.length == 0 ? true : false}
-          Tooltip1={
-            myPermission?.ViewPage == 1 ? "View and Edit Details" : false
-          }
-          funcTrigger1={
-            myPermission?.ViewPage == 1 ? ViewEditDetailsButton : false
-          }
-          h2={"Filter Out"}
-          icon2={<FilterAltOffIcon fontSize="medium" />}
-          Tooltip2={"Filter Out"}
-          funcTrigger2={() => {
-            setFilters({ startDate: "", endDate: "" });
-            setLeadId([]);
+        <Grid item md={12} lg={12} sm={12} xs={12} my={0} py={0}>
+          <Divider />
+        </Grid>
+        {params?.alert ? (
+          <Grid item md={12} sm={12} xs={12} lg={12}>
+            <Box display={"flex"} justifyContent={"space-between"}>
+              <Stack sx={{ width: "100%" }} spacing={2}>
+                <Alert
+                  severity="error"
+                  onClose={() => {
+                    setParams({ alert: false, warning: "" });
+                  }}
+                >
+                  <AlertTitle>Warning</AlertTitle>
+                  {params?.warning}
+                </Alert>
+              </Stack>
+            </Box>
+          </Grid>
+        ) : null}
+        <Grid
+          item
+          sm={12}
+          xs={12}
+          md={5.5}
+          lg={6}
+          display={"flex"}
+          justifyContent={{
+            xl: "flex-start",
+            lg: "flex-start",
+            md: "flex-start",
+            sm: "center",
+            xs: "center",
           }}
-        />
+          flexWrap={"wrap"}
+          alignItems={"center"}
+        >
+          <DateRangFilter2
+            state1={Filters?.startDate}
+            state2={Filters?.endDate}
+            name1={"startDate"}
+            name2={"endDate"}
+            MaxDate1={
+              Filters?.endDate !== undefined &&
+              Filters?.endDate !== null &&
+              Filters?.endDate !== ""
+                ? Filters?.endDate
+                : currentdate
+            }
+            MaxDate2={currentdate}
+            InputHandler={FilterHandler}
+          />
+        </Grid>
+        <Grid
+          item
+          sm={12}
+          xs={12}
+          md={6}
+          lg={6}
+          display={"flex"}
+          justifyContent={{
+            xl: "flex-end",
+            lg: "flex-end",
+            md: "flex-end",
+            sm: "center",
+            xs: "center",
+          }}
+          flexWrap={"wrap"}
+          alignItems={"center"}
+        >
+          <IconOnOffButton
+            h1={myPermission?.ViewPage == 1 ? "View" : null}
+            icon1={
+              myPermission?.ViewPage == 1 ? (
+                <VisibilityIcon fontSize="medium" />
+              ) : null
+            }
+            disable1={LeadId.length == 0 ? true : false}
+            Tooltip1={
+              myPermission?.ViewPage == 1 ? "View and Edit Details" : false
+            }
+            funcTrigger1={
+              myPermission?.ViewPage == 1 ? ViewEditDetailsButton : false
+            }
+            h2={"Filter Out"}
+            icon2={<FilterAltOffIcon fontSize="medium" />}
+            Tooltip2={"Filter Out"}
+            funcTrigger2={() => {
+              setFilters({ startDate: "", endDate: "" });
+              setLeadId([]);
+            }}
+          />
+        </Grid>
+        <Grid item sm={12} xs={12} md={12} lg={12}>
+          <ReusableDataTable
+            uniqueid={"CustomerID"}
+            columns={columns}
+            rows={Lead}
+            state={LeadId}
+            setState={setLeadId}
+            isloading={loader}
+            height={"70vh"}
+          />
+        </Grid>
       </Grid>
-      <Grid item sm={12} xs={12} md={12} lg={12}>
-        <ReusableDataTable
-          uniqueid={"CustomerID"}
-          columns={columns}
-          rows={Lead}
-          state={LeadId}
-          setState={setLeadId}
-          isloading={loader}
-          height={530}
-        />
-      </Grid>
-    </Grid>
+    </ThemeProvider>
   );
 }
 

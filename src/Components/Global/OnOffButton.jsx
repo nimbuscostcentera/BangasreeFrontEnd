@@ -1,6 +1,30 @@
-import React from "react";
 import { Button, Box } from "@mui/material";
-export default function OnOffButton({ yes, no, type1, type2, functrigger1, functrigger2,theme1,theme2 ,disabled1,disabled2}) {
+import PropTypes from "prop-types";
+
+OnOffButton.propTypes = {
+  yes: PropTypes.string,
+  no: PropTypes.string,
+  type1: PropTypes.string,
+  type2: PropTypes.string,
+  functrigger1: PropTypes.func,
+  functrigger2: PropTypes.func,
+  theme1: PropTypes.string,
+  theme2: PropTypes.string,
+  disabled1: PropTypes.bool,
+  disabled2: PropTypes.bool,
+};
+export default function OnOffButton({
+  yes,
+  no,
+  type1,
+  type2,
+  functrigger1,
+  functrigger2,
+  theme1,
+  theme2,
+  disabled1,
+  disabled2,
+}) {
   return (
     <Box sx={{ mt: 1, display: "flex", justifyContent: "space-around" }}>
       {yes ? (

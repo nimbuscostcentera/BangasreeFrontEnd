@@ -15,6 +15,7 @@ import {
   AlertTitle,
   Stack,
 } from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Box } from "@mui/system";
 import {
   GRID_CHECKBOX_SELECTION_COL_DEF,
@@ -47,6 +48,24 @@ import {
   BonusUpdate,
 } from "../../Slice/Collection/BonusUpdateSlice";
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
+const CustomTheme = createTheme({
+  breakpoints: {
+    keys: ["xxs", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"],
+    values: {
+      xxs: 100,
+      xs: 200,
+      sm: 400,
+      mid: 550,
+      md: 813,
+      lg: 970,
+      l: 1060,
+      xl: 1175,
+      xxl: 1210,
+      xxxl: 1345,
+      Big: 1500,
+    },
+  },
+});
 
 function SubscriptionManagement() {
   const location = useLocation();
@@ -272,7 +291,7 @@ function SubscriptionManagement() {
     {
       field: `CustomerAccNo`,
       headerName: "Account No.",
-      width: 130,
+      width: 150,
       hideable: false,
     },
     {
@@ -285,7 +304,7 @@ function SubscriptionManagement() {
       headerName: "Agent Code",
       width: 100,
     },
-    { field: `SchemeTitle`, headerName: "Scheme", width: 120 },
+    { field: `SchemeTitle`, headerName: "Scheme", width: 170 },
     {
       field: `amttobepaid`,
       headerName: "Payable Amt",
@@ -405,506 +424,522 @@ function SubscriptionManagement() {
   };
 
   return (
-    <Grid
-      container
-      ml={2}
-      mt={2}
-      display={"flex"}
-      flexDirection={"row"}
-      alignItems={"center"}
-      justifyContent={{
-        xl: "flex-start",
-        lg: "flex-start",
-        md: "flex-start",
-        sm: "center",
-        xs: "center",
-      }}
-      flexWrap={"wrap"}
-    >
-      {" "}
-      <ToastContainer autoClose={8000} />
+    <ThemeProvider theme={CustomTheme}>
       <Grid
-        item
-        sm={12}
-        xs={12}
-        md={12}
-        lg={12}
+        container
+        maxWidth={"l"}
+        ml={2}
+        mt={2}
         display={"flex"}
-        justifyContent={"space-between"}
+        flexDirection={"row"}
+        alignItems={"center"}
+        justifyContent={{
+          xl: "flex-start",
+          lg: "flex-start",
+          md: "flex-start",
+          sm: "center",
+          xs: "center",
+        }}
         flexWrap={"wrap"}
       >
-        <Box mr={3} mt={1}>
-          <ReusableBreadcrumbs
-            props={[
-              {
-                title: "Home",
-                link: global.Utype == 1 ? "/executive" : "/agent",
-                icon: "home",
-              },
-              {
-                title: "Manage Subscription",
-                link: "#",
-                icon: "manage_accounts",
-              },
-            ]}
-          />
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "flex-end",
-            flexWrap: "wrap",
-          }}
+        {" "}
+        <ToastContainer autoClose={8000} />
+        <Grid
+          item
+          sm={12}
+          xs={12}
+          md={12}
+          lg={12}
+          display={"flex"}
+          justifyContent={"space-between"}
+          flexWrap={"wrap"}
         >
-          {myPermission?.ViewPage == 1 ? (
-            <SingleIconButton
-              icon1={
-                <WorkspacePremium color={disbool2 ? "success" : "disabled"} />
-              }
-              Tooltip1={"View Certificate"}
-              h1={"View Certificate"}
-              disable1={!disbool2 && !disbool4}
-              funcTrigger1={() => {
-                console.log(CId[0]);
-
-                navigate("/superuser/viewcertificate", {
-                  state: { SchemeRegId: CId[0] },
-                });
-              }}
-              textcolor1={disbool2 ? "green" : "grey"}
-              mb={-1}
+          <Box mr={3} mt={1}>
+            <ReusableBreadcrumbs
+              props={[
+                {
+                  title: "Home",
+                  link: global.Utype == 1 ? "/executive" : "/agent",
+                  icon: "home",
+                },
+                {
+                  title: "Manage Subscription",
+                  link: "#",
+                  icon: "manage_accounts",
+                },
+              ]}
             />
-          ) : null}
-          {myPermission?.Create == 1 ? (
-            <SingleIconButton
-              icon1={
-                <GenCertificateIcon color={disbool2 ? "success" : "disabled"} />
-              }
-              Tooltip1={"Generate Certificate"}
-              h1={"Generate Certificate"}
-              disable1={!disbool2 && !disbool4}
-              funcTrigger1={() => {
-                console.log(CId[0]);
-                let data = CollectionDetails?.filter(
-                  (item) => item?.SchemeRegId === CId[0]
-                )[0];
-                if (data?.CertificateStatus == "Certificate Generated") {
-                  setalert(true);
-                  setwarning("Certificate already generated");
-                } else {
-                  navigate("/superuser/generatecertificate", {
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              flexWrap: "wrap",
+            }}
+          >
+            {myPermission?.ViewPage == 1 ? (
+              <SingleIconButton
+                icon1={
+                  <WorkspacePremium color={disbool2 ? "success" : "disabled"} />
+                }
+                Tooltip1={"View Certificate"}
+                h1={"View Certificate"}
+                disable1={!disbool2 && !disbool4}
+                funcTrigger1={() => {
+                  console.log(CId[0]);
+
+                  navigate("/superuser/viewcertificate", {
                     state: { SchemeRegId: CId[0] },
                   });
-                }
-              }}
-              mt1={1}
-              textcolor1={disbool2 ? "green" : "grey"}
-            />
-          ) : null}
-        </Box>
-      </Grid>
-      <Grid item xs={12} sm={12} md={12} lg={12}>
-        <Divider />
-      </Grid>
-      {alert ? (
-        <Grid item md={12} sm={12} xs={12} lg={12} mt={2}>
-          {" "}
-          <Box display={"flex"} justifyContent={"space-between"}>
-            <Stack sx={{ width: "100%" }} spacing={2}>
-              <Alert
-                severity="error"
-                onClose={() => {
-                  setalert(false);
                 }}
-              >
-                <AlertTitle>Warning</AlertTitle>
-                {warning}
-              </Alert>
-            </Stack>
+                textcolor1={disbool2 ? "green" : "grey"}
+                mb={-1}
+              />
+            ) : null}
+            {myPermission?.Create == 1 ? (
+              <SingleIconButton
+                icon1={
+                  <GenCertificateIcon
+                    color={disbool2 ? "success" : "disabled"}
+                  />
+                }
+                Tooltip1={"Generate Certificate"}
+                h1={"Generate Certificate"}
+                disable1={!disbool2 && !disbool4}
+                funcTrigger1={() => {
+                  console.log(CId[0]);
+                  let data = CollectionDetails?.filter(
+                    (item) => item?.SchemeRegId === CId[0]
+                  )[0];
+                  if (data?.CertificateStatus == "Certificate Generated") {
+                    setalert(true);
+                    setwarning("Certificate already generated");
+                  } else {
+                    navigate("/superuser/generatecertificate", {
+                      state: { SchemeRegId: CId[0] },
+                    });
+                  }
+                }}
+                mt1={1}
+                textcolor1={disbool2 ? "green" : "grey"}
+              />
+            ) : null}
           </Box>
         </Grid>
-      ) : null}
-      {userInfo?.details?.Utype === 1 && myPermission?.Edit == 1 ? (
-        <>
-          <Grid
-            item
-            xs={12}
-            sm={6}
-            lg={2.4}
-            md={4}
-            mt={1}
-            display={"flex"}
-            justifyContent={"space-between"}
-            flexWrap={"wrap"}
-          >
-            <IconOnOffButton
-              icon1={
-                <CheckCircleOutlineOutlinedIcon
-                  fontSize="medium"
-                  color={disbool4 || disbool2 ? "disabled" : "success"}
-                />
-              }
-              Tooltip1={"Activate Maturity"}
-              textcolor1={disbool4 || disbool2 ? "grey" : "#1b5e20"}
-              h1={"Activate Maturity"}
-              disable1={disbool4 || disbool2}
-              funcTrigger1={ApprovedMaturityStatusHandler}
-            />
+        <Grid item xs={12} sm={12} md={12} lg={12}>
+          <Divider />
+        </Grid>
+        {alert ? (
+          <Grid item md={12} sm={12} xs={12} lg={12} mt={2}>
+            {" "}
+            <Box display={"flex"} justifyContent={"space-between"}>
+              <Stack sx={{ width: "100%" }} spacing={2}>
+                <Alert
+                  severity="error"
+                  onClose={() => {
+                    setalert(false);
+                  }}
+                >
+                  <AlertTitle>Warning</AlertTitle>
+                  {warning}
+                </Alert>
+              </Stack>
+            </Box>
           </Grid>
-          <Grid
-            item
-            xs={12}
-            sm={6}
-            lg={2.5}
-            md={4}
-            mt={2}
-            display={"flex"}
-            justifyContent={"space-between"}
-            flexWrap={"wrap"}
-          >
-            <ReusableDialogue
-              h1={"Deactivate Maturity"}
-              textcolor={
-                disbool || disbool4 || disbool2 || disbool3 ? "grey" : "#c62828"
-              }
-              icon={
-                <CancelOutlinedIcon
-                  fontSize="medium"
-                  color={
-                    disbool || disbool4 || disbool2 || disbool3
-                      ? "disabled"
-                      : "error"
-                  }
-                />
-              }
-              title={"Confirm"}
-              reason={"Mention the reason below"}
-              b1={"submit"}
-              b2={"cancel"}
-              handleClickOpen={() => {
-                setOpenPrompt1(true);
-              }}
-              handleClose={() => {
-                setOpenPrompt1(false);
-              }}
-              open={openPrompt1}
-              setopen={setOpenPrompt1}
-              disabledId={disbool || disbool4 || disbool2 || disbool3}
-              TooltipMsg={"InActive Maturity Status"}
-              state={comment}
-              setState={setComment}
-              TextFieldName={"Comment"}
-              OnSubmit={RejectMaturityStatus}
-            />
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            sm={6}
-            lg={2.2}
-            md={4}
-            mt={1}
-            display={"flex"}
-            justifyContent={"space-between"}
-            flexWrap={"wrap"}
-          >
-            <IconOnOffButton
-              icon1={
-                <VerifiedIcon
-                  fontSize="medium"
-                  color={
-                    disbool4 || disbool2 || disbool3 ? "disabled" : "success"
-                  }
-                />
-              }
-              Tooltip1={"Activate Bonus"}
-              h1={"Activate Bonus"}
-              textcolor1={disbool4 || disbool2 || disbool3 ? "grey" : "#1b5e20"}
-              disable1={disbool4 || disbool2 || disbool3}
-              funcTrigger1={ApprovedBonusStatusHandler}
-            />
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            sm={6}
-            lg={2.4}
-            md={4}
-            mt={2}
-            display={"flex"}
-            justifyContent={"space-between"}
-            flexWrap={"wrap"}
-          >
-            <ReusableDialogue
-              h1={"Deactivate Bonus"}
-              textcolor={
-                disbool || disbool4 || disbool2 || disbool3 ? "grey" : "#c62828"
-              }
-              icon={
-                <BackspaceIcon
-                  fontSize="medium"
-                  color={
-                    disbool || disbool4 || disbool2 || disbool3
-                      ? "disabled"
-                      : "error"
-                  }
-                />
-              }
-              title={"Confirm"}
-              reason={"Mention the reason below"}
-              b1={"submit"}
-              b2={"cancel"}
-              handleClickOpen={() => {
-                setOpenPrompt2(true);
-              }}
-              handleClose={() => {
-                setOpenPrompt2(false);
-              }}
-              open={openPrompt2}
-              setopen={setOpenPrompt2}
-              state={comment}
-              setState={setComment}
-              TextFieldName={"Comment"}
-              disabledId={disbool || disbool4 || disbool2 || disbool3}
-              TooltipMsg={"InActive Bonus Status"}
-              OnSubmit={RejectBonusStatus}
-            />
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            sm={6}
-            lg={2.4}
-            md={4}
-            mt={1}
-            display={"flex"}
-            justifyContent={"space-between"}
-            flexWrap={"wrap"}
-          >
-            <IconOnOffButton
-              icon1={
-                <CheckCircleOutlineOutlinedIcon
-                  fontSize="medium"
-                  color={
-                    disbool || disbool4 || disbool2 || disbool3
-                      ? "disabled"
-                      : "success"
-                  }
-                />
-              }
-              textcolor1={
-                disbool || disbool4 || disbool2 || disbool3 ? "grey" : "#1b5e20"
-              }
-              Tooltip1={"Matured Account"}
-              h1={"Matured A/C."}
-              disable1={disbool || disbool4 || disbool2 || disbool3}
-              funcTrigger1={OnMaturedFunc}
-            />
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            sm={6}
-            lg={2.4}
-            md={4}
-            mt={1}
-            display={"flex"}
-            justifyContent={"space-between"}
-            flexWrap={"wrap"}
-          >
-            <ReusableDialogue
-              h1={" Premature A/C."}
-              icon={
-                <BackspaceIcon
-                  fontSize="medium"
-                  color={
-                    disbool || disbool4 || disbool2 || disbool3
-                      ? "disabled"
-                      : "error"
-                  }
-                />
-              }
-              textcolor={
-                disbool || disbool4 || disbool2 || disbool3 ? "grey" : "#c62828"
-              }
-              title={"Confirm"}
-              reason={"Mention the reason below"}
-              b1={"submit"}
-              b2={"cancel"}
-              handleClickOpen={() => {
-                setOpenPrompt3(true);
-              }}
-              handleClose={() => {
-                setOpenPrompt3(false);
-              }}
-              open={openPrompt3}
-              setopen={setOpenPrompt3}
-              state={comment}
-              setState={setComment}
-              TextFieldName={"Comment"}
-              disabledId={disbool || disbool4 || disbool2 || disbool3}
-              TooltipMsg={"Premature Account"}
-              OnSubmit={OnPreMaturedFunc}
-            />
-          </Grid>
-        </>
-      ) : null}
-      <Grid
-        item
-        lg={2.2}
-        md={4}
-        sm={4}
-        xs={12}
-        mt={2}
-        justifyContent={"flex-start"}
-      >
-        <FormGroup>
-          <FormControlLabel
-            label="Time to Mature"
-            control={
-              <Checkbox
-                onChange={() => {
-                  setChekedMatures(!checkedMatured);
-                }}
-              />
-            }
-            sx={{ color: "#000000", mt: 0.7 }}
-          />
-        </FormGroup>
-      </Grid>
-      <Grid item lg={2.2} md={4} sm={4} xs={12} mt={1.9}>
-        <FormGroup>
-          <FormControlLabel
-            label="Due Payments"
-            control={
-              <Checkbox
-                onChange={() => {
-                  setChekedDues(!checkedDues);
-                }}
-              />
-            }
-            sx={{ color: "#000000", mt: 0.7 }}
-          />
-        </FormGroup>
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        sm={4}
-        lg={1.6}
-        md={4}
-        justifyContent={"center"}
-        mt={1}
-      >
-        <IconOnOffButton
-          h1={"Filter Out"}
-          Tooltip1={"Filter Out"}
-          icon1={<FilterAltOffIcon fontSize="small" />}
-          funcTrigger1={() => {
-            setCId([]);
-            setFilters({
-              MaturityStatus: "",
-              BonusStatus: "",
-            });
-          }}
-        />
-      </Grid>
-      <Grid
-        item
-        sm={5.5}
-        xs={12}
-        md={5}
-        lg={1.6}
-        mt={2.5}
-        display={"flex"}
-        justifyContent={"flex-end"}
-        flexWrap={"wrap"}
-        mr={3}
-      >
-        <ReusableDropDown4
-          setState={setFilters}
-          state={Filters}
-          label={"Maturity Status"}
-          data={[
-            { value: "Inactive", MaturityStatus: 0 },
-            { value: "Active", MaturityStatus: 1 },
-            { value: "PreMatured", MaturityStatus: 2 },
-            { value: "Matured", MaturityStatus: 3 },
-          ]}
-          id={"arial_status"}
-          disabled={false}
-          ObjectKey={["value"]}
-          Field={Filters?.MaturityStatus}
-          uniquekey={"MaturityStatus"}
-          deselectvalue={true}
-          onChange={FilterHandler}
-        />
-      </Grid>
-      <Grid
-        item
-        sm={5.5}
-        xs={12}
-        md={5}
-        lg={1.6}
-        mt={2.5}
-        display={"flex"}
-        justifyContent={"flex-end"}
-        flexWrap={"wrap"}
-      >
-        <ReusableDropDown4
-          setState={setFilters}
-          state={Filters}
-          label={"Bonus Status"}
-          data={[
-            { value: "Active", BonusStatus: 1 },
-            { value: "InActive", BonusStatus: 0 },
-          ]}
-          id={"arial_bonus_status"}
-          disabled={false}
-          ObjectKey={["value"]}
-          Field={Filters?.BonusStatus}
-          uniquekey={"BonusStatus"}
-          deselectvalue={true}
-          onChange={FilterHandler}
-        />
-      </Grid>
-      <Grid item sm={12} xs={12} md={12} mt={1}>
-        <ReusableDataTable
-          uniqueid={"SchemeRegId"}
-          columns={columns}
-          rows={CollectionDetails}
-          state={CId}
-          setState={setCId}
-          RedMark={checkedMatured || checkedDues}
-          isloading={isloading23}
-        />
-        {Pop === null ? null : (
+        ) : null}
+        {userInfo?.details?.Utype === 1 && myPermission?.Edit == 1 ? (
           <>
-            <Popover
-              id="mouse-over-popover"
-              sx={{
-                pointerEvents: "none",
-              }}
-              open={open}
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              onClose={handlePopoverClose}
-              disableRestoreFocus
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              lg={2.4}
+              md={4}
+              mt={1}
+              display={"flex"}
+              justifyContent={"space-between"}
+              flexWrap={"wrap"}
             >
-              <Typography sx={{ p: 1 }}>{Pop}</Typography>
-            </Popover>
+              <IconOnOffButton
+                icon1={
+                  <CheckCircleOutlineOutlinedIcon
+                    fontSize="medium"
+                    color={disbool4 || disbool2 ? "disabled" : "success"}
+                  />
+                }
+                Tooltip1={"Activate Maturity"}
+                textcolor1={disbool4 || disbool2 ? "grey" : "#1b5e20"}
+                h1={"Activate Maturity"}
+                disable1={disbool4 || disbool2}
+                funcTrigger1={ApprovedMaturityStatusHandler}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              lg={2.5}
+              md={4}
+              mt={2}
+              display={"flex"}
+              justifyContent={"space-between"}
+              flexWrap={"wrap"}
+            >
+              <ReusableDialogue
+                h1={"Deactivate Maturity"}
+                textcolor={
+                  disbool || disbool4 || disbool2 || disbool3
+                    ? "grey"
+                    : "#c62828"
+                }
+                icon={
+                  <CancelOutlinedIcon
+                    fontSize="medium"
+                    color={
+                      disbool || disbool4 || disbool2 || disbool3
+                        ? "disabled"
+                        : "error"
+                    }
+                  />
+                }
+                title={"Confirm"}
+                reason={"Mention the reason below"}
+                b1={"submit"}
+                b2={"cancel"}
+                handleClickOpen={() => {
+                  setOpenPrompt1(true);
+                }}
+                handleClose={() => {
+                  setOpenPrompt1(false);
+                }}
+                open={openPrompt1}
+                setopen={setOpenPrompt1}
+                disabledId={disbool || disbool4 || disbool2 || disbool3}
+                TooltipMsg={"InActive Maturity Status"}
+                state={comment}
+                setState={setComment}
+                TextFieldName={"Comment"}
+                OnSubmit={RejectMaturityStatus}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              lg={2.2}
+              md={4}
+              mt={1}
+              display={"flex"}
+              justifyContent={"space-between"}
+              flexWrap={"wrap"}
+            >
+              <IconOnOffButton
+                icon1={
+                  <VerifiedIcon
+                    fontSize="medium"
+                    color={
+                      disbool4 || disbool2 || disbool3 ? "disabled" : "success"
+                    }
+                  />
+                }
+                Tooltip1={"Activate Bonus"}
+                h1={"Activate Bonus"}
+                textcolor1={
+                  disbool4 || disbool2 || disbool3 ? "grey" : "#1b5e20"
+                }
+                disable1={disbool4 || disbool2 || disbool3}
+                funcTrigger1={ApprovedBonusStatusHandler}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              lg={2.4}
+              md={4}
+              mt={2}
+              display={"flex"}
+              justifyContent={"space-between"}
+              flexWrap={"wrap"}
+            >
+              <ReusableDialogue
+                h1={"Deactivate Bonus"}
+                textcolor={
+                  disbool || disbool4 || disbool2 || disbool3
+                    ? "grey"
+                    : "#c62828"
+                }
+                icon={
+                  <BackspaceIcon
+                    fontSize="medium"
+                    color={
+                      disbool || disbool4 || disbool2 || disbool3
+                        ? "disabled"
+                        : "error"
+                    }
+                  />
+                }
+                title={"Confirm"}
+                reason={"Mention the reason below"}
+                b1={"submit"}
+                b2={"cancel"}
+                handleClickOpen={() => {
+                  setOpenPrompt2(true);
+                }}
+                handleClose={() => {
+                  setOpenPrompt2(false);
+                }}
+                open={openPrompt2}
+                setopen={setOpenPrompt2}
+                state={comment}
+                setState={setComment}
+                TextFieldName={"Comment"}
+                disabledId={disbool || disbool4 || disbool2 || disbool3}
+                TooltipMsg={"InActive Bonus Status"}
+                OnSubmit={RejectBonusStatus}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              lg={2.4}
+              md={4}
+              mt={1}
+              display={"flex"}
+              justifyContent={"space-between"}
+              flexWrap={"wrap"}
+            >
+              <IconOnOffButton
+                icon1={
+                  <CheckCircleOutlineOutlinedIcon
+                    fontSize="medium"
+                    color={
+                      disbool || disbool4 || disbool2 || disbool3
+                        ? "disabled"
+                        : "success"
+                    }
+                  />
+                }
+                textcolor1={
+                  disbool || disbool4 || disbool2 || disbool3
+                    ? "grey"
+                    : "#1b5e20"
+                }
+                Tooltip1={"Matured Account"}
+                h1={"Matured A/C."}
+                disable1={disbool || disbool4 || disbool2 || disbool3}
+                funcTrigger1={OnMaturedFunc}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              lg={2.4}
+              md={4}
+              mt={1}
+              display={"flex"}
+              justifyContent={"space-between"}
+              flexWrap={"wrap"}
+            >
+              <ReusableDialogue
+                h1={" Premature A/C."}
+                icon={
+                  <BackspaceIcon
+                    fontSize="medium"
+                    color={
+                      disbool || disbool4 || disbool2 || disbool3
+                        ? "disabled"
+                        : "error"
+                    }
+                  />
+                }
+                textcolor={
+                  disbool || disbool4 || disbool2 || disbool3
+                    ? "grey"
+                    : "#c62828"
+                }
+                title={"Confirm"}
+                reason={"Mention the reason below"}
+                b1={"submit"}
+                b2={"cancel"}
+                handleClickOpen={() => {
+                  setOpenPrompt3(true);
+                }}
+                handleClose={() => {
+                  setOpenPrompt3(false);
+                }}
+                open={openPrompt3}
+                setopen={setOpenPrompt3}
+                state={comment}
+                setState={setComment}
+                TextFieldName={"Comment"}
+                disabledId={disbool || disbool4 || disbool2 || disbool3}
+                TooltipMsg={"Premature Account"}
+                OnSubmit={OnPreMaturedFunc}
+              />
+            </Grid>
           </>
-        )}
+        ) : null}
+        <Grid
+          item
+          lg={2.2}
+          md={4}
+          sm={4}
+          xs={12}
+          mt={2}
+          justifyContent={"flex-start"}
+        >
+          <FormGroup>
+            <FormControlLabel
+              label="Time to Mature"
+              control={
+                <Checkbox
+                  onChange={() => {
+                    setChekedMatures(!checkedMatured);
+                  }}
+                />
+              }
+              sx={{ color: "#000000", mt: 0.7 }}
+            />
+          </FormGroup>
+        </Grid>
+        <Grid item lg={2.2} md={4} sm={4} xs={12} mt={1.9}>
+          <FormGroup>
+            <FormControlLabel
+              label="Due Payments"
+              control={
+                <Checkbox
+                  onChange={() => {
+                    setChekedDues(!checkedDues);
+                  }}
+                />
+              }
+              sx={{ color: "#000000", mt: 0.7 }}
+            />
+          </FormGroup>
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          sm={4}
+          lg={1.6}
+          md={4}
+          justifyContent={"center"}
+          mt={1}
+        >
+          <IconOnOffButton
+            h1={"Filter Out"}
+            Tooltip1={"Filter Out"}
+            icon1={<FilterAltOffIcon fontSize="small" />}
+            funcTrigger1={() => {
+              setCId([]);
+              setFilters({
+                MaturityStatus: "",
+                BonusStatus: "",
+              });
+            }}
+          />
+        </Grid>
+        <Grid
+          item
+          sm={5.5}
+          xs={12}
+          md={5}
+          lg={1.6}
+          mt={2.5}
+          display={"flex"}
+          justifyContent={"flex-end"}
+          flexWrap={"wrap"}
+          mr={3}
+        >
+          <ReusableDropDown4
+            setState={setFilters}
+            state={Filters}
+            label={"Maturity Status"}
+            data={[
+              { value: "Inactive", MaturityStatus: 0 },
+              { value: "Active", MaturityStatus: 1 },
+              { value: "PreMatured", MaturityStatus: 2 },
+              { value: "Matured", MaturityStatus: 3 },
+            ]}
+            id={"arial_status"}
+            disabled={false}
+            ObjectKey={["value"]}
+            Field={Filters?.MaturityStatus}
+            uniquekey={"MaturityStatus"}
+            deselectvalue={true}
+            onChange={FilterHandler}
+          />
+        </Grid>
+        <Grid
+          item
+          sm={5.5}
+          xs={12}
+          md={5}
+          lg={1.6}
+          mt={2.5}
+          display={"flex"}
+          justifyContent={"flex-end"}
+          flexWrap={"wrap"}
+        >
+          <ReusableDropDown4
+            setState={setFilters}
+            state={Filters}
+            label={"Bonus Status"}
+            data={[
+              { value: "Active", BonusStatus: 1 },
+              { value: "InActive", BonusStatus: 0 },
+            ]}
+            id={"arial_bonus_status"}
+            disabled={false}
+            ObjectKey={["value"]}
+            Field={Filters?.BonusStatus}
+            uniquekey={"BonusStatus"}
+            deselectvalue={true}
+            onChange={FilterHandler}
+          />
+        </Grid>
+        <Grid item sm={12} xs={12} md={12} mt={1}>
+          <ReusableDataTable
+            uniqueid={"SchemeRegId"}
+            columns={columns}
+            rows={CollectionDetails}
+            state={CId}
+            setState={setCId}
+            RedMark={checkedMatured || checkedDues}
+            isloading={isloading23}
+            height={"90vh"}
+          />
+          {Pop === null ? null : (
+            <>
+              <Popover
+                id="mouse-over-popover"
+                sx={{
+                  pointerEvents: "none",
+                }}
+                open={open}
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "left",
+                }}
+                onClose={handlePopoverClose}
+                disableRestoreFocus
+              >
+                <Typography sx={{ p: 1 }}>{Pop}</Typography>
+              </Popover>
+            </>
+          )}
+        </Grid>
       </Grid>
-    </Grid>
+    </ThemeProvider>
   );
 }
 

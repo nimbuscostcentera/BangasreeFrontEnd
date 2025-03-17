@@ -2,7 +2,14 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-import { Typography, Divider, Alert, AlertTitle, Stack, IconButton } from "@mui/material";
+import {
+  Typography,
+  Divider,
+  Alert,
+  AlertTitle,
+  Stack,
+  IconButton,
+} from "@mui/material";
 import { GRID_CHECKBOX_SELECTION_COL_DEF } from "@mui/x-data-grid";
 import { Box } from "@mui/system";
 import Grid from "@mui/system/Unstable_Grid/Grid";
@@ -16,7 +23,7 @@ import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import HistoryIcon  from "@mui/icons-material/History";
+import HistoryIcon from "@mui/icons-material/History";
 import EditIcon from "@mui/icons-material/Edit";
 
 import { SchemeList } from "../../Slice/Scheme/SchemeListSlice";
@@ -46,7 +53,7 @@ export default function SchemeManagement() {
   const { global } = UseFetchLogger();
 
   //Scheme List for Table
-  const { isloading18, Schemes,isSuccess18 } = useSelector(
+  const { isloading18, Schemes, isSuccess18 } = useSelector(
     (state) => state.SchemeList
   );
 
@@ -246,7 +253,6 @@ export default function SchemeManagement() {
           },
         ];
 
-
   //edit scheme
   function ViewEditDetailsButton() {
     if (SUUid.length > 1) {
@@ -269,7 +275,7 @@ export default function SchemeManagement() {
       setWarning("Select 1 record for edit or delete.");
       setalert(true);
     } else {
-      dispatch(DeleteSchemefunc({ SUUid: SUUid[0],...global }));
+      dispatch(DeleteSchemefunc({ SUUid: SUUid[0], ...global }));
     }
   }
 
@@ -282,7 +288,7 @@ export default function SchemeManagement() {
   };
 
   return (
-    <Grid container ml={2} mt={2}>
+    <Grid container ml={2} mt={2} maxWidth={"xxl"}>
       <ToastContainer autoClose={5000} />
       <Grid
         item
@@ -476,7 +482,7 @@ export default function SchemeManagement() {
           state={SUUid}
           setState={setSUUid}
           isloading={isloading18}
-          height={400}
+          height={"68vh"}
         />
       </Grid>
     </Grid>

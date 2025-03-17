@@ -34,10 +34,7 @@ import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutli
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import PreviewIcon from "@mui/icons-material/Preview";
 
-
-import {
-  LotListfunc,
-} from "../../Slice/Collection/LotListSlice";
+import { LotListfunc } from "../../Slice/Collection/LotListSlice";
 import {
   PaymentStatusUpdate,
   ClearState30,
@@ -66,8 +63,9 @@ export default function CollectionSummary() {
   const { global } = UseFetchLogger();
   const { AgentCode } = useFetchAcode({}, []);
   //Lot List for Table
-  const { isLotLoading, LotList,isLotSuccess } =
-    useSelector((state) => state.alllots);
+  const { isLotLoading, LotList, isLotSuccess } = useSelector(
+    (state) => state.alllots
+  );
   const { isloading30, Resp30, error30, isError30, isSuccess30 } = useSelector(
     (state) => state.PayStatusUpdate
   );
@@ -272,7 +270,7 @@ export default function CollectionSummary() {
     }
   };
   return (
-    <Grid container ml={2} mt={2} columnGap={2}>
+    <Grid container ml={1} mt={2} columnGap={2} maxWidth={"xxl"}>
       <ToastContainer autoClose={8000} />
       <Grid
         item
@@ -500,7 +498,7 @@ export default function CollectionSummary() {
           state={LotID}
           setState={setLotID}
           isloading={isLotLoading}
-          height={400}
+          height={"70vh"}
           width="98%"
         />
       </Grid>

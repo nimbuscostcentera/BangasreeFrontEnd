@@ -1,8 +1,7 @@
-import React from "react";
-import moment from "moment";
 import { useEffect, useState } from "react";
+import moment from "moment";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { Box, Typography } from "@mui/material";
 import "react-toastify/dist/ReactToastify.css";
@@ -24,7 +23,6 @@ import LineChart from "../../Components/Global/LineChart";
 import ReusableDropDown4 from "../../Components/Global/ReusableDropDown4";
 
 import black from "../../assets/black.jpg";
-import PieChart from "../../Components/Global/PieChart";
 import { ClearToaster } from "../../Slice/Auth/AuthSlice";
 import useFetchCards from "../../Apps/CustomHook/UseFetchCards";
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
@@ -33,7 +31,6 @@ import useFetchSubscription from "../../Apps/CustomHook/UseFetchSubscription";
 import useFetchAgentAreaColl from "../../Apps/CustomHook/useFetchAgentAreaCol";
 import useFetchAgentYearlyReport from "../../Apps/CustomHook/useFetchAgentYearlyReport";
 import useFetchDueLeads from "../../Apps/CustomHook/useFetchDueLeads";
-import { Collections } from "@mui/icons-material";
 
 function PerformanceReport() {
   const dispatch = useDispatch();
@@ -73,9 +70,7 @@ function PerformanceReport() {
   let TotalLeads = CardData?.TotalLeads;
   let TotalCollection = CardData?.TotalCollection;
   let Commission = CardData?.Commission;
-  let totalcom = Math.floor(
-    ((TotalCollection && TotalCollection) * Commission) / 100
-  );
+  let totalcom = (((TotalCollection && TotalCollection) * Commission) / 100).toFixed(2);
 
   useEffect(() => {
     //For Agent
@@ -158,50 +153,7 @@ function PerformanceReport() {
         />
       </Grid>
       {/**cards */}
-      <Grid
-        item
-        lg={2.2}
-        md={2.6}
-        sm={5.5}
-        xs={12}
-        p={2}
-        sx={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${black})`,
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundSize: "cover",
-          borderRadius: 3,
-          boxShadow:
-            "0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.1)",
-        }}
-        onClick={() => {
-          if (CustPermission?.ViewPage == 1) {
-            navigate("/superuser/customermanagement");
-          }
-        }}
-      >
-        {!loading ? (
-          <StatBox
-            title={TotalCust}
-            subtitle="Total Customer"
-            // progress="0.75"
-            // increase="+14%"
-            stcolor={"#ffffff"}
-            icon={
-              <PersonIcon
-                sx={{
-                  color: "whitesmoke",
-                  fontSize: "35px",
-                }}
-              />
-            }
-          />
-        ) : (
-          <Box my={3}>
-            <Loader />
-          </Box>
-        )}
-      </Grid>
+      {/**Leads */}
       <Grid
         item
         lg={2.2}
@@ -238,6 +190,58 @@ function PerformanceReport() {
           </Box>
         )}
       </Grid>
+      {/**Customer */}
+      <Grid
+        item
+        lg={2.2}
+        md={2.6}
+        sm={5.5}
+        xs={12}
+        p={2}
+        sx={{
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${black})`,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundSize: "cover",
+          borderRadius: 3,
+          boxShadow:
+            "0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.1)",
+        }}
+        onClick={() => {
+          if (CustPermission?.ViewPage == 1) {
+            navigate("/superuser/customermanagement", {
+              state: {
+                AgentCode: userInfo?.details?.AgentCode,
+                Status: 1,
+                BranchId: userInfo?.details?.BranchId,
+              },
+            });
+          }
+        }}
+      >
+        {!loading ? (
+          <StatBox
+            title={TotalCust}
+            subtitle="Total Customer"
+            // progress="0.75"
+            // increase="+14%"
+            stcolor={"#ffffff"}
+            icon={
+              <PersonIcon
+                sx={{
+                  color: "whitesmoke",
+                  fontSize: "35px",
+                }}
+              />
+            }
+          />
+        ) : (
+          <Box my={3}>
+            <Loader />
+          </Box>
+        )}
+      </Grid>
+      {/**Collection */}
       <Grid
         item
         lg={2.2}
@@ -255,13 +259,21 @@ function PerformanceReport() {
         }}
         onClick={() => {
           if (Collectionpermission?.ViewPage == 1) {
-            navigate("/executive/managecollections");
+            navigate("/executive/managecollections", {
+              state: {
+                AgentCode: userInfo?.details?.AgentCode,
+                BranchId: userInfo?.details?.BranchId,
+                StartDate: moment().format("YYYY-MM-DD"),
+                EndDate: moment().format("YYYY-MM-DD"),
+                PayType:2,
+              },
+            });
           }
         }}
       >
         {!loading ? (
           <StatBox
-            title={" ₹ " + `${TotalCollection ? TotalCollection : 0}` + "/-"}
+            title={" ₹ " + `${TotalCollection ? Math.floor(TotalCollection) : 0}` + "/-"}
             subtitle="Total Collections"
             // progress="0.50"
             // increase="+21%"
@@ -276,6 +288,7 @@ function PerformanceReport() {
           </Box>
         )}
       </Grid>
+      {/**Commission Percentage*/}
       <Grid
         item
         lg={2.2}
@@ -296,7 +309,7 @@ function PerformanceReport() {
             userInfo?.details?.Utype == 2 &&
             Collectionpermission?.ViewPage == 1
           ) {
-            navigate("/executive/managecollections");
+            navigate("/executive/profile");
           }
         }}
       >
@@ -313,6 +326,7 @@ function PerformanceReport() {
           </Box>
         )}
       </Grid>
+      {/** today Commission */}
       <Grid
         item
         lg={2.2}
@@ -334,13 +348,20 @@ function PerformanceReport() {
             userInfo?.details?.Utype == 2 &&
             Collectionpermission?.ViewPage == 1
           ) {
-            navigate("/executive/managecollections");
+            navigate("/executive/managecollections", {
+              state: {
+                AgentCode: userInfo?.details?.AgentCode,
+                BranchId: userInfo?.details?.BranchId,
+                StartDate: moment().format("YYYY-MM-DD"),
+                EndDate: moment().format("YYYY-MM-DD"),
+              },
+            });
           }
         }}
       >
         {!loading ? (
           <StatBox
-            title={`₹ ${totalcom} /-`}
+            title={`₹ ${Math.floor(totalcom)} /-`}
             subtitle="Commission(₹)"
             stcolor={"#fafafa"}
             icon={
@@ -476,14 +497,14 @@ function PerformanceReport() {
                     borderRadius="4px"
                     onClick={() => {
                       if (CustPermission?.Edit == 1) {
-                         navigate("/executive/collectionentry", {
-                           state: {
-                             CustUUid: i?.CustomerUUid,
-                             dueAmt: i?.dueAmt,
-                             ID: i?.SchemeRegId,
-                             CustomerName: i?.CustomerName,
-                           },
-                         });
+                        navigate("/executive/collectionentry", {
+                          state: {
+                            CustUUid: i?.CustomerUUid,
+                            dueAmt: i?.dueAmt,
+                            ID: i?.SchemeRegId,
+                            CustomerName: i?.CustomerName,
+                          },
+                        });
                       }
                     }}
                   >
@@ -564,7 +585,7 @@ function PerformanceReport() {
                     onClick={() => {
                       if (CustPermission?.Edit == 1) {
                         navigate("/executive/editleads", {
-                          state: { Leadid: i?.CustomerID},
+                          state: { Leadid: i?.CustomerID },
                         });
                       }
                     }}

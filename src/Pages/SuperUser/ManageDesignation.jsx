@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { DataGrid, GRID_CHECKBOX_SELECTION_COL_DEF } from "@mui/x-data-grid";
-import { Typography, TextField, Divider, IconButton, Box } from "@mui/material";
+import {TextField, Divider, IconButton, Box } from "@mui/material";
 import Grid from "@mui/system/Unstable_Grid";
 
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
@@ -21,7 +20,6 @@ import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
 import useFetchDesignation from "../../Apps/CustomHook/useFetchDesignation";
 
 export default function ManageDesignation() {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [designation, setdesignation] = useState({ Designation: "" });
 
@@ -59,7 +57,7 @@ export default function ManageDesignation() {
       ...GRID_CHECKBOX_SELECTION_COL_DEF,
       hideable: false,
     },
-    { field: "Did", headerName: "DID", width: 120 },
+    // { field: "Did", headerName: "DID", width: 120 },
     {
       field: "Designation",
       headerName: "Designation",
@@ -173,7 +171,7 @@ export default function ManageDesignation() {
           getRowId={(item) => {
             return item?.Did;
           }}
-          sx={{ height: 350, width: "100%" }}
+          sx={{ height: "68vh", width: "100%" }}
           checkboxSelection
         />
       </Grid>

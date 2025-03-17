@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
@@ -13,7 +13,6 @@ import {
   Typography,
 } from "@mui/material";
 import {
-  AddBoxOutlined as AddBoxOutlinedIcon,
   RestartAlt as RestartAltIcon,
   Edit as EditIcon,
   AddCircleOutline as AddCircleOutlineIcon,
@@ -32,7 +31,6 @@ import {
   addRateVsPurityFunc,
 } from "../../Slice/PurityVsRate/AddRateVsPuritySlice";
 
-import MockDataPurityRate from "../../dummy_data/MockDataPurityRate";
 import usefetchLogger from "../../Apps/CustomHook/UseFetchLogger";
 import useFetchPuritylist from "../../Apps/CustomHook/useFetchPurityList";
 import useFetchGoldRateList from "../../Apps/CustomHook/useFetchGoldRateList";
@@ -122,13 +120,13 @@ function PurityMetalRateManagement() {
 
   //column
   const Col = [
-    {
-      field: "ID",
-      headerName: "ID",
-      width: 80,
-      editable: true,
-      hideable: false,
-    },
+    // {
+    //   field: "ID",
+    //   headerName: "ID",
+    //   width: 80,
+    //   editable: true,
+    //   hideable: false,
+    // },
     {
       field: "PURITY",
       headerName: "Purity",
@@ -153,11 +151,7 @@ function PurityMetalRateManagement() {
       type: "selection",
       hideable: false,
       renderCell: (item) => {
-        return (
-          <>
-            {moment(item?.row?.CURRDATE).format("DD/MM/YYYY")}
-          </>
-        );
+        return <>{moment(item?.row?.CURRDATE).format("DD/MM/YYYY")}</>;
       },
     },
   ];
@@ -231,107 +225,6 @@ function PurityMetalRateManagement() {
       <Grid xs={12} xl={12}>
         <Divider />
       </Grid>
-      {/* <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-        <Grid container>
-          <Grid item sm={12} xs={12} md={12} lg={12} xl={12} mt={0} mr={1}>
-            <Typography
-              sx={{
-                color: "grey",
-                fontSize: "17px",
-                my: 1,
-                mr: 2,
-                textWrap: "nowrap",
-                textAlign: "center",
-              }}
-            >
-              {`Add Purity Here`}
-            </Typography>
-          </Grid>
-          <Grid item sm={5} xs={12} md={5} lg={5} xl={5} mt={1.5} mx={2}>
-            <TextField
-              required
-              name="PURITY"
-              label="Purity"
-              variant="outlined"
-              size="small"
-              type="number"
-              fullWidth
-              sx={{ mr: 1 }}
-              value={purity?.PURITY || ""}
-              onChange={PurityHandler}
-            />
-          </Grid>
-          <Grid item sm={5} xs={12} md={5} lg={5} xl={5} mt={1.5} mr={2} mx={2}>
-            <TextField
-              required
-              name="DESCRIPTION"
-              label="Description"
-              variant="outlined"
-              size="small"
-              type="text"
-              fullWidth
-              value={purity?.DESCRIPTION || ""}
-              onChange={PurityHandler}
-            />
-          </Grid>
-          <Grid
-            item
-            sm={6}
-            xs={6}
-            md={6}
-            lg={6}
-            xl={6}
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Tooltip title="Add Purity">
-              <span>
-                <IconButton
-                  size="large"
-                  aria-label="AddBoxIcon"
-                  type="submit"
-                  onClick={SavePurity}
-                  disabled={purity ? false : true}
-                >
-                  <AddBoxOutlinedIcon fontSize="large" />
-                </IconButton>
-              </span>
-            </Tooltip>
-          </Grid>
-          <Grid
-            item
-            sm={6}
-            xs={6}
-            md={6}
-            lg={6}
-            xl={6}
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Tooltip title="Reset">
-              <span>
-                <IconButton
-                  size="large"
-                  aria-label="AddBoxIcon"
-                  type="reset"
-                  onClick={() => {
-                    setPurity({ PURITY: null, DESCRIPTION: null });
-                  }}
-                >
-                  <RestartAltIcon fontSize="large" />
-                </IconButton>
-              </span>
-            </Tooltip>
-          </Grid>
-        </Grid>
-      </Grid> */}
-
       <Grid item sm={12} xs={12} md={12} lg={12} xl={12} mx={1}>
         <Typography
           variant="h5"
@@ -448,7 +341,7 @@ function PurityMetalRateManagement() {
           state={RateVsPurityData}
           uniqueid={"ID"}
           key={1}
-          height={"60vh"}
+          height={"67vh"}
           width="98%"
         />
       </Grid>

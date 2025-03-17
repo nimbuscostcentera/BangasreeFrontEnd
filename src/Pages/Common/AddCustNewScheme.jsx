@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -45,18 +45,12 @@ import IconOnOffButton from "../../Components/Global/IconOnOffButton";
 import OnOffButton from "../../Components/Global/OnOffButton";
 import Loader from "../../Components/Global/loader";
 
-import {
-  CustomerList,
-  ClearState6,
-} from "../../Slice/Customer/CustomerListSlice";
+import { CustomerList } from "../../Slice/Customer/CustomerListSlice";
 import {
   CustPBReturnFunc,
   ClearState60,
 } from "../../Slice/PassBook/CustPBReturnSlice";
-import {
-  SchemeByCustId,
-  ClearState27,
-} from "../../Slice/Scheme/SchemebyCustIdSlice";
+import { SchemeByCustId } from "../../Slice/Scheme/SchemebyCustIdSlice";
 import {
   CustAccDeletefunc,
   ClearState61,
@@ -146,15 +140,16 @@ function AddCustNewScheme() {
     (state) => state.MultiSchemeCust
   );
   //Selected customer Detail
-  const { isloading6, CustomerDetail, error6, isError6, isSuccess6 } =
-    useSelector((state) => state.CustomerList);
+  const { isloading6, CustomerDetail } = useSelector(
+    (state) => state.CustomerList
+  );
 
   //scheme List by Cust Id
-  const { isloading27, Resp27, isError27, error27, isSuccess27 } = useSelector(
+  const { isloading27, Resp27, isSuccess27 } = useSelector(
     (state) => state.SchemeListById
   );
   //agent Passbook list
-  const { isloadin49, isSuccess49, isError49, error49, Resp49 } = useSelector(
+  const { isloadin49, isSuccess49, Resp49 } = useSelector(
     (state) => state.agentPB
   );
   //assign Passbook to customer
@@ -178,7 +173,6 @@ function AddCustNewScheme() {
   useEffect(() => {
     if (isSuccess49 && !isloadin49) {
       let passbook = [...Resp49];
-      let len1 = passbook?.length;
       let arrayPB = [];
       passbook.map((item) => {
         arrayPB.push(item?.PassBookNo);
@@ -195,7 +189,7 @@ function AddCustNewScheme() {
     {
       field: "SCHEMETITLE",
       headerName: "Scheme Name",
-      width: 130,
+      width: 150,
       hideable: false,
     },
     {
@@ -212,9 +206,6 @@ function AddCustNewScheme() {
       type: "singleSelect",
       valueOptions: AgentPassbook,
       hideable: false,
-      ValueGetter: (i) => {
-        //console.log(i);
-      },
     },
     {
       field: "EMI",
@@ -474,11 +465,10 @@ function AddCustNewScheme() {
     setobj({ ...obj, [key]: value });
   };
   const Calculate = () => {
-    var duration, emi, regfees, bonus;
+    var duration, emi, bonus;
     if (obj && obj?.SUUid !== null && obj?.EMI != 0 && obj?.frequency != 0) {
       duration = mytabledata[0].Duration; //month
       emi = obj?.EMI;
-      regfees = mytabledata[0]?.Regfees;
       bonus = mytabledata[0]?.BONUS;
       var date = new moment();
       var finaldate = moment().add(duration, "months");
@@ -496,9 +486,9 @@ function AddCustNewScheme() {
       var BonusAmt = TotalEmi * (bonus / 100);
       var ReedemAmt = TotalEmi + BonusAmt;
       setCal({
-        ReedemAmt: (ReedemAmt||0).toFixed(2),
-        BonusAmt: (BonusAmt||0).toFixed(2),
-        TotalEmi:( TotalEmi||0).toFixed(2),
+        ReedemAmt: (ReedemAmt || 0).toFixed(2),
+        BonusAmt: (BonusAmt || 0).toFixed(2),
+        TotalEmi: (TotalEmi || 0).toFixed(2),
       });
       setbool(true);
     } else {
@@ -739,7 +729,11 @@ function AddCustNewScheme() {
       >
         <ReusableBreadcrumbs
           props={[
-            { title: "Home", link: global.Utype == 1 ? "/executive" : "/agent", icon: "home" },
+            {
+              title: "Home",
+              link: global.Utype == 1 ? "/executive" : "/agent",
+              icon: "home",
+            },
             {
               title: "Manage Customer",
               link:
@@ -1022,6 +1016,7 @@ function AddCustNewScheme() {
                     label="Relation"
                     fullWidth
                     variant="outlined"
+                    InputLabelProps={{ shrink: true }}
                     inputProps={{ maxLength: 25 }}
                     error={!check?.Relation}
                     onChange={(e) => {
@@ -1146,7 +1141,7 @@ function AddCustNewScheme() {
                   ) : null}
                 </Grid>
                 <Grid item xs={12} sm={12} md={5.7} lg={5.7} color={"black"}>
-                  Photo of Nominee's signature
+                  {"Photo of Nominee's signature"}
                   {/* <CameraComponent cameraKey="second" />
             <ImageDisplay cameraKey="second" /> */}
                   <Input
@@ -1167,23 +1162,30 @@ function AddCustNewScheme() {
                   sm={12}
                   md={12}
                   lg={12}
-                  justifyContent={"center"}
-                  mt={-1}
+                 sx={{
+                   display: "flex",
+                   justifyContent: "center",
+                   alignItems: "center",
+                 }}
                 >
-                  <OnOffButton
-                    no={"Assign"}
-                    type2={"submit"}
-                    functrigger2={OnSubmitHandler}
-                    theme2={"success"}
-                    disabled2={
+                  <Button
+                    type={"submit"}
+                    onClick={OnSubmitHandler}
+                    variant={"contained"}
+                    color="success"
+                    disabled={
+                      obj?.EMI !== "" &&
                       obj?.EMI !== 0 &&
                       obj?.EMI !== null &&
                       obj?.SUUid !== null &&
+                      obj?.frequency !== "" &&
                       obj?.frequency !== null
                         ? false
                         : true
                     }
-                  />
+                  >
+                    Assign
+                  </Button>
                 </Grid>
               </>
             ) : null}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -78,14 +78,14 @@ function ManagePassBook() {
   //auth detail
   const { global } = UseFetchLogger();
 
-  //Passbook stock
-  const { isloading43, isSuccess43, isError43, error43, Resp43 } = useSelector(
-    (state) => state.pbStock
-  );
-  //Passbook not assigned to any customer or agent
-  const { isloading55, isSuccess55, isError55, error55, Resp55 } = useSelector(
-    (state) => state.PBList
-  );
+  // //Passbook stock
+  // const { isloading43, isSuccess43, isError43, error43, Resp43 } = useSelector(
+  //   (state) => state.pbStock
+  // );
+  // //Passbook not assigned to any customer or agent
+  // const { isloading55, isSuccess55, isError55, error55, Resp55 } = useSelector(
+  //   (state) => state.PBList
+  // );
 
   //Passbook Generate
   const { isloading52, isSuccess52, isError52, error52, Resp52 } = useSelector(
@@ -104,15 +104,12 @@ function ManagePassBook() {
       Filter1?.BranchId !== "" &&
       Filter1?.BranchId !== null
     ) {
-      dispatch(AvailPassBookList({ ...global, BranchId: Filter1?.BranchId }))
+      dispatch(AvailPassBookList({ ...global, BranchId: Filter1?.BranchId })).unwrap()
         .then(async (res) => {
-          let passbookstock = res.payload;
-          if (passbookstock?.length !== 0 && passid?.length == 0) {
-            setpb(res.payload);
-          }
+          setpb(res);
         })
         .catch((error) => {
-          //console.log(error);
+          console.log(error);
         });
     }
   }, [isSuccess52, Filter1?.BranchId, isSuccess59]);

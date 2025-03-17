@@ -52,6 +52,7 @@ const CustomTheme = createTheme({
       mid: 695,
       md: 825,
       lg: 960,
+      l: 1060,
       xl: 1128,
       xxl: 1210,
       xxxl: 1345,
@@ -62,7 +63,12 @@ const CustomTheme = createTheme({
 
 export default function CustomerManagement() {
   const location = useLocation();
-  const { AgentCode="", BranchId="", AreaID=""} = location.state||{};
+  const {
+    AgentCode = "",
+    BranchId = "",
+    AreaID = "",
+    Status = "",
+  } = location.state || {};
   const navigate = useNavigate();
   const dispatch = useDispatch();
   //console.log("Customer");
@@ -74,12 +80,12 @@ export default function CustomerManagement() {
   });
   const [CustID, setCustID] = useState([]);
   const [Filters, setFilters] = useState({
-    Status: null,
+    Status: Status || null,
     startDate: "",
     endDate: "",
     AgentCode: AgentCode || "",
-    BranchId: BranchId||"",
-    AreaID: AreaID||"",
+    BranchId: BranchId || "",
+    AreaID: AreaID || "",
   });
 
   const handlePopoverOpen = (event, par) => {
@@ -321,7 +327,7 @@ export default function CustomerManagement() {
 
   return (
     <ThemeProvider theme={CustomTheme}>
-      <Grid container ml={3} mt={2} columnGap={1}>
+      <Grid container ml={3} mt={2} columnGap={1} maxWidth={"l"}>
         <ToastContainer autoClose={5000} />
         <Grid
           item
@@ -552,6 +558,7 @@ export default function CustomerManagement() {
             state={CustID}
             setState={setCustID}
             isloading={isloading6}
+            height={"90vh"}
           />
           {params?.Pop == null ? null : (
             <>

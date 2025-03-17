@@ -1,30 +1,26 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import {
   TextField,
   Button,
   Typography,
   Divider,
-  Input,
   FormHelperText,
   Modal,
   InputAdornment,
+  Grid,
 } from "@mui/material";
-import Grid from "@mui/material/Grid/Grid";
-import { Box, color } from "@mui/system";
+import { Box } from "@mui/system";
 
 import ReusableBreadcrumbs from "../../Components/Global/ReusableBreadcrumbs";
 import ReusableDropDown3 from "../../Components/Global/ReusableDropDown3";
 import ReusableDropDown4 from "../../Components/Global/ReusableDropDown4";
 
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
-import useFetchSchemeById from "../../Apps/CustomHook/useFetchSchemeById";
-import ValidateImage from "../../Apps/GlobalFunctions/ValidateImage";
 import MaxMinDate from "../../Apps/GlobalFunctions/MaxMinDate";
 
 import IconOnOffButton from "../../Components/Global/IconOnOffButton";
@@ -36,18 +32,20 @@ import EditIcon from "@mui/icons-material/Edit";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
-import PhnoValidation from "../../Apps/GlobalFunctions/PhnoValidation";
+// import PhnoValidation from "../../Apps/GlobalFunctions/PhnoValidation";
 import AdhaarValidation from "../../Apps/GlobalFunctions/AdhaarValidation";
 import PassportValidation from "../../Apps/GlobalFunctions/PassportValidation";
 import VoterCardValidation from "../../Apps/GlobalFunctions/VoterCardValidation";
 import DrivingLicenceValidation from "../../Apps/GlobalFunctions/DrivingLicenceValidation";
 import AlphabetOnly from "../../Apps/GlobalFunctions/AlphabetOnly";
+
+import useFetchSchemeById from "../../Apps/CustomHook/useFetchSchemeById";
+import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
+import useFetchScheme from "../../Apps/CustomHook/useFetchScheme";
 import {
   EditNomineeFunc,
   ClearState57,
 } from "../../Slice/Scheme/EditNomineeSlice";
-import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
-import useFetchScheme from "../../Apps/CustomHook/useFetchScheme";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
@@ -78,7 +76,6 @@ function EditSchemeReg() {
   const [Edit, setEdit] = useState(false);
   const [freq, setfreq] = useState([]);
   const [open, setOpen] = useState(false);
-  const [check, setCheck] = useState(true);
 
   const [EditPic, setEditPic] = useState({
     NomineeIdProofPhoto: null,
@@ -89,7 +86,7 @@ function EditSchemeReg() {
     Nomineename: true,
     Relation: true,
     NomineeIdProofNumber: true,
-    NomineePhone: true,
+    // NomineePhone: true,
   });
   const [obj, setobj] = useState({
     EMI: null,
@@ -99,16 +96,14 @@ function EditSchemeReg() {
     Relation: null,
     NomineeDOB: null,
     NomineeIdProofNumber: null,
-    NomineePhone: null,
+    // NomineePhone: null,
     NomineeIdProofType: null,
   });
+
   let datetime = moment().format("DD/MM/YYYY HH:mm:SS");
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   const { SchemeRegId, CustomerName, CustUUid } = location.state;
+
   const { isloading57, Resp57, error57, isError57, isSuccess57 } = useSelector(
     (state) => state.EditCustSchemeReg
   );
@@ -120,72 +115,19 @@ function EditSchemeReg() {
     [isSuccess57, Edit]
   );
   const { Scheme } = useFetchScheme({ Status: 1 });
-  //Edit msg of schemereg
-  useEffect(() => {
-    if (!isloading57 && isSuccess57) {
-      toast.success(`${Resp57}`, { positions: toast.POSITION.TOP_RIGHT });
-      setEdit(false);
-      setCheck(true);
-      dispatch(ClearState57());
-    }
-    if (isError57 && !isloading57) {
-      toast.error(`${error57}`, { positions: toast.POSITION.TOP_RIGHT });
-      dispatch(ClearState57());
-    }
-    if (isloading57) {
-      setOpen(true);
-    } else {
-      if (SchemeData?.ID == SchemeRegId) {
-        setOpen(false);
-        setobj({
-          EMI: SchemeData?.EMI,
-          frequency: SchemeData?.frequency,
-          SUUid: SchemeData?.SUUid,
-          Nomineename: SchemeData?.Nomineename,
-          Relation: SchemeData?.Relation,
-          NomineeDOB: SchemeData?.NomineeDOB,
-          NomineeIdProofNumber: SchemeData?.NomineeIdProofNumber,
-          NomineePhone: SchemeData?.NomineePhone,
-          NomineeIdProofType: SchemeData?.NomineeIdProofType,
-        });
-      } else {
-        setOpen(true);
-      }
-    }
-  }, [isError57, isSuccess57, isloading57, SchemeData, Edit]);
 
-  useEffect(() => {
-    var arr = [];
-    if (obj?.SUUid) {
-      var p = Scheme.filter((i) => i?.SUUid == obj?.SUUid);
-      if (p[0].Monthly == 1) {
-        arr.push({ frequency: "Monthly" });
-      }
-      if (p[0].Daily == 1) {
-        arr.push({ frequency: "Daily" });
-      }
-      if (p[0].Weekly == 1) {
-        arr.push({ frequency: "Weekly" });
-      }
-    }
-    setfreq(arr);
-  }, [obj?.SUUid]);
+  const { global } = UseFetchLogger();
 
   const nomAge = MaxMinDate(12);
-  const { global } = UseFetchLogger();
-  var e4 = document.getElementById("NomIdPic");
-  const [photovalmsg4, imgbool4] = ValidateImage(e4);
-  var e5 = document.getElementById("NomPic");
-  const [photovalmsg5, imgbool5] = ValidateImage(e5);
-  var e6 = document.getElementById("NomSign");
-  const [photovalmsg6, imgbool6] = ValidateImage(e6);
 
+  const handleClose = () => {
+    setOpen(false);
+  };
   const HandleChange = (e) => {
     var key = e.target.name;
     let value = e.target.value;
     console.log(key, value);
     setobj({ ...obj, [key]: value });
-    setCheck(false);
   };
 
   const IdProofValidation2 = (args) => {
@@ -205,30 +147,20 @@ function EditSchemeReg() {
   const SubmitHandler = (e) => {
     e.preventDefault();
     const final = Object.keys(obj).reduce((acc, key) => {
-      if (obj[key] !== "" && obj[key] !== null && obj[key] !== undefined) {
+      console.log(key, obj[key]);
+      if (obj[key] != "" && obj[key] != null && obj[key] != undefined && obj[key]!="0000-00-00") {
         acc[key] = obj[key];
       }
       return acc;
     }, {});
-
-    if (final?.NomineeIdProofNumber == undefined) {
-      dispatch(
-        EditNomineeFunc({
-          ...final,
-          ...global,
-          SchemeRegId: SchemeRegId,
-          NomineeIdProofNumber: SchemeData?.NomineeIdProofNumber,
-        })
-      );
-    } else {
-      dispatch(
-        EditNomineeFunc({
-          ...final,
-          ...global,
-          SchemeRegId: SchemeRegId,
-        })
-      );
-    }
+    console.log(final);
+    dispatch(
+      EditNomineeFunc({
+        ...final,
+        ...global,
+        SchemeRegId: SchemeRegId,
+      })
+    );
   };
 
   const HandleEditPic = (e) => {
@@ -238,25 +170,25 @@ function EditSchemeReg() {
     setEditPic({ ...EditPic, [key]: file });
   };
   const SubmitPic = () => {
-     const final = Object.keys(EditPic).reduce((acc, key) => {
-       if (
-         EditPic[key] !== "" &&
-         EditPic[key] !== null &&
-         EditPic[key] !== undefined
-       ) {
-         acc[key] = EditPic[key];
-       }
-       return acc;
-     }, {});
-   dispatch(
-     EditNomineeFunc({
-       ...final,
-       ...global,
-       SchemeRegId: SchemeRegId,
-       NomineeIdProofNumber: SchemeData?.NomineeIdProofNumber,
-     })
-   );
-}
+    const final = Object.keys(EditPic).reduce((acc, key) => {
+      if (
+        EditPic[key] !== "" &&
+        EditPic[key] !== null &&
+        EditPic[key] !== undefined
+      ) {
+        acc[key] = EditPic[key];
+      }
+      return acc;
+    }, {});
+    dispatch(
+      EditNomineeFunc({
+        ...final,
+        ...global,
+        SchemeRegId: SchemeRegId,
+        NomineeIdProofNumber: SchemeData?.NomineeIdProofNumber,
+      })
+    );
+  };
   const getMaxLengthForIDProof = (idProofType) => {
     switch (idProofType) {
       case "Aadhaar Card":
@@ -280,7 +212,6 @@ function EditSchemeReg() {
     } else {
       setobj({ ...obj, NomineeIdProofType: value });
     }
-    setCheck(false);
   };
 
   const ManageFrequency = (e) => {
@@ -316,11 +247,66 @@ function EditSchemeReg() {
       url: "Customer/NomineeSignature",
     },
   ];
-  console.log(obj, SchemeData);
-  //permission List data Fetch
+
   var parray = JSON.parse(window.localStorage.getItem("loggerPermission"));
   var myPermission =
-    parray && parray.filter((i) => i?.PageName == "Manage Customers")[0];
+    parray && parray.filter((i) => i?.PageName == "Manage Customer")[0];
+
+  //Edit msg of schemereg
+  useEffect(() => {
+    if (!isloading57 && isSuccess57) {
+      toast.success(`${Resp57}`, { positions: toast.POSITION.TOP_RIGHT });
+      setEdit(false);
+      dispatch(ClearState57());
+    }
+    if (isError57 && !isloading57) {
+      toast.error(`${error57}`, { positions: toast.POSITION.TOP_RIGHT });
+      dispatch(ClearState57());
+    }
+    if (isloading57) {
+      setOpen(true);
+    } else {
+      if (SchemeData?.ID == SchemeRegId) {
+        setOpen(false);
+        setobj({
+          EMI: SchemeData?.EMI,
+          frequency: SchemeData?.frequency,
+          SUUid: SchemeData?.SUUid,
+          Nomineename: SchemeData?.Nomineename || null,
+          Relation: SchemeData?.Relation || null,
+          NomineeDOB:
+            SchemeData?.NomineeDOB !== "0000-00-00" &&
+            SchemeData?.NomineeDOB !== undefined &&
+            SchemeData?.NomineeDOB !== null &&
+            SchemeData?.NomineeDOB !== ""
+              ? SchemeData?.NomineeDOB
+              : null,
+          NomineeIdProofNumber: SchemeData?.NomineeIdProofNumber || null,
+          // NomineePhone: SchemeData?.NomineePhone || null,
+          NomineeIdProofType: SchemeData?.NomineeIdProofType || null,
+        });
+      } else {
+        setOpen(true);
+      }
+    }
+  }, [isError57, isSuccess57, isloading57, SchemeData, Edit]);
+
+  useEffect(() => {
+    var arr = [];
+    if (obj?.SUUid) {
+      var p = Scheme.filter((i) => i?.SUUid == obj?.SUUid);
+      if (p[0].Monthly == 1) {
+        arr.push({ frequency: "Monthly" });
+      }
+      if (p[0].Daily == 1) {
+        arr.push({ frequency: "Daily" });
+      }
+      if (p[0].Weekly == 1) {
+        arr.push({ frequency: "Weekly" });
+      }
+    }
+    setfreq(arr);
+  }, [obj?.SUUid]);
 
   return (
     <ThemeProvider theme={CustomTheme}>
@@ -447,7 +433,6 @@ function EditSchemeReg() {
               setState={setEdit}
               funcTrigger1={() => {
                 setEdit(!Edit);
-                setCheck(true);
                 setEditPic({
                   NomineeIdProofPhoto: null,
                   NomineePhoto: null,
@@ -457,12 +442,19 @@ function EditSchemeReg() {
                   EMI: SchemeData?.EMI,
                   frequency: SchemeData?.frequency,
                   SUUid: SchemeData?.SUUid,
-                  Nomineename: SchemeData?.Nomineename,
-                  Relation: SchemeData?.Relation,
-                  NomineeDOB: SchemeData?.NomineeDOB,
-                  NomineeIdProofNumber: SchemeData?.NomineeIdProofNumber,
-                  NomineePhone: SchemeData?.NomineePhone,
-                  NomineeIdProofType: SchemeData?.NomineeIdProofType,
+                  Nomineename: SchemeData?.Nomineename || null,
+                  Relation: SchemeData?.Relation || null,
+                  NomineeDOB:
+                    SchemeData?.NomineeDOB !== "0000-00-00" &&
+                    SchemeData?.NomineeDOB !== undefined &&
+                    SchemeData?.NomineeDOB !== null &&
+                    SchemeData?.NomineeDOB !== ""
+                      ? SchemeData?.NomineeDOB
+                      : null,
+                  NomineeIdProofNumber:
+                    SchemeData?.NomineeIdProofNumber || null,
+                  // NomineePhone: SchemeData?.NomineePhone || null,
+                  NomineeIdProofType: SchemeData?.NomineeIdProofType || null,
                 });
               }}
               funcTrigger2={() => {
@@ -634,7 +626,7 @@ function EditSchemeReg() {
                   </FormHelperText>
                 ) : null}
               </Grid>
-              <Grid item lg={2.7} md={5.7} sm={12} xs={12}>
+              {/* <Grid item lg={2.7} md={5.7} sm={12} xs={12}>
                 <TextField
                   size="small"
                   id="NomineePhone"
@@ -663,7 +655,7 @@ function EditSchemeReg() {
                     Phone Number should start from 6 to 9
                   </FormHelperText>
                 ) : null}
-              </Grid>
+              </Grid> */}
               <Grid item lg={2.7} md={5.7} sm={12} xs={12}>
                 <TextField
                   size="small"
@@ -695,7 +687,6 @@ function EditSchemeReg() {
               </Grid>{" "}
               <Grid item lg={2.7} md={5.7} sm={12} xs={12} color={"black"}>
                 <TextField
-                  required
                   size="small"
                   InputLabelProps={{ shrink: true }}
                   id="NomineeDOB"
@@ -840,19 +831,6 @@ function EditSchemeReg() {
                       </FormHelperText>
                     ) : null}
                   </Grid>
-                  <Grid item lg={2.7} md={5.7} sm={12} xs={12}>
-                    <TextField
-                      size="small"
-                      disabled={true}
-                      fullWidth
-                      value={SchemeData?.NomineeIdProofNumber}
-                      id="NomineeIdProofNumber"
-                      name="NomineeIdProofNumber"
-                      label="Nominee's IdProof Number"
-                      variant="outlined"
-                      InputLabelProps={{ shrink: true }}
-                    />
-                  </Grid>
                 </>
               )}
               {!Edit ? null : (
@@ -874,28 +852,15 @@ function EditSchemeReg() {
                     <Button
                       color="success"
                       variant="contained"
+                      type="submit"
                       disabled={
-                        !Edit ||
-                        check ||
-                        !(
-                          obj?.Nomineename !== "" &&
-                          obj?.frequency !== "" &&
-                          obj?.SUUid !== "" &&
-                          obj?.EMI !== "" &&
-                          obj?.Relation !== "" &&
-                          obj?.NomineeDOB !== "" &&
-                          obj?.NomineeIdProofNumber !== "" &&
-                          obj?.NomineePhone !== "" &&
-                          obj?.NomineeIdProofType !== ""
-                        ) ||
                         !(
                           input?.NomineeIdProofNumber &&
+                          // input?.NomineePhone &&
                           input?.Nomineename &&
-                          input?.NomineePhone &&
                           input?.Relation
                         )
                       }
-                      type="submit"
                     >
                       Edit
                     </Button>
@@ -933,10 +898,11 @@ function EditSchemeReg() {
                       variant="outlined"
                       color="success"
                       disabled={
-                        !(EditPic?.NomineeIdProofPhoto ||
+                        !(
+                          EditPic?.NomineeIdProofPhoto ||
                           EditPic?.NomineePhoto ||
-                          EditPic?.Nomineesignature) &&
-                        Edit == true
+                          EditPic?.Nomineesignature
+                        ) && Edit == true
                       }
                     >
                       Edit ID Proof

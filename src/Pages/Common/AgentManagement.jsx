@@ -6,7 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { Box } from "@mui/system";
-import { Divider, Alert,AlertTitle,Stack } from "@mui/material";
+import { Divider, Alert, AlertTitle, Stack } from "@mui/material";
 import Grid from "@mui/system/Unstable_Grid/Grid";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { GRID_CHECKBOX_SELECTION_COL_DEF } from "@mui/x-data-grid";
@@ -40,6 +40,7 @@ const CustomTheme = createTheme({
       mid: 550,
       md: 813,
       lg: 970,
+      l: 1060,
       xl: 1175,
       xxl: 1210,
       xxxl: 1345,
@@ -49,13 +50,13 @@ const CustomTheme = createTheme({
 });
 
 export default function AgentManagement() {
-    const location = useLocation();
-    const {
-      AgentCode = "",
-      BranchId = "",
-      AreaID = "",
-      Status=null,
-    } = location.state || {};
+  const location = useLocation();
+  const {
+    AgentCode = "",
+    BranchId = "",
+    AreaID = "",
+    Status = null,
+  } = location.state || {};
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [params, setParams] = useState({
@@ -64,7 +65,7 @@ export default function AgentManagement() {
   });
   const [ids, setIds] = useState([]);
   const [Filters, setFilters] = useState({
-    Status:Status|| null,
+    Status: Status || null,
     startDate: "",
     endDate: "",
     AgentCode: AgentCode || "",
@@ -155,9 +156,9 @@ export default function AgentManagement() {
       Status: Filters?.Status == 2 ? 0 : Filters?.Status,
       endDate: Filters?.endDate,
       startDate: Filters?.startDate,
-      AgentCode: Filters?.AgentCode||"",
-      BranchId: Filters?.BranchId||"",
-      AreaID: Filters?.AreaID||"",
+      AgentCode: Filters?.AgentCode || "",
+      BranchId: Filters?.BranchId || "",
+      AreaID: Filters?.AreaID || "",
       ...global,
     },
     [Filters, isSuccess9],
@@ -263,7 +264,7 @@ export default function AgentManagement() {
   let currentdate = moment().format("YYYY-MM-DD");
   return (
     <ThemeProvider theme={CustomTheme}>
-      <Grid container ml={3} mt={2} columnGap={2}>
+      <Grid container ml={3} mt={2} columnGap={2} maxWidth={"l"}>
         <ToastContainer autoClose={8000} />
         <Grid
           item
@@ -465,7 +466,7 @@ export default function AgentManagement() {
             state={ids}
             setState={setIds}
             isloading={isloading2}
-            height={520}
+            height={"68vh"}
           />
         </Grid>
       </Grid>

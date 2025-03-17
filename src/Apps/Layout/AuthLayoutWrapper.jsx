@@ -1,10 +1,20 @@
-import React from "react";
 import AuthAppBar from "../../Pages/AppBar/authAppBar";
+import PropTypes from "prop-types";
+import { Container } from "@mui/system";
 export default function AuthLayoutWrapper({ children }) {
   return (
-    <div>
+    <Container
+      maxWidth={"XXL"}
+      sx={{
+          m: "0px !important",
+          p: "0px !important",
+      }}
+    >
       <AuthAppBar />
       {children}
-    </div>
+    </Container>
   );
 }
+AuthLayoutWrapper.propTypes = {
+  children: PropTypes.node.isRequired,
+};

@@ -1,6 +1,5 @@
-import React, { useMemo } from "react";
 import moment from "moment";
-import { Box, textAlign, width } from "@mui/system";
+import { Box} from "@mui/system";
 import { Typography, Divider, TextField } from "@mui/material";
 import Grid from "@mui/material/Grid/Grid";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -37,7 +36,7 @@ const CustomTheme = createTheme({
 
 function Profile() {
   const { userInfo } = UseFetchLogger();
-  let imgWidth = window?.innerWidth === 950 ? "100%" : "250px";
+  // let imgWidth = window?.innerWidth === 950 ? "100%" : "250px";
    let obj = {};
    if (userInfo?.details?.Utype == 3) {
      obj.CustomerID = userInfo?.details?.CustomerID;
@@ -209,7 +208,7 @@ function Profile() {
               </Grid>
               <Grid item sm={10} xs={10} md={10} lg={10}>
                 <Typography sx={{ flexWrap: "wrap", display: "flex" }}>
-                  {userInfo?.details?.Address || "37/1 Jayashree park"}
+                  {userInfo?.details?.Address || "Not Given"}
                 </Typography>
               </Grid>
             </Grid>
