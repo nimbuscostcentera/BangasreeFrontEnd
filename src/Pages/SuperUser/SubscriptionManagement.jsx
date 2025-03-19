@@ -319,13 +319,13 @@ function SubscriptionManagement() {
       },
     },
     {
-      field: "lastDate",
-      headerName: "Last Date",
+      field: "EndDate",
+      headerName: "End Date",
       width:90,
       renderCell: (pramas) => {
         return (
           <span>
-            {moment(pramas.row.lastDate).format("DD/MM/YYYY")}
+            {moment(pramas.row.EndDate).format("DD/MM/YYYY")}
           </span>
         );
       },
