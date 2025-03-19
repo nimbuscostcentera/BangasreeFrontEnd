@@ -647,7 +647,7 @@ function ManageCollections() {
     {
       field: "CustomerAccNo",
       headerName: "Account no.",
-      width: 150,
+      width: 170,
       hideable: false,
     },
     {
@@ -801,7 +801,7 @@ function ManageCollections() {
           justifyContent={"space-between"}
           flexWrap={"wrap"}
         >
-          <Box mr={3} mt={1}>
+          <Box mr={3} mt={1} ml={1}>
             {userInfo?.details?.Utype == 2 ? (
               <ReusableBreadcrumbs
                 props={[
@@ -840,14 +840,16 @@ function ManageCollections() {
             )}{" "}
           </Box>
           {myPermission?.Create ? (
-            <IconOnOffButton
-              h1={"Add Collection"}
-              icon1={<AddCircleOutlineIcon fontSize="medium" />}
-              Tooltip1={"ADD Collection"}
-              funcTrigger1={() => {
-                navigate("/executive/collectionentry");
-              }}
-            />
+            <div style={{ marginLeft: "10px" }}>
+              <IconOnOffButton
+                h1={"Add Collection"}
+                icon1={<AddCircleOutlineIcon fontSize="medium" />}
+                Tooltip1={"ADD Collection"}
+                funcTrigger1={() => {
+                  navigate("/executive/collectionentry");
+                }}
+              />{" "}
+            </div>
           ) : null}
         </Grid>
         <Grid item md={12} lg={12} sm={12} xs={12}>
@@ -888,6 +890,9 @@ function ManageCollections() {
             xs: "center",
           }}
           flexWrap={"wrap"}
+          sx={{
+            marginLeft: "5px",
+          }}
         >
           <DateRangFilter2
             state1={Filters?.startDate}
@@ -924,6 +929,7 @@ function ManageCollections() {
           }}
           flexWrap={"wrap"}
           mt={1.7}
+          ml={1}
         >
           <ReusableDropDown4
             setState={setFilters}
@@ -961,6 +967,7 @@ function ManageCollections() {
           }}
           flexWrap={"wrap"}
           mt={1.7}
+          ml={1}
         >
           <ReusableDropDown4
             setState={setFilters}
@@ -1000,6 +1007,7 @@ function ManageCollections() {
           }}
           flexWrap={"wrap"}
           mt={1.7}
+          ml={1}
         >
           <ReusableDropDown4
             setState={setFilters}
@@ -1038,6 +1046,7 @@ function ManageCollections() {
             }}
             flexWrap={"wrap"}
             mt={1.7}
+            ml={1}
           >
             <ReusableDropDown4
               setState={setFilters}
@@ -1068,6 +1077,7 @@ function ManageCollections() {
               lg: "flex-start",
               md: "center",
               sm: "center",
+              xs: "center",
             }}
             flexWrap={"wrap"}
           >
@@ -1162,7 +1172,7 @@ function ManageCollections() {
             Submit Collection Here :
           </Typography>
         </Grid>
-        <Grid item sm={12} xs={12} md={5.5} lg={2.3} xl={2.5} mt={2}>
+        <Grid item sm={12} xs={12} md={5.5} lg={2.3} xl={2.5} mt={2} ml={1}>
           <TextField
             label="Submission Amount "
             name="CollectedAmt"

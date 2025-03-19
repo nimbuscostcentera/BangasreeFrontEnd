@@ -1,16 +1,39 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import { IconButton, Tooltip, Box, Typography } from "@mui/material";
-import { Title } from "@mui/icons-material";
+import {
+  IconButton,
+  Tooltip,
+  Typography,
+  DialogTitle,
+  DialogContentText,
+  DialogContent,
+  DialogActions,
+  Dialog,
+  TextField,
+  Button,
+} from "@mui/material";
 import StyledBox from "../styledComponent/StyledBox";
-
-export default function ReusableDialogue({
+import PropTypes from "prop-types";
+ReusableDialogue.propTypes = {
+  icon: PropTypes.string,
+  button: PropTypes.bool,
+  type: PropTypes.string,
+  color: PropTypes.string,
+  disabledId: PropTypes.bool,
+  title: PropTypes.string,
+  reason: PropTypes.string,
+  b1: PropTypes.string,
+  b2: PropTypes.string,
+  h1: PropTypes.string,
+  handleClickOpen: PropTypes.func,
+  handleClose: PropTypes.func,
+  TooltipMsg: PropTypes.string,
+  open: PropTypes.bool,
+  TextFieldName: PropTypes.string,
+  setState: PropTypes.func,
+  OnSubmit: PropTypes.func,
+  textcolor: PropTypes.string,
+};
+export default function
+  ReusableDialogue({
   icon,
   button,
   type,
@@ -25,46 +48,58 @@ export default function ReusableDialogue({
   handleClose,
   TooltipMsg,
   open,
-  state,
   TextFieldName,
   setState,
   OnSubmit,
   textcolor,
 }) {
   return (
-    <StyledBox mt={1}>
-      {icon ? (
-        <>
-          <Typography sx={{ color: textcolor }}>{h1}</Typography>
-          <Tooltip title={TooltipMsg}>
-            <span>
-              <IconButton
-                variant="outlined"
-                onClick={handleClickOpen}
-                disabled={disabledId}
-              >
-                {icon}
-              </IconButton>
-            </span>
-          </Tooltip>
-        </>
-      ) : null}
-      {button ? (
-        <>
-          <Tooltip title={TooltipMsg}>
-            <span>
-              <Button
-                type={type}
-                color={color}
-                variant="contained"
-                onClick={handleClickOpen}
-              >
-                {title}
-              </Button>
-            </span>
-          </Tooltip>
-        </>
-      ) : null}
+    <>
+      <StyledBox>
+        {icon ? (
+          <div
+            style={{
+              height:"50px",
+              width:"200px",
+              display: "flex",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <div>
+              <Typography sx={{ color: textcolor }}>{h1}</Typography>
+            </div>
+            <div>
+              <Tooltip title={TooltipMsg}>
+                <IconButton
+                  variant="outlined"
+                  onClick={handleClickOpen}
+                  disabled={disabledId}
+                >
+                  {icon}
+                </IconButton>
+              </Tooltip>{" "}
+            </div>
+          </div>
+        ) : null}
+        {button ? (
+          <>
+            <Tooltip title={TooltipMsg}>
+              <span>
+                <Button
+                  type={type}
+                  color={color}
+                  variant="contained"
+                  onClick={handleClickOpen}
+                >
+                  {title}
+                </Button>
+              </span>
+            </Tooltip>
+          </>
+        ) : null}
+      </StyledBox>
       <Dialog open={open} onClose={handleClose} maxWidth={"xl"}>
         <DialogTitle>{title}</DialogTitle>
         <DialogContent>
@@ -94,6 +129,6 @@ export default function ReusableDialogue({
           </Button>
         </DialogActions>
       </Dialog>
-    </StyledBox>
+    </>
   );
 }

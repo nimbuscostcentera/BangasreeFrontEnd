@@ -1,9 +1,15 @@
-import React from "react";
-import {
-  Typography,
-  Button
-} from "@mui/material";
+import PropTypes from "prop-types";
+import { Typography, Button } from "@mui/material";
 import StyledBox from "../styledComponent/StyledBox";
+SingleIconButton.propTypes = {
+  icon1: PropTypes.string,
+  h1: PropTypes.string,
+  disable1: PropTypes.bool,
+  funcTrigger1: PropTypes.func,
+  textcolor1: PropTypes.string,
+  mt1: PropTypes.number,
+  mb1: PropTypes.number,
+};
 export default function SingleIconButton({
   icon1,
   h1,
@@ -11,7 +17,7 @@ export default function SingleIconButton({
   funcTrigger1,
   textcolor1,
   mt1,
-  mb1
+  mb1,
 }) {
   return (
     <StyledBox mt={mt1} mb={mb1}>
@@ -19,9 +25,9 @@ export default function SingleIconButton({
         variant="text"
         onClick={funcTrigger1}
         disabled={disable1}
-        sx={{ width: 10 }}
+        sx={{ width: 12 }}
       >
-        {icon1}{" "}
+        {icon1}
       </Button>
       <Typography color={textcolor1 || "#2e2f30"} ml={-2}>
         {h1}
