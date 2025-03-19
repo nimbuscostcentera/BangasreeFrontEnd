@@ -48,6 +48,7 @@ import {
   BonusUpdate,
 } from "../../Slice/Collection/BonusUpdateSlice";
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
+import moment from "moment/moment";
 const CustomTheme = createTheme({
   breakpoints: {
     keys: ["xxs", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"],
@@ -291,28 +292,50 @@ function SubscriptionManagement() {
     {
       field: `CustomerAccNo`,
       headerName: "Account No.",
-      width: 150,
+      width: 140,
       hideable: false,
     },
     {
       field: `CustomerName`,
       headerName: "Customer Name",
-      width: 170,
+      width: 168,
     },
     {
       field: `AgentCode`,
       headerName: "Agent Code",
       width: 100,
     },
-    { field: `SchemeTitle`, headerName: "Scheme", width: 170 },
+    { field: `SchemeTitle`, headerName: "Scheme", width: 165 },
+    {
+      field: "StartDate",
+      headerName: "Start Date",
+      width:90,
+      renderCell: (pramas) => {
+        return (
+          <span>
+            {moment(pramas.row.StartDate).format("DD/MM/YYYY")}
+          </span>
+        );
+      },
+    },
+    {
+      field: "lastDate",
+      headerName: "Last Date",
+      width:90,
+      renderCell: (pramas) => {
+        return (
+          <span>
+            {moment(pramas.row.lastDate).format("DD/MM/YYYY")}
+          </span>
+        );
+      },
+    },
     {
       field: `amttobepaid`,
       headerName: "Payable Amt",
       width: 120,
       renderCell: (item) => {
-        return (
-          <Typography> ₹ {item.row.amttobepaid || 0} /-</Typography>
-        );
+        return <Typography> ₹ {item.row.amttobepaid || 0} /-</Typography>;
       },
     },
     {
@@ -334,8 +357,10 @@ function SubscriptionManagement() {
           <>
             {item?.row?.MaturityStatus === 2 ||
             item?.row?.MaturityStatus === 3 ? (
-                <Typography> ₹ {item?.row?.RedeemAmt||0} /-</Typography>
-            ) :"N/A"}
+              <Typography> ₹ {item?.row?.RedeemAmt || 0} /-</Typography>
+            ) : (
+              "N/A"
+            )}
           </>
         );
       },
