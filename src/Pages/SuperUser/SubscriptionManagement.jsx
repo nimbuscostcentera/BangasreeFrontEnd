@@ -306,30 +306,7 @@ function SubscriptionManagement() {
       width: 100,
     },
     { field: `SchemeTitle`, headerName: "Scheme", width: 165 },
-    {
-      field: "StartDate",
-      headerName: "Start Date",
-      width:90,
-      renderCell: (pramas) => {
-        return (
-          <span>
-            {moment(pramas.row.StartDate).format("DD/MM/YYYY")}
-          </span>
-        );
-      },
-    },
-    {
-      field: "EndDate",
-      headerName: "End Date",
-      width:90,
-      renderCell: (pramas) => {
-        return (
-          <span>
-            {moment(pramas.row.EndDate).format("DD/MM/YYYY")}
-          </span>
-        );
-      },
-    },
+
     {
       field: `amttobepaid`,
       headerName: "Payable Amt",
@@ -363,6 +340,22 @@ function SubscriptionManagement() {
             )}
           </>
         );
+      },
+    },
+    {
+      field: "StartDate",
+      headerName: "Start Date",
+      width: 90,
+      renderCell: (pramas) => {
+        return <span>{moment(pramas.row.StartDate).format("DD/MM/YYYY")}</span>;
+      },
+    },
+    {
+      field: "EndDate",
+      headerName: "End Date",
+      width: 90,
+      renderCell: (pramas) => {
+        return <span>{moment(pramas.row.EndDate).format("DD/MM/YYYY")}</span>;
       },
     },
     {
