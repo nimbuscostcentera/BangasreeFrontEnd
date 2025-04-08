@@ -2,8 +2,8 @@ import { IconButton, Tooltip, Typography} from "@mui/material";
 import StyledBox from "../styledComponent/StyledBox";
 import PropTypes from "prop-types";
 IconOnOffButton.propTypes = {
-  icon1: PropTypes.string,
-  icon2: PropTypes.string,
+  icon1: PropTypes.object,
+  icon2: PropTypes.object,
   Tooltip1: PropTypes.string,
   Tooltip2: PropTypes.string,
   h1: PropTypes.string,
@@ -12,8 +12,8 @@ IconOnOffButton.propTypes = {
   disable2: PropTypes.bool,
   funcTrigger1: PropTypes.func,
   funcTrigger2: PropTypes.func,
-  textcolor1: PropTypes.bool,
-  textcolor2: PropTypes.bool,
+  textcolor1: PropTypes.string,
+  textcolor2: PropTypes.string,
   mt: PropTypes.number,
   mb: PropTypes.number,
 };

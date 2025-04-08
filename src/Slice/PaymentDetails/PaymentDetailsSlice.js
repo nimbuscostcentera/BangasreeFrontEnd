@@ -12,8 +12,8 @@ export const PaymentDetailList = createAsyncThunk(
       };
 
       const { data } = await AxiosInstance.post(URL, UserData, config);
-
-      return data?.response;
+      console.log(data?.response);
+      return data;
     } catch (error) {
       return rejectWithValue(error.response.data.response);
     }
@@ -25,6 +25,7 @@ const PaymentDetailListSlice = createSlice({
   initialState: {
     isloading29: false,
     Resp29: [],
+    pagination:{},
     error29: "",
     isError29: false,
     isSuccess29: false,
@@ -47,7 +48,8 @@ const PaymentDetailListSlice = createSlice({
         state.isError29 = false;
         state.isloading29 = false;
         state.isSuccess29 = true;
-        state.Resp29 = payload;
+        state.Resp29 = payload?.response;
+        state.pagination = payload?.pagination;
       })
       .addCase(PaymentDetailList.rejected, (state, { payload }) => {
         state.isloading29 = false;

@@ -1,6 +1,12 @@
-import { Box, Input } from "@mui/material";
-import { useState, useEffect } from "react";
+import {Input } from "@mui/material";
 import Grid from "@mui/system/Unstable_Grid/Grid";
+import PropTypes from "prop-types";
+DateRangFilter.propTypes = {
+  setState: PropTypes.func.isRequired,
+  state: PropTypes.object.isRequired,
+  name1: PropTypes.string.isRequired,
+  name2: PropTypes.string.isRequired,
+};
 export default function DateRangFilter({ setState, state, name1, name2 }) {
   var date = new Date();
   var datestring = date.toISOString();

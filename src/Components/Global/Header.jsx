@@ -1,6 +1,5 @@
 import { Typography, Box } from "@mui/material";
-import { Container } from "@mui/system";
-
+import PropTypes from "prop-types"
 const Header = ({ title, subtitle }) => {
   return (
     <Box sx={{ display: "grid",marginBottom:"15px" }}>
@@ -26,5 +25,8 @@ const Header = ({ title, subtitle }) => {
     </Box>
   );
 };
-
+Header.propTypes = {
+  title: PropTypes.string.isRequired,
+  subtitle: PropTypes.string.isRequired,
+};
 export default Header;

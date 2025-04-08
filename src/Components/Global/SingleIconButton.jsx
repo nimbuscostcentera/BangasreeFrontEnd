@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { Typography, Button } from "@mui/material";
 import StyledBox from "../styledComponent/StyledBox";
 SingleIconButton.propTypes = {
-  icon1: PropTypes.string,
+  icon1: PropTypes.object,
   h1: PropTypes.string,
   disable1: PropTypes.bool,
   funcTrigger1: PropTypes.func,

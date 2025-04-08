@@ -49,7 +49,7 @@ import SchemeHistory from "./Pages/SuperUser/SchemeHistory";
 import CollectionSummary from "./Pages/SuperUser/CollectionSummery";
 import ViewLogs from "./Pages/SuperUser/ViewLogs";
 function App() {
-  const {  AccessToken } = UseFetchLogger();
+  const {  AccessToken = false} = UseFetchLogger();
 
   return (
     <Routes>

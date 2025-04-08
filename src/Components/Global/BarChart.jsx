@@ -2,7 +2,9 @@ import { ResponsiveBar } from "@nivo/bar";
 import { Box } from "@mui/system";
 import Loader from "../Global/loader";
 import { useTheme, useMediaQuery } from "@mui/material";
-const BarChart = ({ data=[], nameArray=[], isload=true,XaxisName,YaxisName,index }) => {
+import PropTypes from "prop-types";
+
+const BarChart = ({ data, nameArray, isload,XaxisName,YaxisName,index }) => {
   const theme = useTheme();
   const isMdToLg = useMediaQuery(theme.breakpoints.between("lg", "xl"));
   const tickRotation = isMdToLg ? 0 : 25;
@@ -88,5 +90,12 @@ const BarChart = ({ data=[], nameArray=[], isload=true,XaxisName,YaxisName,index
     </Box>
   );
 };
-
+BarChart.propTypes = {
+  YaxisName: PropTypes.string.isRequired,
+  data: PropTypes.array.isRequired,
+  nameArray: PropTypes.array.isRequired,
+  isload: PropTypes.any,
+  XaxisName: PropTypes.string.isRequired,
+  index: PropTypes.string.isRequired,
+};
 export default BarChart;

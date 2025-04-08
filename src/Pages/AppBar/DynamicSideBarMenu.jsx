@@ -9,15 +9,14 @@ import { useNavigate } from "react-router-dom";
 import { Box, Tooltip } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import Icon from "@mui/material/Icon";
+import PropTypes from "prop-types";
 const DynamicSideBarMenu = ({ isOpen, Menu }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  
-  //const [Module,setModule]=useState(location.pathname)
   return (
     <Box>
       <List>
-        {Menu.map((i,index) => {
+        {Menu.map((i) => {
           let isActive = location.pathname == i?.PageUrl;
           //console.log(isActive);
           return (
@@ -38,7 +37,7 @@ const DynamicSideBarMenu = ({ isOpen, Menu }) => {
               <ListItemButton
                 sx={{
                   minHeight: 48,
-                  justifyContent: isOpen ? "initial" : "center",
+                  justifyContent: isOpen == "true" ? "initial" : "center",
                   px: 2.5,
                 }}
                 onClick={() => {
@@ -48,7 +47,7 @@ const DynamicSideBarMenu = ({ isOpen, Menu }) => {
                 <ListItemIcon
                   sx={{
                     minWidth: 0,
-                    mr: isOpen ? 1 : "auto",
+                    mr: isOpen == "true" ? 1 : "auto",
                     justifyContent: "center",
                   }}
                 >
@@ -65,7 +64,7 @@ const DynamicSideBarMenu = ({ isOpen, Menu }) => {
                 </ListItemIcon>
                 <ListItemText
                   primary={i?.PageName}
-                  sx={{ opacity: isOpen ? 1 : 0 }}
+                  sx={{ opacity: isOpen == "true" ? 1 : 0 }}
                 />
               </ListItemButton>
             </ListItem>
@@ -74,5 +73,9 @@ const DynamicSideBarMenu = ({ isOpen, Menu }) => {
       </List>
     </Box>
   );
+};
+DynamicSideBarMenu.propTypes = {
+  isOpen: PropTypes.string.isRequired,
+  Menu: PropTypes.array.isRequired,
 };
 export default DynamicSideBarMenu;

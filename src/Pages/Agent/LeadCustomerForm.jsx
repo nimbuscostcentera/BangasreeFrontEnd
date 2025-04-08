@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
 import {
   TextField,
@@ -122,26 +121,24 @@ export default function LeadCustomerForm() {
   const onHandleClose = () => {
     setOpen(true);
   };
-
   const onChangeHandler = (e) => {
     var key = e?.target?.name;
     var value = e?.target?.value;
 
-    if (key == "FollowUpDate") {
+    if (key == "FollowUpDate")
+    {
       let now = new moment();
       let inputdate = new moment(value);
-      let diffdays = inputdate.diff(now, "days");
-      if (diffdays < 0) {
-        setRawData({
-          ...rawData,
-          [key]: "0000-00-00",
-        });
-      } else {
-        setRawData({ ...rawData, [key]: value });
+      let diffdays = now.diff(inputdate, "days");
+      let y=inputdate.year()
+       console.log("up if", diffdays, inputdate.format("YYYY-MM-DD"), now.format("YYYY-MM-DD"));
+      if (diffdays > 0 && y>999) {
+        console.log("in if");
+        console.log(diffdays, inputdate.format("YYYY-MM-DD"));
+        value = null;
       }
-    } else {
-      setRawData({ ...rawData, [key]: value });
     }
+    setRawData({ ...rawData, [key]: value });
   };
 
   const OnSubmitHandler = (e) => {
@@ -493,17 +490,6 @@ export default function LeadCustomerForm() {
               />
             </Grid>
           </Grid>
-          {console.log(
-            rawData?.CustomerName,
-            rawData?.PhoneNumber,
-            rawData?.AreaID,
-            rawData?.FollowUpDate,
-            global?.Utype == 1 ? rawData?.BranchId && rawData?.AgentCode : true,
-            rawData?.FollowUpDate,
-            input?.phn,
-            input?.Email,
-            input?.CustomerName
-          )}
           <Box sx={{ p: 2, m: 1 }}>
             <OnOffButton
               yes={"Submit"}

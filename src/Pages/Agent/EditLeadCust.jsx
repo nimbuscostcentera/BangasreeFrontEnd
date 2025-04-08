@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import moment from "moment";
@@ -40,7 +40,6 @@ import PhnoValidation from "../../Apps/GlobalFunctions/PhnoValidation";
 
 import {
   LeadCustList,
-  ClearState26,
 } from "../../Slice/PortableCustomer/PortableCustListSlice";
 import {
   ClearState34,
@@ -97,7 +96,7 @@ export default function EditLeadCust() {
   );
 
   //Lead Leadcust List
-  const { isloading26, LeadCustData, error26, isError26, isSuccess26 } =
+  const { isloading26, LeadCustData, isSuccess26 } =
     useSelector((state) => state.leadCustList);
 
   //Edit Lead
@@ -169,18 +168,17 @@ export default function EditLeadCust() {
     if (key == "FollowUpDate") {
       let now = new moment();
       let inputdate = new moment(value);
-      let diffdays = inputdate.diff(now, "days");
-      if (diffdays < 0) {
-        setRawData({
-          ...rawData,
-          [key]: "",
-        });
-      } else {
-        setRawData({ ...rawData, [key]: value });
+      let diffdays = now.diff(inputdate, "days");
+      let y=inputdate.year()
+      console.log("up if", diffdays, inputdate.format("YYYY-MM-DD"), now.format("YYYY-MM-DD"));
+      if (diffdays > 0 && y>999) {
+        console.log("in if");
+        console.log(diffdays, inputdate.format("YYYY-MM-DD"));
+        value = null;
       }
-    } else {
-      setRawData({ ...rawData, [key]: value });
     }
+
+    setRawData({ ...rawData, [key]: value });
   };
 
   const OnSubmitHandler = (e) => {

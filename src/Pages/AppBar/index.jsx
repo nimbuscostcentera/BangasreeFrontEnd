@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { styled, useTheme } from "@mui/material/styles";
+import { useEffect, useState } from "react";
+import { styled } from "@mui/material/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -9,14 +9,13 @@ import MuiAppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
-import { Badge, Button, Divider, Grid, Popover, Tooltip } from "@mui/material";
+import { Badge, Divider, Popover, Tooltip } from "@mui/material";
 
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import AppsIcon from "@mui/icons-material/Apps";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
@@ -37,7 +36,6 @@ import useFetchNotification from "../../Apps/CustomHook/useFetchNotification";
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
 
 import {
-  ClearState16,
   PagePermissionAccess,
 } from "../../Slice/Page/PageAccessSlice";
 
@@ -109,7 +107,7 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function MiniDrawer() {
-  const theme = useTheme();
+  // const theme = useTheme();
   const [open, setOpen] = useState(true);
   const [nobj, setNobj] = useState({});
   const navigate = useNavigate();
@@ -156,7 +154,7 @@ export default function MiniDrawer() {
   };
 
   const [menu, setMenu] = useState([]);
-  const { isloading16, AccessID, error16, isError16, isSuccess16 } =
+  const { isloading16, AccessID, isSuccess16 } =
     useSelector((state) => state.PageList);
 
   useEffect(() => {
@@ -220,7 +218,7 @@ export default function MiniDrawer() {
                 </Typography>
               }
               onError={(e) => {
-                e.target.src = NoImage;
+                e.target.src = Nopic;
                 e.target.width = 200;
                 e.target.height = 200;
               }}
@@ -525,7 +523,7 @@ export default function MiniDrawer() {
             <Loader />
           </Box>
         ) : (
-          <DynamicSideBarMenu isOpen={open} Menu={menu} />
+          <DynamicSideBarMenu isOpen={open.toString()} Menu={menu} />
         )}
       </Drawer>
     </>

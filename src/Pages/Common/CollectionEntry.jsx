@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import { ToastContainer, toast } from "react-toastify";
@@ -409,10 +409,21 @@ function CollectionEntryForm() {
                   inputProps={{ max: currentdate }}
                   value={formData?.CollectionDate || ""}
                   onChange={(e) => {
-                    setformData({
-                      ...formData,
-                      CollectionDate: e.target.value,
-                    });
+                    let latest = moment();
+                    let inputdate = moment(e?.target?.value);
+                    let diffdays = latest.diff(inputdate, "days");  
+                    if (diffdays >= 0) {
+                       setformData({
+                         ...formData,
+                         CollectionDate: e.target.value,
+                       });
+                    }
+                    else {
+                       setformData({
+                         ...formData,
+                         CollectionDate:null,
+                       });
+                    }
                   }}
                 />
               </Grid>

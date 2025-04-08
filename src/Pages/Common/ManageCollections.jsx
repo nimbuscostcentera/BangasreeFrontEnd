@@ -23,10 +23,8 @@ import {
   DataGrid,
   GridToolbarContainer,
   GridToolbarColumnsButton,
-  GridToolbarFilterButton,
   GridToolbarDensitySelector,
   GridToolbarExport,
-  GridFooterContainer,
   GridToolbarQuickFilter,
   GRID_CHECKBOX_SELECTION_COL_DEF,
 } from "@mui/x-data-grid";
@@ -66,7 +64,7 @@ const CustomFooter = ({ count }) => {
     agentcode,
   } = count;
   return (
-    <GridFooterContainer
+    <Box
       sx={{
         backgroundColor: "#0f45ba",
         color: "white",
@@ -183,7 +181,7 @@ const CustomFooter = ({ count }) => {
           </TableRow>
         </TableBody>
       </Table>
-    </GridFooterContainer>
+    </Box>
   );
 };
 CustomFooter.propTypes = {
@@ -220,7 +218,6 @@ const CustomGridToolBar = () => {
     <GridToolbarContainer sx={{ justifyContent: "space-between" }}>
       <div>
         <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
         <GridToolbarDensitySelector />
         <GridToolbarExport
           csvOptions={{ allColumns: true }}
@@ -294,6 +291,11 @@ function ManageCollections() {
     NotAgentPayment: null,
     BranchId: BranchId || null,
     AreaID: AreaID || null,
+    page :0,
+    pageSize:100,
+    totalPages:0,
+    total: 0,
+    SearchKey:"",
   });
   //Login List for Table
   const { global, userInfo } = UseFetchLogger();
@@ -361,9 +363,12 @@ function ManageCollections() {
       } else if (userInfo?.details?.Utype === 1) {
         obj22.SuperUserID = userInfo?.details?.SuperUserID;
       }
-      dispatch(PaymentDetailList({ ...obj22, ...global }))
+      dispatch(PaymentDetailList({ ...obj22, ...global })).unwrap()
         .then((res) => {
-          setPaymentDetails(res?.payload);
+          setPaymentDetails(res?.response);
+          let { page = 1, pageSize = 100, total = 0, totalPages = 0 } = res?.pagination || {};
+          console.log(res?.pagination);
+          setFilters((prev)=>({...prev,page:page,pageSize:pageSize,total:total,totalPages:totalPages}))
         })
         .catch((err) => {
           console.log(err);
@@ -379,10 +384,12 @@ function ManageCollections() {
     Filters?.PaymentType,
     Filters?.startDate,
     Filters?.endDate,
+    Filters?.page,
+    Filters?.pageSize,
+    Filters?.SearchKey,
     isSuccess75,
     isLotEntrySuccess,
   ]);
-
   //commission calculation
   useEffect(() => {
     var totalcollection = 0;
@@ -400,7 +407,7 @@ function ManageCollections() {
     }
 
     if (PaymentDetails?.length !== 0) {
-      PaymentDetails.map((i) => {
+      PaymentDetails?.map((i) => {
         PaymentID.map((j) => {
           if (i?.CollectionId == j) {
             cr = cr + i?.Commission;
@@ -507,7 +514,7 @@ function ManageCollections() {
   //delete wrong collection
   const DeleteCollection = () => {
     if (PaymentID && PaymentID.length == 1) {
-      PaymentDetails.map((i) => {
+      PaymentDetails?.map((i) => {
         PaymentID.map((j) => {
           if (i?.CollectionId == j) {
             if (
@@ -771,6 +778,7 @@ function ManageCollections() {
       },
     },
   ];
+  console.log(Filters);
   return (
     <ThemeProvider theme={CustomTheme}>
       <Grid
@@ -1243,11 +1251,14 @@ function ManageCollections() {
             </Button>
           </Box>
         </Grid>
+        <Grid item sm={12} xs={12} md={12} lg={12} xl={12} mt={2}>
+          <CustomFooter count={count} />
+        </Grid>
         {/**Table */}
-        <Grid item sm={12} xs={12} md={12} mt={2}>
-          <div style={{ height: "90vh", width: "100%" }}>
+        <Grid item sm={12} xs={12} md={12}>
+          <div style={{ height: "85vh", width: "100%" }}>
             <DataGrid
-              loading={isloading29}
+              loading={isloading29||false}
               selectRow
               getRowId={(row) => {
                 if (!row) {
@@ -1268,8 +1279,35 @@ function ManageCollections() {
                 },
               }}
               rows={PaymentDetails || []}
-              columns={columns}
+              columns={columns||[]}
               rowHeight={44}
+              rowCount={Filters?.total}
+              paginationMode="server"
+              paginationModel={{
+                page: Filters?.page-1,
+                pageSize: Filters?.pageSize,
+              }}
+              onFilterModelChange={(model) => {
+                console.log(model?.quickFilterValues[0]?.toUpperCase());
+                if (isloading29 == false) {
+                    setFilters((prev) => ({
+                      ...prev,
+                      SearchKey: model?.quickFilterValues[0]?.toUpperCase(),
+                    }));
+                 }
+              }}
+              onPaginationModelChange={(model) => {
+                console.log(model)
+                if (isloading29 == false)
+                {
+                  setFilters((prev) => ({
+                    ...prev,
+                    page: model.page + 1,
+                    pageSize: model.pageSize,
+                  }));
+                }    
+              }}
+              pageSizeOptions={[25,50,100]}
               checkboxSelection
               rowSelectionModel={PaymentID}
               onRowSelectionModelChange={(id) => {
@@ -1279,13 +1317,22 @@ function ManageCollections() {
               }}
               slots={{
                 toolbar: CustomGridToolBar,
-                footer: CustomFooter,
               }}
               slotProps={{
                 toolbar: {
                   showQuickFilter: true,
+                  quickFilterProps: {
+                    debounceMs: 500, 
+                    onInputChange: (e) => {
+                      console.log(e.target.value)
+                      setFilters((prev) => ({
+                        ...prev,
+                        SearchKey: e.target.value,
+                      }));
+                    }
+                  },
+
                 },
-                footer: { count },
               }}
             />
           </div>

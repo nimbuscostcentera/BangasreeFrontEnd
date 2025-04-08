@@ -22,7 +22,7 @@
     "@mui/lab": "^5.0.0-alpha.151",
     "@mui/material": "^5.15.16",
     "@mui/system": "^5.14.15",
-    "@mui/x-data-grid": "^6.18.0",
+    "@mui/x-data-grid": "^6.20.4",
     "@nivo/bar": "^0.83.0",
     "@nivo/core": "^0.83.0",
     "@nivo/geo": "^0.83.0",

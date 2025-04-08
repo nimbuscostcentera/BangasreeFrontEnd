@@ -1,7 +1,16 @@
-import { Box, Input } from "@mui/material";
-import { useState, useEffect } from "react";
+import {  Input } from "@mui/material";
 import Grid from "@mui/system/Unstable_Grid/Grid";
-export default function DateRangFilter2({
+import PropTypes from "prop-types";
+DateRangFilter2.propTypes = {
+  state1: PropTypes.string,
+  state2: PropTypes.string,
+  name1: PropTypes.string,
+  name2: PropTypes.string,
+  MaxDate1: PropTypes.string,
+  MaxDate2: PropTypes.string,
+  InputHandler: PropTypes.func,
+};
+function DateRangFilter2({
   state1,
   state2,
   name1,
@@ -27,7 +36,7 @@ export default function DateRangFilter2({
           From
           <br />
           <Input
-            value={state1}
+            value={state1||""}
             name={name1}
             type="date"
             sx={{
@@ -54,7 +63,7 @@ export default function DateRangFilter2({
           <br />
           <Input
             name={name2}
-            value={state2}
+            value={state2||""}
             type="date"
             sx={{
               backgroundColor: "#ffffff",
@@ -76,3 +85,4 @@ export default function DateRangFilter2({
     </Grid>
   );
 }
+export default DateRangFilter2;

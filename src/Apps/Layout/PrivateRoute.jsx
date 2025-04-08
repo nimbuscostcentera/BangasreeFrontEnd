@@ -5,6 +5,6 @@ const PrivateRoute = ({ authenticated }) => {
   return authenticated ? <Outlet /> : <Navigate to="/" />;
 };
 PrivateRoute.propTypes = {
-  authenticated: PropTypes.bool.isRequired,
+  authenticated: PropTypes.string,
 };
 export default PrivateRoute;

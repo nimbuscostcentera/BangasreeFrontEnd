@@ -141,6 +141,6 @@ ReusableDataTable.propTypes = {
   setState: PropTypes.func,
   width: PropTypes.string,
   RedMark: PropTypes.bool,
-  height: PropTypes.number,
+  height: PropTypes.any,
   isloading: PropTypes.bool,
 };

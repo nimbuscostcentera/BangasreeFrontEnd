@@ -122,7 +122,7 @@ function AddCustNewScheme() {
   const [obj, setobj] = useState({
     SUUid: null,
     frequency: null,
-    EMI: 0,
+    EMI: null,
     NomineeName: null,
     Relation: null,
     NomineeIdProofNumber: null,
@@ -442,11 +442,17 @@ function AddCustNewScheme() {
   const HandleInput = (e) => {
     var key = e.target.name;
     var value = e.target.value;
-    let now = new moment().add(-12, "years");
-    let inputdate = new moment(e?.target?.value);
+    var curdate = moment();
+    let now = curdate.add(-12, "years");
+    let inputdate = moment(e?.target?.value);
     let diffdays = now.diff(inputdate, "days");
+  
+    var latest = moment();
+      let diffdays1 = latest.diff(inputdate, "days");
+   
     if (key == "EMI" && value > 0) {
       value = e.target.value;
+      console.log("hi1");
     }
     if (
       key == "NomineeIdProofPhoto" &&
@@ -454,14 +460,22 @@ function AddCustNewScheme() {
       key == "Nomineesignature"
     ) {
       value = null;
+          console.log("hi2");
     }
-    if (key === "NomineeDOB" && diffdays < 0) {
+    if (key == "NomineeDOB" && diffdays < 0 && diffdays1 < 0 ) {
+       console.log(
+      now.format("YYYY-MM-DD"),
+      latest.format("YYYY-MM-DD"),
+      diffdays1,
+      diffdays,key
+    );
       value = null;
     }
     if (key == "EMI" && e.target.value < 0) {
       value = 0;
+          console.log("hi3");
     }
-
+ console.log("hi4",value);
     setobj({ ...obj, [key]: value });
   };
   const Calculate = () => {
@@ -959,6 +973,7 @@ function AddCustNewScheme() {
                     label="Nominee Name"
                     fullWidth
                     type="text"
+                    value={obj?.NomineeName || ""}
                     variant="outlined"
                     inputProps={{ maxLength: 50 }}
                     InputLabelProps={{ shrink: true }}
@@ -984,6 +999,7 @@ function AddCustNewScheme() {
                   <TextField
                     size="small"
                     id="NomineePhone"
+                    value={obj?.NomineePhone || ""}
                     name="NomineePhone"
                     label="NomineePhone"
                     fullWidth
@@ -1013,6 +1029,7 @@ function AddCustNewScheme() {
                     size="small"
                     id="Relation"
                     name="Relation"
+                    value={obj?.Relation || ""}
                     label="Relation"
                     fullWidth
                     variant="outlined"
@@ -1100,6 +1117,7 @@ function AddCustNewScheme() {
                       InputLabelProps={{ shrink: true }}
                       id="NomineeDOB"
                       name="NomineeDOB"
+                      value={obj?.NomineeDOB || ""}
                       fullWidth
                       variant="outlined"
                       type="Date"
@@ -1162,11 +1180,11 @@ function AddCustNewScheme() {
                   sm={12}
                   md={12}
                   lg={12}
-                 sx={{
-                   display: "flex",
-                   justifyContent: "center",
-                   alignItems: "center",
-                 }}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
                 >
                   <Button
                     type={"submit"}
