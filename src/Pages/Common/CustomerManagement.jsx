@@ -12,6 +12,7 @@ import {
   Alert,
   AlertTitle,
   Stack,
+  Button,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -41,7 +42,7 @@ import {
 
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
 import useFetchCustomer from "../../Apps/CustomHook/useFetchCustomer";
-
+import useFetchAcode from "../../Apps/CustomHook/useFetchAcode";
 const CustomTheme = createTheme({
   breakpoints: {
     keys: ["xxs", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"],
@@ -62,6 +63,9 @@ const CustomTheme = createTheme({
 });
 
 export default function CustomerManagement() {
+  //--------------hooks------------
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const location = useLocation();
   const {
     AgentCode = "",
@@ -69,9 +73,10 @@ export default function CustomerManagement() {
     AreaID = "",
     Status = "",
   } = location.state || {};
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  //console.log("Customer");
+  //--------------hooks------------
+
+  //--------------states-----------
+
   const [params, setParams] = useState({
     alert: false,
     warning: null,
@@ -79,6 +84,11 @@ export default function CustomerManagement() {
     anchorEl: null,
   });
   const [CustID, setCustID] = useState([]);
+  const [custTransData, setCustTransData] = useState({
+    OldAgentCode: null,
+    NewAgentCode: null,
+    CustIDs: [],
+  });
   const [Filters, setFilters] = useState({
     Status: Status || null,
     startDate: "",
@@ -87,7 +97,57 @@ export default function CustomerManagement() {
     BranchId: BranchId || "",
     AreaID: AreaID || "",
   });
+  //--------------states----------------
 
+  const open = Boolean(params?.anchorEl);
+
+  //-------------------------Api Calling hooks-------------------------
+
+  //Login List for Table
+  const { userInfo, global } = UseFetchLogger();
+  //agent List
+  const { AgentCode: AgentListDD } = useFetchAcode();
+  //Customer CustomerApproval
+  const { isloading10, Msg10, error10, isError10, isSuccess10 } = useSelector(
+    (state) => state.CustStatus
+  );
+  //After Reg
+  const { msg7, isSuccess7, ToasterCust } = useSelector(
+    (state) => state?.CustomerReg
+  );
+  //Customer List
+  let addobj = {};
+  if (userInfo?.details?.Utype == 2) {
+    addobj.AgentCode = userInfo?.details?.AgentCode;
+  }
+  const { custList: CustomerDetails, isloading6 } = useFetchCustomer(
+    { ...global, ...Filters, ...addobj },
+    [Filters, isSuccess10, isSuccess7, navigate],
+    ""
+  );
+  //-------------------------Api Calling hooks-------------------------
+
+  //-----------------------permission List data Fetch----------------------
+  var parray = JSON.parse(window.localStorage.getItem("loggerPermission"));
+  var myPermission =
+    parray && parray.filter((i) => i?.PageName == "Manage Customer")[0];
+  //-----------------------permission List data Fetch----------------------
+
+  //----------------------------functions-------------------------------------
+
+  //bulk transfer
+  const HandleCustTransDataInput = (e) => {
+    let key = e.target.name;
+    let value = e.target.value;
+    setCustTransData((prev) => ({ ...prev, [key]: value }));
+  };
+  //transfer cust submit button
+  const TransferHandler = (e) => {
+    e.preventDefault();
+    let obj = { ...global, ...custTransData, CustIDs: CustID };
+    console.log(obj)
+  };
+  //Blocking cause checker open
   const handlePopoverOpen = (event, par) => {
     setParams({
       ...params,
@@ -95,7 +155,7 @@ export default function CustomerManagement() {
       anchorEl: event.currentTarget,
     });
   };
-
+  //Blocking cause checker close
   const handlePopoverClose = () => {
     setParams({
       ...params,
@@ -103,63 +163,7 @@ export default function CustomerManagement() {
       anchorEl: false,
     });
   };
-
-  const open = Boolean(params?.anchorEl);
-  //Login List for Table
-  const { userInfo, global } = UseFetchLogger();
-
-  //Customer CustomerApproval
-  const { isloading10, Msg10, error10, isError10, isSuccess10 } = useSelector(
-    (state) => state.CustStatus
-  );
-
-  //After Reg
-  const { msg7, isSuccess7, ToasterCust } = useSelector(
-    (state) => state?.CustomerReg
-  );
-
-  //permission List data Fetch
-  var parray = JSON.parse(window.localStorage.getItem("loggerPermission"));
-  var myPermission =
-    parray && parray.filter((i) => i?.PageName == "Manage Customer")[0];
-
-  let addobj = {};
-  if (userInfo?.details?.Utype == 2) {
-    addobj.AgentCode = userInfo?.details?.AgentCode;
-  }
-  //Customer List
-  const { custList: CustomerDetails, isloading6 } = useFetchCustomer(
-    { ...global, ...Filters, ...addobj},
-    [Filters, isSuccess10, isSuccess7, navigate],
-    ""
-  );
-
-  //alert show function
-  useEffect(() => {
-    if (CustID == undefined || CustID.length == 0) {
-      setParams({ ...params, alert: false, warning: null });
-    }
-  }, [CustID]);
-
-  //toaster
-  useEffect(() => {
-    if (!isloading10 && isSuccess10) {
-      toast.success(`${Msg10}`, { positions: toast.POSITION.TOP_RIGHT });
-      dispatch(ClearState10());
-      setCustID([]);
-    }
-    if (isError10 && !isloading10) {
-      toast.error(`${error10}`, { positions: toast.POSITION.TOP_RIGHT });
-      dispatch(ClearState10());
-    }
-    if (ToasterCust) {
-      toast.success(`${msg7}`, toast.POSITION.TOP_RIGHT);
-      dispatch(ClearToasterCust());
-      dispatch(ClearState7());
-    }
-  }, [isSuccess10, isError10, ToasterCust]);
-
-  //function of status update
+  //Status Approve
   const ApprovedStatusHandler = () => {
     let final;
     if (userInfo?.details?.Utype === 2) {
@@ -176,7 +180,7 @@ export default function CustomerManagement() {
     const UserData = { Status: true, UUid: CustID, ...global, ...final };
     dispatch(CutomerStatusUpdate(UserData));
   };
-
+  //Status reject
   const RejectStatusHandler = () => {
     let final;
     if (userInfo?.details?.Utype === 2) {
@@ -193,6 +197,56 @@ export default function CustomerManagement() {
     const UserData = { Status: 0, UUid: CustID, ...global, ...final };
     dispatch(CutomerStatusUpdate(UserData));
   };
+  //Navigate to edit page
+  function ViewEditDetailsButton() {
+    if (CustID.length > 1) {
+      setParams({
+        ...params,
+        alert: true,
+        warning: "Select 1 Customer to View and edit details",
+      });
+    } else {
+      var a = CustID[0];
+      navigate("/superuser/vieweditcustomer", { state: { CustUUid: a } });
+    }
+  }
+  //new scheme Assign to Customer
+  function CustNewSchemeAssign() {
+    var objArr = [];
+    if (CustID.length > 1) {
+      setParams({
+        ...params,
+        alert: true,
+        warning: "Select 1 Customer to Assign Gold Schemes",
+      });
+    } else if (CustID.length === 1) {
+      objArr = CustomerDetails.filter((i) => {
+        return i.UUid === CustID[0];
+      });
+      if (objArr[0].Status == 1) {
+        navigate("/executive/addcustscheme", {
+          state: { CustUUid: objArr[0] },
+        });
+      } else {
+        setParams({
+          ...params,
+          alert: true,
+          warning: "The Selected Customer is Not active",
+        });
+      }
+    }
+  }
+  //handle filter
+  const FilterHandler = (e) => {
+    var key = e.target.name;
+    var value = e.target.value;
+    console.log(key, value);
+    setFilters({ ...Filters, [key]: value });
+  };
+  //----------------------------functions-------------------------------------
+
+  //-------------------------------others---------------------------------------
+  //Columns of table
   const columns = [
     {
       ...GRID_CHECKBOX_SELECTION_COL_DEF,
@@ -268,62 +322,45 @@ export default function CustomerManagement() {
       },
     },
   ];
-
-  function ViewEditDetailsButton() {
-    if (CustID.length > 1) {
-      setParams({
-        ...params,
-        alert: true,
-        warning: "Select 1 Customer to View and edit details",
-      });
-    } else {
-      var a = CustID[0];
-      navigate("/superuser/vieweditcustomer", { state: { CustUUid: a } });
-    }
-  }
-
-  function CustNewSchemeAssign() {
-    var objArr = [];
-    if (CustID.length > 1) {
-      setParams({
-        ...params,
-        alert: true,
-        warning: "Select 1 Customer to Assign Gold Schemes",
-      });
-    } else if (CustID.length === 1) {
-      objArr = CustomerDetails.filter((i) => {
-        return i.UUid === CustID[0];
-      });
-      if (objArr[0].Status == 1) {
-        navigate("/executive/addcustscheme", {
-          state: { CustUUid: objArr[0] },
-        });
-      } else {
-        setParams({
-          ...params,
-          alert: true,
-          warning: "The Selected Customer is Not active",
-        });
-      }
-    }
-  }
-
-  //handle filter
-  const FilterHandler = (e) => {
-    var key = e.target.name;
-    var value = e.target.value;
-    console.log(key, value);
-    setFilters({ ...Filters, [key]: value });
-  };
-
+  //Current date
   let currentdate = moment().format("YYYY-MM-DD");
-
+  //Status array with value
   let statusData = [
     { Status: 1, value: "Active" },
     { Status: 0, value: "InActive" },
     { Status: 3, value: "Pending" },
     { Status: 2, value: "Block" },
   ];
+  //-------------------------------others---------------------------------------
+
+  //---------------------------------useEffects-----------------------------------
+  //alert show function
+  useEffect(() => {
+    if (CustID == undefined || CustID.length == 0) {
+      setParams({ ...params, alert: false, warning: null });
+    }
+  }, [CustID]);
+  //toaster
+  useEffect(() => {
+    if (!isloading10 && isSuccess10) {
+      toast.success(`${Msg10}`, { positions: toast.POSITION.TOP_RIGHT });
+      dispatch(ClearState10());
+      setCustID([]);
+    }
+    if (isError10 && !isloading10) {
+      toast.error(`${error10}`, { positions: toast.POSITION.TOP_RIGHT });
+      dispatch(ClearState10());
+    }
+    if (ToasterCust) {
+      toast.success(`${msg7}`, toast.POSITION.TOP_RIGHT);
+      dispatch(ClearToasterCust());
+      dispatch(ClearState7());
+    }
+  }, [isSuccess10, isError10, ToasterCust]);
+  useEffect(() => {
+    setFilters((prev) => ({ ...prev, AgentCode: custTransData?.OldAgentCode }));
+  },[custTransData?.OldAgentCode])
+  //---------------------------------useEffects-----------------------------------
 
   return (
     <ThemeProvider theme={CustomTheme}>
@@ -455,8 +492,7 @@ export default function CustomerManagement() {
           lg={7.5}
           xl={5.6}
           xxl={5.5}
-          mt={1}
-          mb={2}
+          my={2}
           display={"flex"}
           justifyContent={{
             mid: "center",
@@ -490,10 +526,15 @@ export default function CustomerManagement() {
                 startDate: "",
                 endDate: "",
               });
+              setCustTransData({
+                OldAgentCode: null,
+                NewAgentCode: null,
+                CustIDs:[]
+              })
             }}
           />
 
-          {myPermission?.Edit == 1 && global?.Utype!==2 ? (
+          {myPermission?.Edit == 1 && global?.Utype !== 2 ? (
             <>
               {" "}
               <IconOnOffButton
@@ -525,6 +566,7 @@ export default function CustomerManagement() {
             </>
           ) : null}
         </Grid>
+
         <Grid
           item
           sm={12}
@@ -533,7 +575,7 @@ export default function CustomerManagement() {
           lg={3}
           xl={1.5}
           xxl={2}
-          mt={{ xl: 4, lg: 1.5, md: 1.5 }}
+          mt={{ xl: 2, lg: 1.5, md: 1.5 }}
           mb={1}
         >
           <ReusableDropDown4
@@ -550,6 +592,60 @@ export default function CustomerManagement() {
             onChange={FilterHandler}
           />
         </Grid>
+
+        {/* <Grid
+          item
+          sm={3}
+          xs={12}
+          md={2.5}
+          lg={2.4}
+          xl={2}
+          xxl={1.5}
+          sx={{ color: "grey", fontSize: "16px", mt: 3 }}
+        >
+          Agent Transfer :
+        </Grid>
+
+        <Grid item sm={6} xs={12} md={4} lg={4} xl={3} my={2}>
+          <ReusableDropDown4
+            Field={custTransData?.OldAgentCode}
+            name={"OldAgentCode"}
+            uniquekey={"AgentCode"}
+            ObjectKey={["AgentCode", "Name"]}
+            data={AgentListDD || []}
+            deselectvalue={true}
+            disabled={false}
+            id={"AgentCode"}
+            label={"from Old Agent"}
+            setState={setCustTransData}
+            state={custTransData}
+            onChange={HandleCustTransDataInput}
+          />
+        </Grid>
+
+        <Grid item sm={6} xs={12} md={4} lg={4} xl={3} my={2} mx={3}>
+          <ReusableDropDown4
+            Field={custTransData?.NewAgentCode}
+            uniquekey={"AgentCode"}
+            name={"NewAgentCode"}
+            ObjectKey={["AgentCode", "Name"]}
+            data={AgentListDD || []}
+            deselectvalue={true}
+            disabled={false}
+            id={"AgentCode"}
+            label={"Assign To New Agent"}
+            setState={setCustTransData}
+            state={custTransData}
+            onChange={HandleCustTransDataInput}
+          />
+        </Grid>
+
+        <Grid item sm={6} xs={12} md={4} lg={3} xl={2} mt={3} mx={1}>
+          <Button variant="contained" color="success" onClick={TransferHandler}>
+            Transfer
+          </Button>
+        </Grid> */}
+
         <Grid item sm={12} xs={12} md={12} lg={12}>
           <ReusableDataTable
             uniqueid={"UUid"}

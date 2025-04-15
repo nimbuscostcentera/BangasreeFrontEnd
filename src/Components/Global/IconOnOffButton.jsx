@@ -32,7 +32,7 @@ export default function IconOnOffButton({
   textcolor2,mt,mb
 }) {
   return (
-    <StyledBox mr={1} mt={mt || 2} mb={0 || mb}>
+    <StyledBox mr={1} mt={mt || 0} mb={0 || mb}>
       {icon1 ? (
         <StyledBox>
           <Typography color={textcolor1}>{h1}</Typography>

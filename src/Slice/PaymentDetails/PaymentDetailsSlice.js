@@ -12,7 +12,6 @@ export const PaymentDetailList = createAsyncThunk(
       };
 
       const { data } = await AxiosInstance.post(URL, UserData, config);
-      console.log(data?.response);
       return data;
     } catch (error) {
       return rejectWithValue(error.response.data.response);

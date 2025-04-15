@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
+
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import PropsType from "prop-types";
 
-export default function ReusableDropDown4({
+function ReusableDropDown4({
   label,
   data,
   id,
@@ -13,13 +13,14 @@ export default function ReusableDropDown4({
   ObjectKey,
   Field,
   uniquekey,
+  name,
   deselectvalue,
   onChange,
   onClick,
 }) {
   var a = [];
   var i, k;
-  var n = ObjectKey.length - 1;
+  var n = ObjectKey?.length - 1;
   if (n === 0) {
     a[0] = ObjectKey;
   } else {
@@ -38,7 +39,7 @@ export default function ReusableDropDown4({
         id={id}
         disabled={disabled}
         value={Field}
-        name={uniquekey}
+        name={name||uniquekey}
         onChange={onChange}
         onOpen={onClick}
         onClose={onClick}
@@ -68,3 +69,17 @@ export default function ReusableDropDown4({
     </FormControl>
   );
 }
+ReusableDropDown4.propTypes = {
+  label: PropsType.string,
+  data: PropsType.array,
+  id: PropsType.string,
+  disabled: PropsType.bool,
+  ObjectKey: PropsType.array,
+  Field: PropsType.string,
+  uniquekey: PropsType.string,
+  name:PropsType.string,
+  deselectvalue: PropsType.bool,
+  onChange: PropsType.func,
+  onClick: PropsType.func,
+};
+export default ReusableDropDown4;

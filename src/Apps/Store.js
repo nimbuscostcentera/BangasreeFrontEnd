@@ -86,6 +86,7 @@ import CollectionEntrySlice from "../Slice/Collection/CollectionEntrySlice";
 import DeleteCollectionSlice from "../Slice/Collection/DeleteCollectionSlice";
 import LotListSlice from "../Slice/Collection/LotListSlice";
 import LotEntryslice from "../Slice/Collection/LotEntrySlice";
+import TotCollectionShowSlice from "../Slice/Collection/TotCollectionSlice";
 
 import MCShowSlice from "../Slice/Collection/MCShowSlice";
 import BonusUpdateSlice from "../Slice/Collection/BonusUpdateSlice";
@@ -209,6 +210,7 @@ const rootReducer = combineReducers({
   alllots: LotListSlice,
   lotentry: LotEntryslice,
   logs: LogBookListSlice,
+  totcol: TotCollectionShowSlice,
 });
 const persistConfig = {
   key: "root",

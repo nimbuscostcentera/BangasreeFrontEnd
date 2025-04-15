@@ -30,6 +30,7 @@ import GenCertificateIcon from "../../Components/styledComponent/GenCertificateI
 import VerifiedIcon from "@mui/icons-material/Verified";
 import BackspaceIcon from "@mui/icons-material/Backspace";
 import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
+import LockIcon from "@mui/icons-material/Lock";
 
 import IconOnOffButton from "../../Components/Global/IconOnOffButton";
 import ReusableDataTable from "../../Components/Global/ReusableTable";
@@ -58,8 +59,8 @@ const CustomTheme = createTheme({
       sm: 475,
       mid: 550,
       md: 813,
-      lg: 970,
-      l: 1060,
+      lg:1017,
+      l: 1080,
       xl: 1175,
       xxl: 1210,
       xxxl: 1345,
@@ -532,7 +533,6 @@ function SubscriptionManagement() {
                   });
                 }}
                 textcolor1={disbool2 ? "green" : "grey"}
-                mb={-1}
               />
             ) : null}
             {myPermission?.Create == 1 ? (
@@ -591,21 +591,20 @@ function SubscriptionManagement() {
             <Grid
               item
               xs={12}
-              sm={5.5}
+              sm={6}
               lg={2.4}
+              xxl={2}
               md={3.8}
-              pt={0.5}
               display={"flex"}
               justifyContent={{
                 xxl: "flex-start",
                 xl: "flex-start",
                 lg: "flex-start",
-                md: "center",
+                md: "start",
                 sm: "center",
                 xs: "center",
               }}
               flexWrap={"wrap"}
-              pl={1}
             >
               <IconOnOffButton
                 icon1={
@@ -624,8 +623,9 @@ function SubscriptionManagement() {
             <Grid
               item
               xs={12}
-              sm={5.5}
-              lg={2.8}
+              sm={6}
+              lg={2.6}
+              xxl={2.2}
               md={4}
               display={"flex"}
               justifyContent={{
@@ -638,11 +638,7 @@ function SubscriptionManagement() {
               }}
               flexWrap={"wrap"}
             >
-              <div
-                style={{
-                  paddingTop: "20px",
-                }}
-              >
+              <div>
                 <ReusableDialogue
                   h1={"Deactivate Maturity"}
                   textcolor={
@@ -683,23 +679,22 @@ function SubscriptionManagement() {
             </Grid>
             <Grid
               item
-              xxl={2.5}
-              xl={2.5}
-              lg={2.5}
+              xxl={1.8}
+              xl={2.3}
+              lg={2.2}
               md={4}
-              sm={5.5}
+              sm={6}
               xs={12}
               display={"flex"}
               justifyContent={{
                 xxl: "flex-start",
                 xl: "flex-start",
                 lg: "flex-start",
-                md: "center",
+                md: "end",
                 sm: "center",
                 xs: "center",
               }}
               flexWrap={"wrap"}
-              pl={1}
             >
               <IconOnOffButton
                 icon1={
@@ -722,21 +717,20 @@ function SubscriptionManagement() {
             <Grid
               item
               xs={12}
-              sm={5.5}
-              lg={2.4}
+              sm={6}
+              lg={2.6}
+              xxl={2.2}
               md={3.8}
-              pt={0.5}
               display={"flex"}
               justifyContent={{
                 xxl: "flex-start",
                 xl: "flex-start",
                 lg: "flex-start",
-                md: "center",
+                md: "start",
                 sm: "center",
                 xs: "center",
               }}
               flexWrap={"wrap"}
-              pl={1}
             >
               <ReusableDialogue
                 h1={"Deactivate Bonus"}
@@ -777,11 +771,11 @@ function SubscriptionManagement() {
             </Grid>
             <Grid
               item
-              xxl={2.5}
-              xl={2.8}
-              lg={2.8}
-              md={3.8}
-              sm={5.5}
+              xxl={1.8}
+              xl={2}
+              lg={2}
+              md={4}
+              sm={6}
               xs={12}
               display={"flex"}
               justifyContent={{
@@ -818,23 +812,22 @@ function SubscriptionManagement() {
             </Grid>
             <Grid
               item
-              xxl={2.5}
+              xxl={1.8}
               xl={2.5}
               lg={2.5}
-              md={3.8}
-              sm={5.5}
+              md={4.2}
+              sm={6}
               xs={12}
               display={"flex"}
               justifyContent={{
                 xxl: "flex-start",
                 xl: "flex-start",
                 lg: "flex-start",
-                md: "center",
+                md: "end",
                 sm: "center",
                 xs: "center",
               }}
               flexWrap={"wrap"}
-              ml={1}
             >
               <ReusableDialogue
                 h1={" Premature A/C."}
@@ -883,11 +876,11 @@ function SubscriptionManagement() {
           md={4}
           sm={6}
           xs={12}
-          mt={2}
           sx={{
             display: "flex",
-            justifyContent: "center",
+            justifyContent: { md: "start", sm: "center", xs: "center" },
             alignItems: "center",
+            ml: 0,
           }}
         >
           <FormGroup>
@@ -900,23 +893,23 @@ function SubscriptionManagement() {
                   }}
                 />
               }
-              sx={{ color: "#000000", mt: 0.7 }}
+              sx={{ color: "#000000" }}
             />
           </FormGroup>
         </Grid>
         <Grid
           item
-          xxl={2}
-          xl={2.2}
+          xxl={1.8}
+          xl={1.8}
           lg={2.2}
           md={4}
           sm={6}
           xs={12}
-          mt={2}
           sx={{
             display: "flex",
-            justifyContent: "center",
+            justifyContent: { md: "center", sm: "center", xs: "center" },
             alignItems: "center",
+            flexWrap: "wrap",
           }}
         >
           <FormGroup>
@@ -929,23 +922,25 @@ function SubscriptionManagement() {
                   }}
                 />
               }
-              sx={{ color: "#000000", mt: 0.7 }}
+              sx={{ color: "#000000" }}
             />
           </FormGroup>
         </Grid>
         <Grid
           item
-          xxl={2}
-          xl={2.2}
-          lg={2.2}
+          xxl={3}
+          xl={3}
+          lg={3}
           md={4}
           sm={12}
           xs={12}
-          mt={1.1}
           sx={{
             display: "flex",
-            justifyContent: "center",
+            justifyContent: { md: "end", sm: "center", xs:"center"},
             alignItems: "center",
+            my: {
+              sm: 2,
+            },
           }}
         >
           <IconOnOffButton
@@ -959,19 +954,22 @@ function SubscriptionManagement() {
                 BonusStatus: "",
               });
             }}
+            // h2={"Lock A/C."}
+            // Tooltip2={"Lock A/C."}
+            // icon2={<LockIcon fontSize="small" />}
+            // funcTrigger2={() => {}}
           />
         </Grid>
         <Grid
           item
           sm={5.5}
           xs={12}
-          md={5}
-          lg={2.5}
-          pt={2.5}
+          md={5.8}
+          lg={2.2}
           display={"flex"}
           justifyContent={"flex-end"}
           flexWrap={"wrap"}
-          pl={3}
+          mr={1}
         >
           <ReusableDropDown4
             setState={setFilters}
@@ -996,13 +994,11 @@ function SubscriptionManagement() {
           item
           sm={5.5}
           xs={12}
-          md={5}
-          lg={2.5}
-          pt={2.5}
+          md={5.8}
+          lg={2.2}
           display={"flex"}
           justifyContent={"flex-end"}
           flexWrap={"wrap"}
-          pl={3}
         >
           <ReusableDropDown4
             setState={setFilters}

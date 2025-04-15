@@ -28,7 +28,6 @@ function DateRangFilter2({
         width: "fit-content",
         justifyContent: "center",
         borderRadius: 1,
-        my: 0.8,
       }}
     >
       <Grid item sx={{ color: "#787878", mr: 1 }}>
@@ -44,7 +43,6 @@ function DateRangFilter2({
               borderRadius: 1,
               border: "1px solid #D0D0D0",
               paddingX: 1.5,
-              paddingY: 0.5,
             }}
             inputProps={{ max: state2 || MaxDate1 }}
             onChange={InputHandler}
@@ -70,7 +68,6 @@ function DateRangFilter2({
               borderRadius: 1,
               border: "1px solid #D0D0D0",
               paddingX: 1.5,
-              paddingY: 0.5,
             }}
             inputProps={{ min: state1, max: MaxDate2 }}
             onChange={InputHandler}

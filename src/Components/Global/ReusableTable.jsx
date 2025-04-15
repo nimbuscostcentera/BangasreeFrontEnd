@@ -65,20 +65,16 @@ export default function ReusableDataTable({
   height,
   isloading,
 }) {
-  const [isloading1, setIsLoading1] = useState(true);
+  const [isloading1, setIsLoading1] = useState(isloading||true);
   useEffect(() => {
-    if (Array.isArray(rows) && rows?.length !== 0) {
+    if (!isloading && rows?.length == 0) {
       const delay2 = setTimeout(() => {
         setIsLoading1(false);
-      }, 500); // 2000 milliseconds delay
+      }, 2000); // 2000 milliseconds delay
       return () => clearTimeout(delay2);
-    } else if (!isloading && Array.isArray(rows) && rows?.length == 0) {
-      const delay2 = setTimeout(() => {
-        setIsLoading1(false);
-      }, 4000); // 2000 milliseconds delay
-      return () => clearTimeout(delay2);
-    } else if (!isloading) {
-      setIsLoading1(true);
+    }
+    else if (!isloading && rows?.length !== 0) {
+      setIsLoading1(false);
     }
   }, [rows, isloading]);
 
