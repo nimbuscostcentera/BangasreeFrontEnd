@@ -50,16 +50,15 @@ import {
   LotEntryFunc,
   ClearStateLotEntry,
 } from "../../Slice/Collection/LotEntrySlice";
-// import {
-//   FetchTotCollection,
-//   ClearStateTotColl,
-// } from "../../Slice/Collection/TotCollectionSlice";
+import {
+  FetchTotCollection,
+  ClearStateTotColl,
+} from "../../Slice/Collection/TotCollectionSlice";
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
 import useFetchAcode from "../../Apps/CustomHook/useFetchAcode";
 import PropTypes from "prop-types";
 const CustomFooter = ({ count }) => {
   const {
-    rowSelected,
     totalColl: totCol,
     totalSub: totSub,
     comper: CommissionPer,
@@ -69,6 +68,7 @@ const CustomFooter = ({ count }) => {
   return (
     <Box
       sx={{
+        backgroundColor: "#0f45ba",
         color: "white",
         minHeight: "fit-content!important",
         overflow: "auto",
@@ -78,19 +78,19 @@ const CustomFooter = ({ count }) => {
         },
       }}
     >
-      <Table size="small" style={{ width: "100%", backgroundColor: "#0f45ba" }}>
+      <Table size="small">
         <TableBody>
           <TableRow>
-            <TableCell
+            {/* <TableCell
               sx={{
                 textAlign: "end",
                 color: "white",
                 borderRight: "1px solid #8c8c8c",
               }}
             >
-              count
-            </TableCell>
-            <TableCell
+              <Typography>count</Typography>
+            </TableCell> */}
+            {/* <TableCell
               sx={{
                 textAlign: "end",
                 color: "white",
@@ -98,7 +98,7 @@ const CustomFooter = ({ count }) => {
               }}
             >
               {rowSelected || 0}
-            </TableCell>
+            </TableCell> */}
             <TableCell
               sx={{
                 textAlign: "end",
@@ -106,17 +106,7 @@ const CustomFooter = ({ count }) => {
                 borderRight: "1px solid #8c8c8c",
               }}
             >
-              Total Collection
-            </TableCell>
-
-            <TableCell
-              sx={{
-                textAlign: "end",
-                color: "white",
-                borderRight: "1px solid #8c8c8c",
-              }}
-            >
-              {`₹${totCol || 0}/-`}
+              <Typography>Total Collection</Typography>
             </TableCell>
 
             <TableCell
@@ -126,7 +116,22 @@ const CustomFooter = ({ count }) => {
                 borderRight: "1px solid #8c8c8c",
               }}
             >
-              Total Submission
+              <Typography
+                sx={{
+                  textAlign: "end",
+                  color: "white",
+                }}
+              >{`₹${totCol || 0}/-`}</Typography>
+            </TableCell>
+
+            <TableCell
+              sx={{
+                textAlign: "end",
+                color: "white",
+                borderRight: "1px solid #8c8c8c",
+              }}
+            >
+              <Typography>Tot. Submitted Amt.</Typography>{" "}
             </TableCell>
             <TableCell
               sx={{
@@ -135,7 +140,7 @@ const CustomFooter = ({ count }) => {
                 borderRight: "1px solid #8c8c8c",
               }}
             >
-              {`₹${totSub || 0}/-`}
+              <Typography>{`₹${totSub || 0}/-`}</Typography>
             </TableCell>
             <TableCell
               sx={{
@@ -144,7 +149,7 @@ const CustomFooter = ({ count }) => {
                 borderRight: "1px solid #8c8c8c",
               }}
             >
-              Commission(%)
+              <Typography>Commission Percentage</Typography>
             </TableCell>
             <TableCell
               sx={{
@@ -153,7 +158,7 @@ const CustomFooter = ({ count }) => {
                 borderRight: "1px solid #8c8c8c",
               }}
             >
-              {`${agentcode ? CommissionPer : 0}%`}
+              <Typography>{`${agentcode ? CommissionPer : 0}%`}</Typography>
             </TableCell>
             <TableCell
               sx={{
@@ -162,7 +167,7 @@ const CustomFooter = ({ count }) => {
                 borderRight: "1px solid #8c8c8c",
               }}
             >
-              Commission(₹)
+              <Typography>Commission</Typography>{" "}
             </TableCell>
             <TableCell
               sx={{
@@ -171,7 +176,9 @@ const CustomFooter = ({ count }) => {
                 borderRight: "1px solid #8c8c8c",
               }}
             >
-              {`₹${agentcode ? Math.floor(TotComission) : 0}/-`}
+              <Typography>{`₹${
+                agentcode ? Math.floor(TotComission) : 0
+              }/-`}</Typography>
             </TableCell>
           </TableRow>
         </TableBody>
@@ -257,7 +264,6 @@ function ManageCollections() {
     PayType = null,
   } = location?.state || {};
   const LotId = location?.state?.LotId || null;
-  //-----------------------------------states------------------------------------------
   const [subData, setSubData] = useState({
     CollectedAmt: null,
     receiptPic: "",
@@ -287,20 +293,24 @@ function ManageCollections() {
     NotAgentPayment: null,
     BranchId: BranchId || null,
     AreaID: AreaID || null,
-    LotId: LotId || null,
+    page: 0,
+    pageSize: 100,
+    totalPages: 0,
+    total: 0,
+    SearchKey: "",
   });
-  //-----------------------------------------API------------------------------------------
-
   //Login List for Table
   const { global, userInfo } = UseFetchLogger();
+
   //AgentCode
   const { AgentCode } = useFetchAcode({ Status: 1 });
+
   // collection List
   const { isloading29 } = useSelector((state) => state.CustPayDetails);
   //total Collection
-  // const { isTotCollectionSuccess, TotCollectionList } = useSelector(
-  //   (state) => state.totcol
-  // );
+  const { isTotCollectionSuccess, TotCollectionList } = useSelector(
+    (state) => state.totcol
+  );
   //lot entry
   const {
     isLotEntryLoading,
@@ -313,22 +323,168 @@ function ManageCollections() {
   const { isloading75, Resp75, error75, isError75, isSuccess75 } = useSelector(
     (state) => state.DelColl
   );
-  //-------------------------------------function-----------------------------------------
+  //permission List data Fetch
+  var parray = JSON.parse(window.localStorage.getItem("loggerPermission"));
+  var myPermission =
+    parray && parray.filter((i) => i?.PageName == "Manage Collections")[0];
 
+  //Delete coll toaster response
+  useEffect(() => {
+    if (isSuccess75 && !isloading75) {
+      toast.success(`${Resp75}`, { positions: toast.POSITION.TOP_RIGHT });
+      dispatch(ClearState75());
+      setPaymentID([]);
+    }
+    if (isError75 && !isloading75) {
+      toast.error(`${error75}`, { positions: toast.POSITION.TOP_RIGHT });
+      dispatch(ClearState75());
+    }
+  }, [isSuccess75, isError75]);
+  //tot collection fetch
+  useEffect(() => {
+    if (
+      Filters?.AgentCode !== null &&
+      Filters?.AgentCode !== "" &&
+      Filters?.AgentCode !== undefined
+    ) {
+      dispatch(FetchTotCollection({ ...global, ...Filters }));
+    }
+  }, [
+    Filters?.AgentCode,
+    Filters?.PaymentStatus,
+    Filters?.startDate,
+    Filters?.endDate,
+  ]);
+  //total collection view
+  useEffect(() => {
+    if (TotCollectionList && isTotCollectionSuccess && Filters?.AgentCode) {
+      let obj = TotCollectionList || {}; 
+      console.log(TotCollectionList);
+       let obj2 = AgentCode?.filter(
+         (item) => item?.AgentCode == Filters?.AgentCode
+       )[0];
+      setCount((prev) => ({
+        ...prev,
+        totalColl: obj?.TotCollection,
+        totalSub: obj?.TotSubmission,
+        comper: obj2?.Commision,
+        com: (obj2?.Commision * obj?.TotCollection) / 100,
+        agentcode: Filters?.AgentCode,
+      }));
+    }
+    if(Filters?.AgentCode == null || Filters?.AgentCode == "" || Filters?.AgentCode == undefined){
+      setCount({
+        totalColl: 0,
+        totalSub: 0,
+        com: 0,
+        comper: 0,
+        rowSelected: 0,
+        agentcode: null,
+      });
+    }
+    dispatch(ClearStateTotColl());
+  }, [isTotCollectionSuccess, TotCollectionList, Filters?.AgentCode]);
+  //toaster
+  useEffect(() => {
+    if (!isLotEntryLoading && isLotEntrySuccess) {
+      toast.success(LotEntrySuccessMsg, {
+        autoClose: 5000,
+        position: "top-right",
+      });
+      setSubData({ CollectedAmt: null, receiptPic: null });
+      ImageRef.current.value = "";
+    }
+    if (!isLotEntryLoading && isLotEntryError) {
+      toast.error(LotEntryErrorMsg, { autoClose: 5000, position: "top-right" });
+    }
+    dispatch(ClearStateLotEntry());
+  }, [isLotEntryLoading, isLotEntryError, isLotEntrySuccess]);
+
+  //fetch payment detail calculation by selecting
+  useEffect(() => {
+    const fetchPaymentDetails = async () => {
+      var obj22 = { ...global, ...Filters };
+      if (LotId) {
+        obj22.LotId = LotId;
+      }
+      if (userInfo?.details?.Utype === 2) {
+        obj22.AgentCode = userInfo?.details?.AgentCode;
+      } else if (userInfo?.details?.Utype === 1) {
+        obj22.SuperUserID = userInfo?.details?.SuperUserID;
+      }
+      dispatch(PaymentDetailList({ ...obj22, ...global }))
+        .unwrap()
+        .then((res) => {
+          setPaymentDetails(res?.response);
+          let {
+            page = 1,
+            pageSize = 100,
+            total = 0,
+            totalPages = 0,
+          } = res?.pagination || {};
+
+          setFilters((prev) => ({
+            ...prev,
+            page: page,
+            pageSize: pageSize,
+            total: total,
+            totalPages: totalPages,
+          }));
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    fetchPaymentDetails();
+  }, [
+    Filters?.AgentCode,
+    Filters?.AreaID,
+    Filters?.BranchId,
+    Filters?.NotAgentPayment,
+    Filters?.PaymentStatus,
+    Filters?.PaymentType,
+    Filters?.startDate,
+    Filters?.endDate,
+    Filters?.page,
+    Filters?.pageSize,
+    Filters?.SearchKey,
+    isSuccess75,
+    isLotEntrySuccess,
+  ]);
+
+  useEffect(() => {
+    if (
+      global?.Utype == 1 &&
+      Filters?.AgentCode !== undefined &&
+      Filters?.AgentCode !== null &&
+      Filters?.AgentCode !== ""
+    ) {
+      let element = AgentCode.find((i) => i?.AgentCode === Filters?.AgentCode);
+
+      setCount((prev) => ({
+        ...prev,
+        agentcode: Filters?.AgentCode,
+        comper: element?.Commision || 0,
+      }));
+    } else if (global?.Utype == 2) {
+      setCount((prev) => ({
+        ...prev,
+        agentcode: userInfo?.details?.AgentCode,
+        comper: userInfo?.details?.Commision,
+      }));
+    }
+  }, [
+    PayType,
+    Filters?.AgentCode,
+    Filters?.startDate,
+    Filters?.endDate,
+    PaymentDetails,
+  ]);
   //handle filter
   const FilterHandler = (e) => {
     var key = e.target.name;
     var value = e.target.value;
     setFilters({ ...Filters, [key]: value });
-    setCount({
-      totalColl: 0,
-      totalSub: 0,
-      com: 0,
-      comper: 0,
-      rowSelected: 0,
-      agentcode: acode || null,
-    });
-    setPaymentID([]);
   };
   //Edit collection navigation
   const GoToEditCollection = () => {
@@ -493,205 +649,8 @@ function ManageCollections() {
       });
     }
   };
-  const fetchPaymentDetails = async () => {
-    var obj22 = { ...global, ...Filters };
-    if (LotId) {
-      obj22.LotId = LotId;
-    }
-    if (userInfo?.details?.Utype === 2) {
-      obj22.AgentCode = userInfo?.details?.AgentCode;
-    } else if (userInfo?.details?.Utype === 1) {
-      obj22.SuperUserID = userInfo?.details?.SuperUserID;
-    }
-    dispatch(PaymentDetailList({ ...obj22, ...global }))
-      .unwrap()
-      .then((res) => {
-        setCount({
-          totalColl: 0,
-          totalSub: 0,
-          com: 0,
-          comper: 0,
-          rowSelected: 0,
-          agentcode: acode || null,
-        });
-        setPaymentID([]);
-        setPaymentDetails(res?.response);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-  //--------------------------------------permission List data Fetch-------------------------------
-  var parray = JSON.parse(window.localStorage.getItem("loggerPermission"));
-  var myPermission =
-    parray && parray.filter((i) => i?.PageName == "Manage Collections")[0];
-
-  //------------------------------------------useEffect-------------------------------------------
-
-  //Delete coll toaster response
-  useEffect(() => {
-    if (isSuccess75 && !isloading75) {
-      toast.success(`${Resp75}`, { positions: toast.POSITION.TOP_RIGHT });
-      dispatch(ClearState75());
-      setPaymentID([]);
-    }
-    if (isError75 && !isloading75) {
-      toast.error(`${error75}`, { positions: toast.POSITION.TOP_RIGHT });
-      dispatch(ClearState75());
-    }
-  }, [isSuccess75, isError75]);
-
-  //toaster for lot entry
-  useEffect(() => {
-    if (!isLotEntryLoading && isLotEntrySuccess) {
-      toast.success(LotEntrySuccessMsg, {
-        autoClose: 5000,
-        position: "top-right",
-      });
-      setSubData({ CollectedAmt: null, receiptPic: null });
-      ImageRef.current.value = "";
-    }
-    if (!isLotEntryLoading && isLotEntryError) {
-      toast.error(LotEntryErrorMsg, { autoClose: 5000, position: "top-right" });
-    }
-    dispatch(ClearStateLotEntry());
-  }, [isLotEntryLoading, isLotEntryError, isLotEntrySuccess]);
-
-  //fetch payment list
-  useEffect(() => {
-    fetchPaymentDetails();
-  }, [
-    Filters?.AgentCode,
-    Filters?.AreaID,
-    Filters?.BranchId,
-    Filters?.NotAgentPayment,
-    Filters?.PaymentStatus,
-    Filters?.PaymentType,
-    Filters?.startDate,
-    Filters?.endDate,
-    isSuccess75,
-    isLotEntrySuccess,
-  ]);
-
-  //Commisiion Calculation along with collection details
-  useEffect(() => {
-    let submittedAmt=0, CollectedAmt=0, commission=0, percentage=0,all=0;
-    let onj = AgentCode?.filter((item) => item?.AgentCode == Filters?.AgentCode)[0];
-    percentage = parseFloat(onj?.Commision);
-    console.log(percentage, onj);
-    let selectedArray = PaymentDetails?.filter((item) =>
-      PaymentID.includes(item?.CollectionId)
-    );
-    selectedArray?.forEach((element) => {
-      if (element?.PaymentStatus == 1) {
-        CollectedAmt += parseFloat(element?.totcolection);
-      }
-      if (element?.PaymentStatus == 2 || element?.PaymentStatus == 3) {
-        submittedAmt += parseFloat(element?.totcolection);
-      }
-      if (
-        element?.PaymentStatus !== 4 &&
-        Filters?.AgentCode !== null &&
-        Filters?.AgentCode !== undefined &&
-        Filters?.AgentCode !== "" &&
-        Filters?.AgentCode !== -1
-      ) {
-        all += parseFloat(element?.totcolection);
-        commission = parseFloat(all * percentage * 0.01).toFixed(2);
-      }
-    });
-      setCount({
-        rowSelected: PaymentID?.length,
-        totalColl: parseFloat(CollectedAmt).toFixed(2),
-        totalSub: parseFloat(submittedAmt).toFixed(2),
-        agentcode: Filters?.AgentCode || acode,
-        comper: parseFloat(percentage),
-        com: parseFloat(commission).toFixed(2),
-      });
-  }, [Filters?.AgentCode,acode,PaymentID]);
-  
-  // useEffect(() => {
-  //   if (
-  //     global?.Utype == 1 &&
-  //     Filters?.AgentCode !== undefined &&
-  //     Filters?.AgentCode !== null &&
-  //     Filters?.AgentCode !== ""
-  //   ) {
-  //     let element = AgentCode.find((i) => i?.AgentCode === Filters?.AgentCode);
-
-  //     setCount((prev) => ({
-  //       ...prev,
-  //       agentcode: Filters?.AgentCode,
-  //       comper: element?.Commision || 0,
-  //     }));
-  //   } else if (global?.Utype == 2) {
-  //     setCount((prev) => ({
-  //       ...prev,
-  //       agentcode: userInfo?.details?.AgentCode,
-  //       comper: userInfo?.details?.Commision,
-  //     }));
-  //   }
-  // }, [
-  //   PayType,
-  //   Filters?.AgentCode,
-  //   Filters?.startDate,
-  //   Filters?.endDate,
-  //   PaymentDetails,
-  // ]);
-  //tot collection fetch
-  // useEffect(() => {
-  //   if (
-  //     Filters?.AgentCode !== null &&
-  //     Filters?.AgentCode !== "" &&
-  //     Filters?.AgentCode !== undefined
-  //   ) {
-  //     dispatch(FetchTotCollection({ ...global, ...Filters }));
-  //   }
-  // }, [
-  //   Filters?.AgentCode,
-  //   Filters?.PaymentStatus,
-  //   Filters?.startDate,
-  //   Filters?.endDate,
-  // ]);
-
-  //total collection view
-  // useEffect(() => {
-  //   if (TotCollectionList && isTotCollectionSuccess && Filters?.AgentCode) {
-  //     let obj = TotCollectionList || {};
-  //     console.log(TotCollectionList);
-  //     let obj2 = AgentCode?.filter(
-  //       (item) => item?.AgentCode == Filters?.AgentCode
-  //     )[0];
-  //     setCount((prev) => ({
-  //       ...prev,
-  //       totalColl: obj?.TotCollection,
-  //       totalSub: obj?.TotSubmission,
-  //       comper: obj2?.Commision,
-  //       com: (obj2?.Commision * obj?.TotCollection) / 100,
-  //       agentcode: Filters?.AgentCode,
-  //     }));
-  //   }
-  //   if (
-  //     Filters?.AgentCode == null ||
-  //     Filters?.AgentCode == "" ||
-  //     Filters?.AgentCode == undefined
-  //   ) {
-  //     setCount({
-  //       totalColl: 0,
-  //       totalSub: 0,
-  //       com: 0,
-  //       comper: 0,
-  //       rowSelected: 0,
-  //       agentcode: null,
-  //     });
-  //   }
-  //   dispatch(ClearStateTotColl());
-  // }, [isTotCollectionSuccess, TotCollectionList, Filters?.AgentCode]);
-
-  //------------------------------------others--------------------------------------------
   let currentdate = moment().format("YYYY-MM-DD");
   //column
-
   const columns = [
     {
       ...GRID_CHECKBOX_SELECTION_COL_DEF,
@@ -715,7 +674,7 @@ function ManageCollections() {
       width: 100,
       hideable: false,
       renderCell: (item) => {
-        return <span>{moment(item?.row?.CollDate).format("DD/MM/YYYY")}</span>;
+        return <span>{moment(item.row.CollDate).format("DD/MM/YYYY")}</span>;
       },
     },
     {
@@ -726,7 +685,7 @@ function ManageCollections() {
       renderCell: (item) => {
         return (
           <Typography sx={{ textAlign: "end", width: "100%" }}>
-            ₹ {item?.row?.totcolection} /-
+            ₹ {item.row.totcolection} /-
           </Typography>
         );
       },
@@ -738,7 +697,7 @@ function ManageCollections() {
       renderCell: (item) => {
         return (
           <Typography sx={{ textAlign: "center", width: "100%" }}>
-            ₹{item?.row?.ExpectedCollection}/-
+            ₹{item.row.ExpectedCollection}/-
           </Typography>
         );
       },
@@ -802,7 +761,7 @@ function ManageCollections() {
         return (
           <Typography sx={{ textAlign: "center", width: "100%" }}>
             {" "}
-            ₹ {item?.row?.Commission} /-
+            ₹ {item.row.Commission.toFixed(2)} /-
           </Typography>
         );
       },
@@ -824,7 +783,6 @@ function ManageCollections() {
       },
     },
   ];
-
   return (
     <ThemeProvider theme={CustomTheme}>
       <Grid
@@ -1326,31 +1284,31 @@ function ManageCollections() {
               columns={columns || []}
               rowHeight={44}
               rowCount={Filters?.total}
-              // paginationMode="server"
-              // paginationModel={{
-              //   page: Filters?.page - 1,
-              //   pageSize: Filters?.pageSize,
-              // }}
-              // onFilterModelChange={(model) => {
-              //   console.log(model?.quickFilterValues[0]?.toUpperCase());
-              //   if (isloading29 == false) {
-              //     setFilters((prev) => ({
-              //       ...prev,
-              //       SearchKey: model?.quickFilterValues[0]?.toUpperCase(),
-              //     }));
-              //   }
-              // }}
-              // onPaginationModelChange={(model) => {
-              //   console.log(model);
-              //   if (isloading29 == false) {
-              //     setFilters((prev) => ({
-              //       ...prev,
-              //       page: model.page + 1,
-              //       pageSize: model.pageSize,
-              //     }));
-              //   }
-              // }}
-              // pageSizeOptions={[25, 50, 100]}
+              paginationMode="server"
+              paginationModel={{
+                page: Filters?.page - 1,
+                pageSize: Filters?.pageSize,
+              }}
+              onFilterModelChange={(model) => {
+                console.log(model?.quickFilterValues[0]?.toUpperCase());
+                if (isloading29 == false) {
+                  setFilters((prev) => ({
+                    ...prev,
+                    SearchKey: model?.quickFilterValues[0]?.toUpperCase(),
+                  }));
+                }
+              }}
+              onPaginationModelChange={(model) => {
+                console.log(model);
+                if (isloading29 == false) {
+                  setFilters((prev) => ({
+                    ...prev,
+                    page: model.page + 1,
+                    pageSize: model.pageSize,
+                  }));
+                }
+              }}
+              pageSizeOptions={[25, 50, 100]}
               checkboxSelection
               rowSelectionModel={PaymentID}
               onRowSelectionModelChange={(id) => {
@@ -1359,24 +1317,21 @@ function ManageCollections() {
                 setPaymentID(IDarr);
               }}
               slots={{
-                pagination: false,
                 toolbar: CustomGridToolBar,
-                footer: CustomFooter,
               }}
               slotProps={{
-                footer: { count },
                 toolbar: {
                   showQuickFilter: true,
-                  // quickFilterProps: {
-                  //   debounceMs: 500,
-                  //   onInputChange: (e) => {
-                  //     console.log(e.target.value);
-                  //     setFilters((prev) => ({
-                  //       ...prev,
-                  //       SearchKey: e.target.value,
-                  //     }));
-                  //   },
-                  // },
+                  quickFilterProps: {
+                    debounceMs: 500,
+                    onInputChange: (e) => {
+                      console.log(e.target.value);
+                      setFilters((prev) => ({
+                        ...prev,
+                        SearchKey: e.target.value,
+                      }));
+                    },
+                  },
                 },
               }}
             />
