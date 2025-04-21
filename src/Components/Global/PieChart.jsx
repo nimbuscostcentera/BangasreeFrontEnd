@@ -1,15 +1,13 @@
 import { ResponsivePie } from "@nivo/pie";
-import useFetchPieChartData from "../../Apps/CustomHook/useFetchPie";
 import { Box } from "@mui/system";
-
-const PieChart = ({data}) => {
- 
+import PropTypes from "prop-types";
+const PieChart = ({ data }) => {
   return (
-    <Box sx={{ height:320, width: 300 }}>
+    <Box sx={{ height: 320, width: 300 }}>
       <ResponsivePie
         data={data}
         sortByValue={true}
-        margin={{ top: 60, right:70, bottom: 70, left: 10 }}
+        margin={{ top: 60, right: 70, bottom: 70, left: 10 }}
         startAngle={-179}
         innerRadius={0.5}
         padAngle={0.7}
@@ -74,13 +72,13 @@ const PieChart = ({data}) => {
         ]}
         legends={[
           {
-            anchor: "right",
-            direction: "column",
+            anchor: "left",
+            direction: "row",
             justify: false,
-            translateX: 60,
-            translateY: -100,
+            translateX: 20,
+            translateY: 140,
             itemsSpacing: 1,
-            itemWidth:100,
+            itemWidth: 100,
             itemHeight: 19,
             itemTextColor: "#999",
             itemDirection: "left-to-right",
@@ -100,5 +98,8 @@ const PieChart = ({data}) => {
       />
     </Box>
   );
+};
+PieChart.propTypes = {
+  data: PropTypes.array.isRequired,
 };
 export default PieChart;

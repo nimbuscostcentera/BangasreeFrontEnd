@@ -1,4 +1,5 @@
 import { ResponsiveLine } from "@nivo/line";
+import PropTypes from "prop-types";
 
 const LineChart = ({ sdata, Xaxislegend, Yaxislegend }) => {
   return (
@@ -68,7 +69,7 @@ const LineChart = ({ sdata, Xaxislegend, Yaxislegend }) => {
         tickPadding: 5,
         tickRotation: 0,
         legend: Yaxislegend,
-        legendOffset: -40,
+        legendOffset: -30,
         legendPosition: "middle",
         truncateTickAt: 0,
       }}
@@ -92,7 +93,7 @@ const LineChart = ({ sdata, Xaxislegend, Yaxislegend }) => {
           translateY: 0,
           itemsSpacing: 0,
           itemDirection: "left-to-right",
-          itemWidth: 80,
+          itemWidth:90,
           itemHeight: 20,
           itemOpacity: 0.75,
           symbolSize: 12,
@@ -113,4 +114,9 @@ const LineChart = ({ sdata, Xaxislegend, Yaxislegend }) => {
   );
 };
 
+LineChart.propTypes = {
+  sdata: PropTypes.array.isRequired,
+  Xaxislegend: PropTypes.string,
+  Yaxislegend: PropTypes.string,
+};
 export default LineChart;

@@ -1295,9 +1295,7 @@ function ManageCollections() {
             </Button>
           </Box>
         </Grid>
-        <Grid item sm={12} xs={12} md={12} lg={12} xl={12} mt={2}>
-          <CustomFooter count={count} />
-        </Grid>
+       
         {/**Table */}
         <Grid item sm={12} xs={12} md={12}>
           <div style={{ height: "85vh", width: "100%" }}>

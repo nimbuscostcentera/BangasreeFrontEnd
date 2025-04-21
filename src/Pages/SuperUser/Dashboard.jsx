@@ -351,7 +351,6 @@ const Dashboard = () => {
           </div>
         </div>
       </Grid>
-
       {/**cards */}
       {/*super user */}
       <Grid
@@ -589,7 +588,6 @@ const Dashboard = () => {
           </Box>
         )}
       </Grid>
-
       {/**Line graph */}
       <Grid
         item
