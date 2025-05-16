@@ -12,7 +12,6 @@ import {
   Alert,
   AlertTitle,
   Stack,
-  Button,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -42,7 +41,7 @@ import {
 
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
 import useFetchCustomer from "../../Apps/CustomHook/useFetchCustomer";
-import useFetchAcode from "../../Apps/CustomHook/useFetchAcode";
+// import useFetchAcode from "../../Apps/CustomHook/useFetchAcode";
 const CustomTheme = createTheme({
   breakpoints: {
     keys: ["xxs", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"],
@@ -106,7 +105,7 @@ export default function CustomerManagement() {
   //Login List for Table
   const { userInfo, global } = UseFetchLogger();
   //agent List
-  const { AgentCode: AgentListDD } = useFetchAcode();
+  // const { AgentCode: AgentListDD } = useFetchAcode();
   //Customer CustomerApproval
   const { isloading10, Msg10, error10, isError10, isSuccess10 } = useSelector(
     (state) => state.CustStatus
@@ -136,17 +135,17 @@ export default function CustomerManagement() {
   //----------------------------functions-------------------------------------
 
   //bulk transfer
-  const HandleCustTransDataInput = (e) => {
-    let key = e.target.name;
-    let value = e.target.value;
-    setCustTransData((prev) => ({ ...prev, [key]: value }));
-  };
+  // const HandleCustTransDataInput = (e) => {
+  //   let key = e.target.name;
+  //   let value = e.target.value;
+  //   setCustTransData((prev) => ({ ...prev, [key]: value }));
+  // };
   //transfer cust submit button
-  const TransferHandler = (e) => {
-    e.preventDefault();
-    let obj = { ...global, ...custTransData, CustIDs: CustID };
-    console.log(obj)
-  };
+  // const TransferHandler = (e) => {
+  //   e.preventDefault();
+  //   let obj = { ...global, ...custTransData, CustIDs: CustID };
+  //   console.log(obj)
+  // };
   //Blocking cause checker open
   const handlePopoverOpen = (event, par) => {
     setParams({
@@ -411,19 +410,21 @@ export default function CustomerManagement() {
                     : null
                 }
                 h2={
-                  myPermission?.Edit == 1 ? "Assign Scheme to Customer" : null
+                  myPermission?.Create == 1 ? "Assign Scheme to Customer" : null
                 }
                 icon2={
-                  myPermission?.Edit == 1 ? (
+                  myPermission?.Create == 1 ? (
                     <AddCircleOutlineIcon fontSize="medium" />
                   ) : null
                 }
                 disable2={CustID && CustID.length == 0 ? true : false}
                 Tooltip2={
-                  myPermission?.Edit == 1 ? "Assigne Scheme to Customer" : null
+                  myPermission?.Create == 1
+                    ? "Assigne Scheme to Customer"
+                    : null
                 }
                 funcTrigger2={
-                  myPermission?.Edit == 1 ? CustNewSchemeAssign : null
+                  myPermission?.Create == 1 ? CustNewSchemeAssign : null
                 }
               />
             </>
@@ -529,8 +530,8 @@ export default function CustomerManagement() {
               setCustTransData({
                 OldAgentCode: null,
                 NewAgentCode: null,
-                CustIDs:[]
-              })
+                CustIDs: [],
+              });
             }}
           />
 

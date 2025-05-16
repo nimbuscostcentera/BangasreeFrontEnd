@@ -1,17 +1,41 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import moment from "moment";
 import { useLocation } from "react-router-dom";
-import Grid from "@mui/system/Unstable_Grid/Grid";
-import ReusableUnCheckedTable from "../../Components/Global/ReusableUnCheckedTable";
-import { Divider, Typography, IconButton, Box } from "@mui/material";
-import ReusableBreadcrumbs from "../../Components/Global/ReusableBreadcrumbs";
-import LocalPrintshopIcon from "@mui/icons-material/LocalPrintshop";
-import { PaymentDetailList } from "../../Slice/PaymentDetails/PaymentDetailsSlice";
-import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
 import Banga from "../../assets/BangaLogo_updated8Feb.png";
 import jsPDF from "jspdf";
+import moment from "moment";
 import "jspdf-autotable";
+
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Divider, Typography, IconButton, Box } from "@mui/material";
+import Grid from "@mui/system/Unstable_Grid/Grid";
+
+import LocalPrintshopIcon from "@mui/icons-material/LocalPrintshop";
+
+import ReusableUnCheckedTable from "../../Components/Global/ReusableUnCheckedTable";
+import ReusableBreadcrumbs from "../../Components/Global/ReusableBreadcrumbs";
+
+import { PaymentDetailList } from "../../Slice/PaymentDetails/PaymentDetailsSlice";
+import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
+
+const CustomTheme = createTheme({
+  breakpoints: {
+    keys: ["xxs", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"],
+    values: {
+      xxs: 100,
+      xs: 200,
+      sm: 400,
+      mid: 695,
+      md: 825,
+      lg: 960,
+      l: 1060,
+      xl: 1125,
+      xxl: 1210,
+      xxxl: 1345,
+      Big: 1500,
+    },
+  },
+});
 
 function CustPaymentHistory() {
   const dispatch = useDispatch();
@@ -202,8 +226,6 @@ function CustPaymentHistory() {
 
     const pageWidth = doc.internal.pageSize.width;
     const pageHeight = doc.internal.pageSize.height;
-    const footerHeight = 30;
-    const maxTableHeight = pageHeight - footerHeight - 15;
     const ROWS_PER_PAGE = 23;
 
     doc.setDrawColor(0);
@@ -335,7 +357,7 @@ function CustPaymentHistory() {
         styles: { fontSize: 9, cellPadding: 1.5 },
         margin: { left: 10, right: 10 },
         pageBreak: "auto",
-        didDrawPage: function (data) {
+        didDrawPage: function () {
           let pageNumber = doc.internal.getNumberOfPages();
           let footerY = doc.internal.pageSize.height - 18;
           addFooter(doc, footerY, pageNumber);
@@ -367,102 +389,106 @@ function CustPaymentHistory() {
   };
 
   return (
-    <Grid container ml={2} mt={2}>
-      <Grid
-        item
-        sm={12}
-        xs={12}
-        md={12}
-        lg={12}
-        display={"flex"}
-        justifyContent={"space-between"}
-        flexWrap={"wrap"}
-      >
-        <Box mr={3} mt={1}>
-          {global.Utype == 1 ? (
-            <ReusableBreadcrumbs
-              props={[
-                {
-                  title: "Home",
-                  link:
-                    global.Utype == 3
-                      ? "/customer"
-                      : global.Utype == 1
-                      ? "/executive"
-                      : "/agent",
-                  icon: "home",
-                },
-                {
-                  title: "Manage Collection",
-                  link: "/executive/managecollections",
-                  icon: "manage_accounts",
-                },
-                {
-                  title: "Payment History",
-                  link: "#",
-                  icon: "savings",
-                },
-              ]}
-            />
-          ) : (
-            <ReusableBreadcrumbs
-              props={[
-                {
-                  title: "Home",
-                  link:
-                    global.Utype == 3
-                      ? "/customer"
-                      : global.Utype == 1
-                      ? "/executive"
-                      : "/agent",
-                  icon: "home",
-                },
-                {
-                  title: "Payment History",
-                  link: "#",
-                  icon: "manage_accounts",
-                },
-              ]}
-            />
-          )}
-        </Box>
-      </Grid>{" "}
-      <Grid item xs={12} sm={12} md={12} lg={12} my={0} py={0}>
-        <Divider />
+    <ThemeProvider theme={CustomTheme}>
+      <Grid container ml={2} mt={2} maxWidth={"l"}>
+        <Grid
+          item
+          sm={12}
+          xs={12}
+          md={12}
+          lg={12}
+          display={"flex"}
+          justifyContent={"space-between"}
+          flexWrap={"wrap"}
+        >
+          <Box mr={3} mt={1}>
+            {global.Utype == 1 ? (
+              <ReusableBreadcrumbs
+                props={[
+                  {
+                    title: "Home",
+                    link:
+                      global.Utype == 3
+                        ? "/customer"
+                        : global.Utype == 1
+                        ? "/executive"
+                        : "/agent",
+                    icon: "home",
+                  },
+                  {
+                    title: "Manage Collection",
+                    link: "/executive/managecollections",
+                    icon: "manage_accounts",
+                  },
+                  {
+                    title: "Payment History",
+                    link: "#",
+                    icon: "savings",
+                  },
+                ]}
+              />
+            ) : (
+              <ReusableBreadcrumbs
+                props={[
+                  {
+                    title: "Home",
+                    link:
+                      global.Utype == 3
+                        ? "/customer"
+                        : global.Utype == 1
+                        ? "/executive"
+                        : "/agent",
+                    icon: "home",
+                  },
+                  {
+                    title: "Payment History",
+                    link: "#",
+                    icon: "manage_accounts",
+                  },
+                ]}
+              />
+            )}
+          </Box>
+        </Grid>{" "}
+        <Grid item xs={12} sm={12} md={12} lg={12} my={0} py={0}>
+          <Divider />
+        </Grid>
+        <Grid
+          item
+          md={12}
+          lg={12}
+          sm={12}
+          xs={12}
+          mt={2}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: "5px",
+            marginBottom: "0px",
+          }}
+        >
+          <Typography color={"#5c5c5c"} variant="h6">
+            Payment History
+          </Typography>
+          <Box sx={{ color: "black" }}>
+            Print A/C Statement:
+            <IconButton onClick={generatePDF}>
+              <LocalPrintshopIcon />
+            </IconButton>
+          </Box>
+        </Grid>
+        <Grid item md={12} lg={12} sm={12} xs={12} mt={1}>
+          <ReusableUnCheckedTable
+            columns={col || []}
+            rows={pay || []}
+            uniqueid={"CollectionId"}
+            isloading={isloading29}
+            height={580}
+          />
+        </Grid>
       </Grid>
-      <Grid
-        item
-        md={12}
-        lg={12}
-        sm={12}
-        xs={12}
-        mt={2}
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Typography color={"#5c5c5c"} variant="h6">
-          Payment History
-        </Typography>
-        <Box sx={{ color: "black" }}>
-          Print A/C Statement:
-          <IconButton onClick={generatePDF}>
-            <LocalPrintshopIcon />
-          </IconButton>
-        </Box>
-      </Grid>
-      <Grid item md={12} lg={12} sm={12} xs={12} mt={2}>
-        <ReusableUnCheckedTable
-          columns={col || []}
-          rows={pay || []}
-          uniqueid={"CollectionId"}
-          isloading={isloading29}
-          height={400}
-        />
-      </Grid>
-    </Grid>
+    </ThemeProvider>
   );
 }
 

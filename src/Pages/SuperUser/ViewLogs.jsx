@@ -1,18 +1,44 @@
-import  { useState } from "react";
+import { useEffect, useState } from "react";
 import moment from "moment";
-import Grid from "@mui/system/Unstable_Grid";
+
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
 import { Divider, TextField } from "@mui/material";
+import Grid from "@mui/system/Unstable_Grid/Grid";
+
+import ReusableUnCheckedTable from "../../Components/Global/ReusableUnCheckedTable";
 import DateRangFilter2 from "../../Components/Global/DateRangeFilter2";
 import ReusableBreadcrumbs from "../../Components/Global/ReusableBreadcrumbs";
 import UseFetchLogs from "../../Apps/CustomHook/useFetchLogs";
-import ReusableUnCheckedTable from "../../Components/Global/ReusableUnCheckedTable";
+
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
+
+const CustomTheme = createTheme({
+  breakpoints: {
+    keys: ["xxs", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"],
+    values: {
+      xxs: 100,
+      xs: 200,
+      sm: 400,
+      mid: 695,
+      md: 825,
+      lg: 960,
+      l:1060,
+      xl: 1125,
+      xxl: 1210,
+      xxxl: 1345,
+      Big: 1500,
+    },
+  },
+});
+
 function ViewLogs() {
   const [Filters, setFilters] = useState({
     StartDate: null,
     EndDate: null,
     CellValue: "",
   });
+  const [filteredData,setFilterData]=useState([]);
   const { global } = UseFetchLogger();
   const currentdate = moment();
   const FilterHandler = (e) => {
@@ -31,13 +57,13 @@ function ViewLogs() {
     {
       field: `UserName`,
       headerName: "UserName",
-      width: 130,
+      width: 160,
       hideable: false,
     },
     {
       field: `DateTime`,
       headerName: "DateTime",
-      width: 150,
+      width: 180,
       hideable: false,
       renderCell: (i) => {
         return (
@@ -58,118 +84,121 @@ function ViewLogs() {
       hideable: false,
     },
     {
-      field: `Request`,
+      field: `message`,
       headerName: "Request",
       width: 500,
-      hideable: false,
-      renderCell: (item) => {
-        return <span>{item?.row?.Request}</span>;
-      },
+      hideable: false
     },
   ];
-
+  console.log(LogBookdetails);
+  useEffect(() => {
+    let arr = [];
+    LogBookdetails?.forEach((i) => arr.push({...i}));
+    console.log(arr)
+    let req={};
+    arr?.forEach((item) => {
+      req = JSON.parse(item?.Request);
+      item.message = `A ${
+        req?.SuperUserType == 1 ? "Super User" : "BackOfficeUser"
+      } of LoggerID ${req?.LoggerID} and BarnchID ${req?.LoggerBranchId} ${
+        item?.Description
+      } ${req?.SchemeRegId?"of SchemeID "+req?.SchemeRegId:""}`;
+      console.log(req)
+    });
+    setFilterData(arr);
+  }, [LogBookdetails]);
   return (
-    <Grid container mt={2.5} ml={2}>
-      <Grid item xs={12}>
-        <ReusableBreadcrumbs
-          props={[
-            {
-              title: "Home",
-              link: global.Utype == 1 ? "/executive" : "/agent",
-              icon: "home",
-            },
-            {
-              title: "View Logs",
-              link: "#",
-              icon: "manage_history",
-            },
-          ]}
-        />
-      </Grid>
-      <Grid item xs={12} xl={12} mt={0.5}>
-        <Divider />
-      </Grid>
-      <Grid
-        item
-        xl={3}
-        lg={4}
-        md={5.5}
-        sm={12}
-        xs={12}
-        display={"flex"}
-        justifyContent={{
-          xl: "flex-start",
-          lg: "flex-start",
-          md: "flex-start",
-          sm: "center",
-          xs: "center",
-        }}
-        alignItems={"center"}
-        color={"#000000"}
-        mb={1}
-        ml={2}
-      >
-        <DateRangFilter2
-          state1={Filters?.StartDate}
-          state2={Filters?.EndDate}
-          name1={"StartDate"}
-          name2={"EndDate"}
-          MaxDate1={
-            Filters?.EndDate !== undefined &&
-            Filters?.EndDate !== null &&
-            Filters?.EndDate !== ""
-              ? Filters?.EndDate
-              : currentdate
-          }
-          MaxDate2={currentdate}
-          InputHandler={FilterHandler}
-        />
-      </Grid>
-      <Grid
-        item
-        xl={6.5}
-        lg={7}
-        md={5.5}
-        sm={12}
-        xs={12}
-        display={"flex"}
-        justifyContent={{
-          xl: "flex-start",
-          lg: "flex-start",
-          md: "flex-start",
-          sm: "center",
-          xs: "center",
-        }}
-        alignItems={"center"}
-        flexWrap={"wrap"}
-        color={"#000000"}
-        mt={1}
-        ml={2}
-      >
-        <TextField
-          value={Filters?.CellValue}
-          size="small"
-          fullWidth
-          label="Show"
-          InputLabelProps={{ shrink: true }}
-          multiline={true}
-          rows={2}
-          variant="outlined"
-        />
-      </Grid>
-      <Grid item xs={12} xl={12}>
-        <ReusableUnCheckedTable
-          columns={column || []}
-          rows={LogBookdetails || []}
-          isloading={false}
-          height={"67vh"}
-          uniqueid={"LogID"}
-          onClicksingleCell={(e) => {
-            setFilters({ ...Filters, CellValue: JSON.stringify(e.value) });
+    <ThemeProvider theme={CustomTheme}>
+       <Grid container ml={2} mt={3} maxWidth={"l"}>
+        <Grid item xs={12} sm={4} md={4} lg={6} xl={6}>
+          <ReusableBreadcrumbs
+            props={[
+              {
+                title: "Home",
+                link: global.Utype == 1 ? "/executive" : "/agent",
+                icon: "home",
+              },
+              {
+                title: "View Logs",
+                link: "#",
+                icon: "manage_history",
+              },
+            ]}
+          />
+        </Grid>
+        <Grid
+          item
+          xl={6}
+          sm={8}
+          lg={6}
+          md={10}
+          xs={12}
+          sx={{ display: "flex", justifyContent: "flex-end" }}
+        >
+          <DateRangFilter2
+            state1={Filters?.StartDate}
+            state2={Filters?.EndDate}
+            name1={"StartDate"}
+            name2={"EndDate"}
+            MaxDate1={
+              Filters?.EndDate !== undefined &&
+              Filters?.EndDate !== null &&
+              Filters?.EndDate !== ""
+                ? Filters?.EndDate
+                : currentdate
+            }
+            MaxDate2={currentdate}
+            InputHandler={FilterHandler}
+          />
+        </Grid>
+        <Grid item xs={12} xl={12} mt={0.5}>
+          <Divider />
+        </Grid>
+        <Grid
+          item
+          xl={12}
+          lg={12}
+          md={12}
+          sm={12}
+          xs={12}
+          display={"flex"}
+          justifyContent={{
+            xl: "flex-start",
+            lg: "flex-start",
+            md: "flex-start",
+            sm: "center",
+            xs: "center",
           }}
-        />
+          alignItems={"center"}
+          flexWrap={"wrap"}
+          color={"#000000"}
+          my={2}
+        >
+          <TextField
+            value={Filters?.CellValue}
+            size="small"
+            fullWidth
+            label="Show"
+            InputLabelProps={{ shrink: true }}
+            multiline={true}
+            rows={2}
+            variant="outlined"
+          />
+        </Grid>
+        <Grid item xs={12} xl={12}>
+          <ReusableUnCheckedTable
+            columns={column || []}
+            rows={filteredData || []}
+            isloading={false}
+            height={580}
+            uniqueid={"LogID"}
+            onClicksingleCell={(e) => {
+              setFilters({ ...Filters, CellValue: JSON.stringify(e.value) });
+            }}
+          />
+        </Grid>
       </Grid>
-    </Grid>
+    </ThemeProvider>
   );
 }
 
