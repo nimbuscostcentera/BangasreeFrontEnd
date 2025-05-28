@@ -6,11 +6,6 @@ export const CustomerList = createAsyncThunk(
   async (UserData, { rejectWithValue }) => {
     var fetchData;
     try {
-       const config = {
-         headers: {
-           "Content-Type": "application/json",
-         },
-       };
       if (UserData) {
         fetchData = await AxiosInstance.post(URL, UserData);
       } else {

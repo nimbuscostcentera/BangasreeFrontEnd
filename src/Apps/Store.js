@@ -40,6 +40,7 @@ import CustomerEditSlice from "../Slice/Customer/CustomerEditSlice";
 import CustomerSearchSlice from "../Slice/Customer/CustomerSearchSlice";
 import ApprovedCustomerSlice from "../Slice/Customer/ApprovedCustomerSlice";
 import CustomerStatusUpadateSlice from "../Slice/Customer/CutomerStatusUpdateSlice";
+import CustomerTransferSlice from "../Slice/Customer/CustomerTransferSlice";
 
 import MontlyPaymentSlice from "../Slice/PaymentDetails/MontlyPaymentSlice";
 import WalletBalanceSlice from "../Slice/PaymentDetails/WalletBalanceSlice";
@@ -211,6 +212,7 @@ const rootReducer = combineReducers({
   lotentry: LotEntryslice,
   logs: LogBookListSlice,
   totcol: TotCollectionShowSlice,
+  custTrans: CustomerTransferSlice,
 });
 const persistConfig = {
   key: "root",

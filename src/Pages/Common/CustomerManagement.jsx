@@ -12,6 +12,7 @@ import {
   Alert,
   AlertTitle,
   Stack,
+  Button
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -35,13 +36,17 @@ import {
   ClearState10,
 } from "../../Slice/Customer/CutomerStatusUpdateSlice";
 import {
+  CustomerTransferFunc,
+  ClearStateCustomerTransfer,
+} from "../../Slice/Customer/CustomerTransferSlice";
+import {
   ClearState7,
   ClearToasterCust,
 } from "../../Slice/Auth/CustomerRegSlice";
 
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
 import useFetchCustomer from "../../Apps/CustomHook/useFetchCustomer";
-// import useFetchAcode from "../../Apps/CustomHook/useFetchAcode";
+import useFetchAcode from "../../Apps/CustomHook/useFetchAcode";
 const CustomTheme = createTheme({
   breakpoints: {
     keys: ["xxs", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"],
@@ -105,7 +110,7 @@ export default function CustomerManagement() {
   //Login List for Table
   const { userInfo, global } = UseFetchLogger();
   //agent List
-  // const { AgentCode: AgentListDD } = useFetchAcode();
+  const { AgentCode: AgentListDD } = useFetchAcode();
   //Customer CustomerApproval
   const { isloading10, Msg10, error10, isError10, isSuccess10 } = useSelector(
     (state) => state.CustStatus
@@ -124,6 +129,12 @@ export default function CustomerManagement() {
     [Filters, isSuccess10, isSuccess7, navigate],
     ""
   );
+  const {
+    isCustomerTransferSucc,
+    CustomerTransferErr,
+    isCustomerTransferErr,
+    isCustomerTransferLoading,
+  } = useSelector((state) => state.custTrans);
   //-------------------------Api Calling hooks-------------------------
 
   //-----------------------permission List data Fetch----------------------
@@ -135,17 +146,18 @@ export default function CustomerManagement() {
   //----------------------------functions-------------------------------------
 
   //bulk transfer
-  // const HandleCustTransDataInput = (e) => {
-  //   let key = e.target.name;
-  //   let value = e.target.value;
-  //   setCustTransData((prev) => ({ ...prev, [key]: value }));
-  // };
-  //transfer cust submit button
-  // const TransferHandler = (e) => {
-  //   e.preventDefault();
-  //   let obj = { ...global, ...custTransData, CustIDs: CustID };
-  //   console.log(obj)
-  // };
+  const HandleCustTransDataInput = (e) => {
+    let key = e.target.name;
+    let value = e.target.value;
+    setCustTransData((prev) => ({ ...prev, [key]: value }));
+  };
+  // transfer cust submit button
+  const TransferHandler = (e) => {
+    e.preventDefault();
+    let obj = { ...global, ...custTransData, CustIDs: CustID };
+    dispatch(CustomerTransferFunc(obj));
+    console.log(obj)
+  };
   //Blocking cause checker open
   const handlePopoverOpen = (event, par) => {
     setParams({
@@ -333,12 +345,40 @@ export default function CustomerManagement() {
   //-------------------------------others---------------------------------------
 
   //---------------------------------useEffects-----------------------------------
+
   //alert show function
   useEffect(() => {
     if (CustID == undefined || CustID.length == 0) {
       setParams({ ...params, alert: false, warning: null });
     }
   }, [CustID]);
+
+  //cust transfer
+  useEffect(() => {
+    console.log(
+      isCustomerTransferLoading,
+      isCustomerTransferSucc,
+      CustomerTransferErr
+    );
+    if (isCustomerTransferSucc) {
+      toast.success("Customer Transfer Successfully", { positions:"top-right",autoClose:5000 });
+      setCustTransData({
+        CustIDs:[],
+        NewAgentCode: "",
+        OldAgentCode: "",
+      });
+    }
+    if (isCustomerTransferErr) {
+      toast.error("Customer Transfer Failed!", {
+        positions: toast.POSITION.TOP_RIGHT,
+      });
+    }
+    ClearStateCustomerTransfer();
+  }, [
+    isCustomerTransferSucc,
+    isCustomerTransferErr,
+    isCustomerTransferLoading,
+  ]);
   //toaster
   useEffect(() => {
     if (!isloading10 && isSuccess10) {
@@ -356,9 +396,12 @@ export default function CustomerManagement() {
       dispatch(ClearState7());
     }
   }, [isSuccess10, isError10, ToasterCust]);
+
+  //agentcode
   useEffect(() => {
     setFilters((prev) => ({ ...prev, AgentCode: custTransData?.OldAgentCode }));
-  },[custTransData?.OldAgentCode])
+  }, [custTransData?.OldAgentCode]);
+
   //---------------------------------useEffects-----------------------------------
 
   return (
@@ -393,7 +436,6 @@ export default function CustomerManagement() {
           </Box>
           {myPermission?.Create == 1 ? (
             <>
-              {" "}
               <IconOnOffButton
                 h1={myPermission?.Create == 1 ? "Add New Customer" : null}
                 icon1={
@@ -435,7 +477,6 @@ export default function CustomerManagement() {
         </Grid>
         {params?.alert ? (
           <Grid item md={12} xs={12} sm={12} lg={12}>
-            {" "}
             <Stack sx={{ width: "100%" }} spacing={2}>
               <Alert
                 severity="error"
@@ -461,6 +502,7 @@ export default function CustomerManagement() {
           mb={{ xl: 1 }}
           display={"flex"}
           justifyContent={{
+            xl: "flex-start",
             lg: "flex-start",
             sm: "center",
             xs: "center",
@@ -485,6 +527,7 @@ export default function CustomerManagement() {
             InputHandler={FilterHandler}
           />
         </Grid>
+
         <Grid
           item
           sm={12}
@@ -496,8 +539,11 @@ export default function CustomerManagement() {
           my={2}
           display={"flex"}
           justifyContent={{
+            xl: "flex-start",
+            lg: "flex-start",
+            l: "flex-start",
             mid: "center",
-            md: "flex-start",
+            md: "center",
             sm: "center",
             xs: "center",
           }}
@@ -537,7 +583,6 @@ export default function CustomerManagement() {
 
           {myPermission?.Edit == 1 && global?.Utype !== 2 ? (
             <>
-              {" "}
               <IconOnOffButton
                 h1={"Accept"}
                 h2={"Reject"}
@@ -578,74 +623,137 @@ export default function CustomerManagement() {
           xxl={2}
           mt={{ xl: 2, lg: 1.5, md: 1.5 }}
           mb={1}
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
-          <ReusableDropDown4
-            setState={setFilters}
-            state={Filters}
-            label={"Status"}
-            data={statusData}
-            id={"arial_status"}
-            disabled={false}
-            ObjectKey={["value"]}
-            Field={Filters?.Status}
-            uniquekey={"Status"}
-            deselectvalue={true}
-            onChange={FilterHandler}
-          />
+          <div style={{ width: "100%", maxWidth: "300px" }}>
+            <ReusableDropDown4
+              setState={setFilters}
+              state={Filters}
+              label={"Status"}
+              data={statusData}
+              id={"arial_status"}
+              disabled={false}
+              ObjectKey={["value"]}
+              Field={Filters?.Status}
+              uniquekey={"Status"}
+              deselectvalue={true}
+              onChange={FilterHandler}
+            />
+          </div>
         </Grid>
 
-        {/* <Grid
+        <Grid
           item
-          sm={3}
           xs={12}
-          md={2.5}
+          sm={12}
+          md={2.6}
           lg={2.4}
           xl={2}
           xxl={1.5}
-          sx={{ color: "grey", fontSize: "16px", mt: 3 }}
+          my={2}
+          sx={{
+            color: "grey",
+            fontSize: "16px",
+            mt:2,
+            display: "flex",
+            justifyContent: "center",
+          }}
         >
           Agent Transfer :
         </Grid>
 
-        <Grid item sm={6} xs={12} md={4} lg={4} xl={3} my={2}>
-          <ReusableDropDown4
-            Field={custTransData?.OldAgentCode}
-            name={"OldAgentCode"}
-            uniquekey={"AgentCode"}
-            ObjectKey={["AgentCode", "Name"]}
-            data={AgentListDD || []}
-            deselectvalue={true}
-            disabled={false}
-            id={"AgentCode"}
-            label={"from Old Agent"}
-            setState={setCustTransData}
-            state={custTransData}
-            onChange={HandleCustTransDataInput}
-          />
+        <Grid
+          item
+          sm={5.5}
+          xs={12}
+          md={2.7}
+          lg={4}
+          xl={3}
+          my={1}
+          sx={{
+            color: "grey",
+            fontSize: "16px",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <div style={{ width: "100%", maxWidth: "250px" }}>
+            <ReusableDropDown4
+              Field={custTransData?.OldAgentCode}
+              name={"OldAgentCode"}
+              uniquekey={"AgentCode"}
+              ObjectKey={["AgentCode", "Name"]}
+              data={AgentListDD || []}
+              deselectvalue={true}
+              disabled={false}
+              id={"AgentCode"}
+              label={"from Old Agent"}
+              setState={setCustTransData}
+              state={custTransData}
+              onChange={HandleCustTransDataInput}
+            />
+          </div>
         </Grid>
 
-        <Grid item sm={6} xs={12} md={4} lg={4} xl={3} my={2} mx={3}>
-          <ReusableDropDown4
-            Field={custTransData?.NewAgentCode}
-            uniquekey={"AgentCode"}
-            name={"NewAgentCode"}
-            ObjectKey={["AgentCode", "Name"]}
-            data={AgentListDD || []}
-            deselectvalue={true}
-            disabled={false}
-            id={"AgentCode"}
-            label={"Assign To New Agent"}
-            setState={setCustTransData}
-            state={custTransData}
-            onChange={HandleCustTransDataInput}
-          />
+        <Grid
+          item
+          sm={5}
+          xs={12}
+          md={2.7}
+          lg={4}
+          xl={3}
+          my={1}
+          mx={3}
+          sx={{
+            color: "grey",
+            fontSize: "16px",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <div style={{ width: "100%", maxWidth: "250px" }}>
+            <ReusableDropDown4
+              Field={custTransData?.NewAgentCode}
+              uniquekey={"AgentCode"}
+              name={"NewAgentCode"}
+              ObjectKey={["AgentCode", "Name"]}
+              data={AgentListDD || []}
+              deselectvalue={true}
+              disabled={false}
+              id={"AgentCode"}
+              label={"Assign To New Agent"}
+              setState={setCustTransData}
+              state={custTransData}
+              onChange={HandleCustTransDataInput}
+            />
+          </div>
         </Grid>
 
-        <Grid item sm={6} xs={12} md={4} lg={3} xl={2} mt={3} mx={1}>
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={2.5}
+          lg={3}
+          xl={2}
+          mt={2}
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            mb: {
+              xs:1
+            }
+          }}
+        >
           <Button variant="contained" color="success" onClick={TransferHandler}>
             Transfer
           </Button>
-        </Grid> */}
+        </Grid>
 
         <Grid item sm={12} xs={12} md={12} lg={12}>
           <ReusableDataTable
