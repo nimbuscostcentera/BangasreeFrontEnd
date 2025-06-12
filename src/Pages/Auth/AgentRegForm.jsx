@@ -273,36 +273,6 @@ console.log(Data,"agent");
 
   var agentmindate = MaxMinDate(18);
 
-  console.log(
-    Data?.Name ,
-      Data?.Phonenumber ,
-      Data?.DOB ,
-      Data?.Address ,
-      Data?.BankName ,
-      Data?.AccountNumber ,
-      Data?.IFSCCode ,
-      Data?.IDProofNumber ,
-      Data?.BranchId ,
-      Data?.IDProofType ,
-      Data?.AccountType ,
-      pic?.IDProofPhoto ,
-      pic?.Photo ,
-      pic?.Signature ,
-      input?.Name == true ,
-      input?.phn == true ,
-      input?.Email == true ,
-      input?.BankName == true ,
-      input?.AccountNo == true ,
-      input?.IFSC == true ,
-      input?.MICR == true ,
-      input?.NomineeName == true ,
-      input?.Relation == true ,
-      input?.Password == true ,
-      input?.IDProofNumber == true ,
-      input?.Commission == true
-  );
-  
-
   return (
     <Grid container maxWidth="lg" mt={3} ml={2}>
       <ToastContainer autoClose={5000} />

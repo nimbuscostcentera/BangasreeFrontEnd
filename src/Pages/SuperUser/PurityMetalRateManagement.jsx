@@ -36,7 +36,7 @@ import useFetchPuritylist from "../../Apps/CustomHook/useFetchPurityList";
 import useFetchGoldRateList from "../../Apps/CustomHook/useFetchGoldRateList";
 import AddPurityform from "./AddPurityform";
 function PurityMetalRateManagement() {
-  const currdt = moment();
+  const currdt = moment().format("YYYY-MM-DD");
   const [show, setShow] = useState(false);
   const [purity, setPurity] = useState({ PURITY: null, DESCRIPTION: null });
   const [RateVsPurityData, setRateVsPurityData] = useState({
@@ -117,7 +117,7 @@ function PurityMetalRateManagement() {
     }
     dispatch(ClearState78());
   }, [isSuccess78, isloading78, isError78]);
-
+  console.log(rateList);
   //column
   const Col = [
     // {
@@ -222,7 +222,7 @@ function PurityMetalRateManagement() {
           />
         </Box>
       </Grid>
-      <Grid xs={12} xl={12}>
+      <Grid item sm={12} xs={12} md={12} lg={12} xl={12}>
         <Divider />
       </Grid>
       <Grid item sm={12} xs={12} md={12} lg={12} xl={12} mx={1}>
@@ -323,7 +323,12 @@ function PurityMetalRateManagement() {
               aria-label="AddBoxIcon"
               type="reset"
               onClick={() => {
-                setRateVsPurityData({ ID_PURITY: -1, Rate: null });
+                setRateVsPurityData({
+                  date: null,
+                  DESCRIPTION: null,
+                  GOLD_RATE: null,
+                  ID_PURITY: -1,
+                });
               }}
             >
               <RestartAltIcon fontSize="large" />

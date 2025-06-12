@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
 import { Box } from "@mui/system";
 import useFetchNotification from "../../Apps/CustomHook/useFetchNotification";
 import SubList from "./SubList";
-
+import PropTypes from "prop-types";
 function UnSeenMsgList({nobj,  setNobj, setToggle}) {
 
   const { UnSeenMsg } = useFetchNotification();
@@ -28,5 +27,9 @@ function UnSeenMsgList({nobj,  setNobj, setToggle}) {
     </Box>
   );
 }
-
+UnSeenMsgList.propTypes = {
+  nobj: PropTypes.object,
+  setNobj: PropTypes.func,
+  setToggle: PropTypes.func,
+};
 export default UnSeenMsgList;

@@ -131,7 +131,6 @@ export default function CustomerManagement() {
   );
   const {
     isCustomerTransferSucc,
-    CustomerTransferErr,
     isCustomerTransferErr,
     isCustomerTransferLoading,
   } = useSelector((state) => state.custTrans);
@@ -355,11 +354,6 @@ export default function CustomerManagement() {
 
   //cust transfer
   useEffect(() => {
-    console.log(
-      isCustomerTransferLoading,
-      isCustomerTransferSucc,
-      CustomerTransferErr
-    );
     if (isCustomerTransferSucc) {
       toast.success("Customer Transfer Successfully", { positions:"top-right",autoClose:5000 });
       setCustTransData({
@@ -645,115 +639,125 @@ export default function CustomerManagement() {
             />
           </div>
         </Grid>
+        {/**Agent Transfer start */}
+        {global?.Utype == 2 ? null : (
+          <>
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={2.6}
+              lg={2.4}
+              xl={2}
+              xxl={1.5}
+              my={2}
+              sx={{
+                color: "grey",
+                fontSize: "16px",
+                mt: 2,
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              Agent Transfer :
+            </Grid>
 
-        <Grid
-          item
-          xs={12}
-          sm={12}
-          md={2.6}
-          lg={2.4}
-          xl={2}
-          xxl={1.5}
-          my={2}
-          sx={{
-            color: "grey",
-            fontSize: "16px",
-            mt:2,
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          Agent Transfer :
-        </Grid>
+            <Grid
+              item
+              sm={5.5}
+              xs={12}
+              md={2.7}
+              lg={4}
+              xl={3}
+              my={1}
+              sx={{
+                color: "grey",
+                fontSize: "16px",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <div style={{ width: "100%", maxWidth: "250px" }}>
+                <ReusableDropDown4
+                  Field={custTransData?.OldAgentCode}
+                  name={"OldAgentCode"}
+                  uniquekey={"AgentCode"}
+                  ObjectKey={["AgentCode", "Name"]}
+                  data={AgentListDD || []}
+                  deselectvalue={true}
+                  disabled={false}
+                  id={"AgentCode"}
+                  label={"from Old Agent"}
+                  setState={setCustTransData}
+                  state={custTransData}
+                  onChange={HandleCustTransDataInput}
+                />
+              </div>
+            </Grid>
 
-        <Grid
-          item
-          sm={5.5}
-          xs={12}
-          md={2.7}
-          lg={4}
-          xl={3}
-          my={1}
-          sx={{
-            color: "grey",
-            fontSize: "16px",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          <div style={{ width: "100%", maxWidth: "250px" }}>
-            <ReusableDropDown4
-              Field={custTransData?.OldAgentCode}
-              name={"OldAgentCode"}
-              uniquekey={"AgentCode"}
-              ObjectKey={["AgentCode", "Name"]}
-              data={AgentListDD || []}
-              deselectvalue={true}
-              disabled={false}
-              id={"AgentCode"}
-              label={"from Old Agent"}
-              setState={setCustTransData}
-              state={custTransData}
-              onChange={HandleCustTransDataInput}
-            />
-          </div>
-        </Grid>
+            <Grid
+              item
+              sm={5}
+              xs={12}
+              md={2.7}
+              lg={4}
+              xl={3}
+              my={1}
+              mx={3}
+              sx={{
+                color: "grey",
+                fontSize: "16px",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <div style={{ width: "100%", maxWidth: "250px" }}>
+                <ReusableDropDown4
+                  Field={custTransData?.NewAgentCode}
+                  uniquekey={"AgentCode"}
+                  name={"NewAgentCode"}
+                  ObjectKey={["AgentCode", "Name"]}
+                  data={AgentListDD || []}
+                  deselectvalue={true}
+                  disabled={false}
+                  id={"AgentCode"}
+                  label={"Assign To New Agent"}
+                  setState={setCustTransData}
+                  state={custTransData}
+                  onChange={HandleCustTransDataInput}
+                />
+              </div>
+            </Grid>
 
-        <Grid
-          item
-          sm={5}
-          xs={12}
-          md={2.7}
-          lg={4}
-          xl={3}
-          my={1}
-          mx={3}
-          sx={{
-            color: "grey",
-            fontSize: "16px",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          <div style={{ width: "100%", maxWidth: "250px" }}>
-            <ReusableDropDown4
-              Field={custTransData?.NewAgentCode}
-              uniquekey={"AgentCode"}
-              name={"NewAgentCode"}
-              ObjectKey={["AgentCode", "Name"]}
-              data={AgentListDD || []}
-              deselectvalue={true}
-              disabled={false}
-              id={"AgentCode"}
-              label={"Assign To New Agent"}
-              setState={setCustTransData}
-              state={custTransData}
-              onChange={HandleCustTransDataInput}
-            />
-          </div>
-        </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={2.5}
+              lg={3}
+              xl={2}
+              mt={2}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                mb: {
+                  xs: 1,
+                },
+              }}
+            >
+              <Button
+                variant="contained"
+                color="success"
+                onClick={TransferHandler}
+              >
+                Transfer
+              </Button>
+            </Grid>
+          </>
+        )}
 
-        <Grid
-          item
-          xs={12}
-          sm={12}
-          md={2.5}
-          lg={3}
-          xl={2}
-          mt={2}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            mb: {
-              xs:1
-            }
-          }}
-        >
-          <Button variant="contained" color="success" onClick={TransferHandler}>
-            Transfer
-          </Button>
-        </Grid>
+        {/**Agent Transfer end */}
 
         <Grid item sm={12} xs={12} md={12} lg={12}>
           <ReusableDataTable

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import  { useEffect, useState } from "react";
 import UseFetchLogger from "./UseFetchLogger";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -7,8 +7,9 @@ import {
 } from "../../Slice/Dashboard/AgentAreaCollSlice";
 function useFetchAgentAreaColl() {
   const dispatch = useDispatch();
+  const [AreaAgentData,setAreaAgentData] = useState([]);
   const { global } = UseFetchLogger();
-  const { isloading73, Resp73, isError73, error73, isSuccess73 } = useSelector(
+  const { isloading73, Resp73,  isSuccess73 } = useSelector(
     (state) => state.AgentAreaCol
   );
   var at = localStorage.getItem("AccessToken");
@@ -26,21 +27,26 @@ function useFetchAgentAreaColl() {
   let myset = new Set(transArray);
   let midarray = [...myset];
   let nameArray = midarray.filter((item) => item !== "AreaName");
-  let AreaAgentData = useMemo(() => {
-    if (Resp73 && Resp73?.length !== 0) {
+
+  useEffect(() => {
+    if (isSuccess73) {
       let Bardata = [];
       Resp73?.map((item) => {
-        var amount =(item?.totalCollection/1000||0).toFixed(2);
+        var amount = (item?.totalCollection / 1000 || 0).toFixed(2);
         Bardata.push({
           AreaName: item?.AreaName,
           totalCollection: amount,
         });
       });
-      return Bardata;
+      setAreaAgentData(Bardata);
     }
+    else {
+      return;
+    }
+    dispatch(ClearState73());
   }, [isSuccess73]);
-console.log(AreaAgentData,"bar agent area");
-  return { AreaAgentData, nameArray, isloading73 };
+
+  return { AreaAgentData, nameArray, isloading73, isSuccess73 };
 }
 
 export default useFetchAgentAreaColl;

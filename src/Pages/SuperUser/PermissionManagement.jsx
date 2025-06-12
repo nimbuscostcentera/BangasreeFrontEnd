@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { ToastContainer, toast } from "react-toastify";
@@ -10,7 +10,6 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Typography,
   Checkbox,
   Divider,
   Box,
@@ -42,20 +41,6 @@ import {
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
 import useFetchBranch from "../../Apps/CustomHook/useFetchBranch";
 
-const test = (item) => {
-  return (
-    <>
-      {item.row.usertype === 1 ? (
-        <Typography>superuser</Typography>
-      ) : item.row.usertype === 2 ? (
-        <Typography>agent</Typography>
-      ) : (
-        <Typography>customer</Typography>
-      )}
-    </>
-  );
-};
-
 function PermissionManagement() {
   const dispatch = useDispatch();
   const [UserID, setUserID] = useState([]);
@@ -65,10 +50,10 @@ function PermissionManagement() {
     BranchId: null,
     UUid: null,
   });
-  const { userInfo, global } = UseFetchLogger();
+  const { global } = UseFetchLogger();
 
   //userList
-  const { isloading47, Resp47, error47, isError47, isSuccess47 } = useSelector(
+  const {  Resp47,  isSuccess47 } = useSelector(
     (state) => state.UserList
   );
   const { branch } = useFetchBranch({ Status: 1 }, [], "");
@@ -91,7 +76,7 @@ function PermissionManagement() {
   }, [isSuccess47, filter?.Utype, filter?.BranchId]);
 
   //permissions
-  const { isloading14, PermissionData, error14, isError14, isSuccess14 } =
+  const { isloading14, PermissionData,  isError14, isSuccess14 } =
     useSelector((state) => state.Permission);
 
   const { isloading15, msg15, error15, isError15, isSuccess15 } = useSelector(
@@ -187,7 +172,7 @@ function PermissionManagement() {
           ]}
         />
       </Grid>
-      <Grid xs={12} sm={12} md={12} lg={12} my={1}>
+      <Grid item xs={12} sm={12} md={12} lg={12} my={1}>
         <Divider />
       </Grid>
 
@@ -354,8 +339,6 @@ function PermissionManagement() {
             <TableHead
               sx={{
                 backgroundColor: "#1775ce",
-                // position: "fixed",
-                // zIndex: 2,
                 width: "auto",
               }}
             >
@@ -371,14 +354,12 @@ function PermissionManagement() {
                   );
                 })}
               </TableRow>
-            </TableHead>{" "}
+            </TableHead>
             <TableBody sx={{ zIndex: 1 }}>
               {tableData &&
                 tableData.map((item, index) => {
-                  //  "CompanyCode","usertype","PageName","ViewPage","Create","Edit","Delete",
                   return (
-                    // <StyledTableRow align="left" key={index}>
-                    <TableRow>
+                    <TableRow key={index}>
                       <TableCell
                         sx={{
                           color: "#000000",

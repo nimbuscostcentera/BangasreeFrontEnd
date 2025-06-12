@@ -999,30 +999,6 @@ function InspectSuperUser() {
                   justifyContent={"center"}
                   my={3}
                 >
-                  {console.log(
-                    !Edit,
-                    check,
-                    !(
-                      input?.Name == true &&
-                      input?.Email == true &&
-                      input?.IDProofNumber == true &&
-                      input?.IDProofNumber == true
-                    ),
-                    !(
-                      EditData?.Name !== "" &&
-                      EditData?.Status !== "" &&
-                      EditData?.EmailId !== "" &&
-                      EditData?.Did !== "" &&
-                      EditData?.Status !== "" &&
-                      EditData?.Sex !== "" &&
-                      EditData?.SUtype !== "" &&
-                      EditData?.BranchId !== "" &&
-                      EditData?.IDProofNumber !== "" &&
-                      EditData?.IDProofNumber !== null &&
-                      EditData?.IDProofType !== ""
-                    ),
-                    EditData?.IDProofNumber
-                  )}
                   <OnOffButton
                     yes={"Update"}
                     type1={"submit"}

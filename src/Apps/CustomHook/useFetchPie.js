@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import UseFetchLogger from "./UseFetchLogger";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -8,7 +8,8 @@ import {
 function useFetchPieChartData(obj = {}, dep = []) {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
-  const { isloading68, Resp68, isError68, error68, isSuccess68 } = useSelector(
+  const [data, setData] = useState([]);
+  const { isloading68, Resp68, isSuccess68 } = useSelector(
     (state) => state.Pie
   );
   var at = localStorage.getItem("AccessToken");
@@ -18,20 +19,22 @@ function useFetchPieChartData(obj = {}, dep = []) {
       dispatch(PieChartsfunc({ ...global, ...obj }));
     }
   }, dep);
-  let data = useMemo(() => {
-    if (Resp68 && Resp68?.length !== 0) {
+
+  useEffect(() => {
+    if (isSuccess68 && !isloading68) {
       let piedata = [];
-      Resp68.map((item, index) => {
+      Resp68?.map((item, index) => {
         if (index == 0) {
           piedata.push({ ...item, color: "red" });
         } else {
           piedata.push({ ...item, color: "green" });
         }
       });
-      return piedata;
+      setData(piedata);
     } else {
-      return [];
+      return;
     }
+    dispatch(ClearState68());
   }, [isSuccess68, ...dep]);
 
   return {data};

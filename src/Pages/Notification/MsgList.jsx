@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import React from "react";
+import {useState } from "react";
 import UnSeenMsgList from "./UnSeenMsgList";
 import SeenMsgList from "./SeenMsgList";
 import { TabContext, TabList, TabPanel } from "@mui/lab";

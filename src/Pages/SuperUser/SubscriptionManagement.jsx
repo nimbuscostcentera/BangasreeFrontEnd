@@ -30,7 +30,6 @@ import GenCertificateIcon from "../../Components/styledComponent/GenCertificateI
 import VerifiedIcon from "@mui/icons-material/Verified";
 import BackspaceIcon from "@mui/icons-material/Backspace";
 import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
-import LockIcon from "@mui/icons-material/Lock";
 
 import IconOnOffButton from "../../Components/Global/IconOnOffButton";
 import ReusableDataTable from "../../Components/Global/ReusableTable";

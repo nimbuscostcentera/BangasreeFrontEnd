@@ -1,16 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Box, positions } from "@mui/system";
+import { useEffect, useState } from "react";
+import { Box} from "@mui/system";
 import Grid from "@mui/system/Unstable_Grid/Grid";
 import {
   Button,
-  Input,
-  InputAdornment,
   OutlinedInput,
   Paper,
   TextField,
-  Typography,
 } from "@mui/material";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { useDispatch, useSelector } from "react-redux";
 import {
   SendNotification,
@@ -18,7 +14,6 @@ import {
 } from "../../Slice/Notification/SendNotificationSlice";
 import {
   UserListfunc,
-  ClearState47,
 } from "../../Slice/BackofficeUser/UserListSlice";
 import MultipleSelection from "../../Components/Global/MultipleSelection";
 import { ToastContainer, toast } from "react-toastify";
@@ -44,7 +39,7 @@ const{branch}=useFetchBranch({Status:1},[],"")
   };
 
   //User List
-  const { isloading47, Resp47, error47, isError47, isSuccess47 } = useSelector(
+  const { isloading47, Resp47,  isError47, isSuccess47 } = useSelector(
     (state) => state.UserList
   );
 
@@ -82,7 +77,7 @@ const{branch}=useFetchBranch({Status:1},[],"")
     dispatch(ClearState45());
     document.getElementById("notificationform").reset();
   }, [isSuccess45, isloading45, isError45]);
-console.log(userInfo?.details);
+
   const OnSubmitHandler = (e) => {
     e.preventDefault();
     let val = [];
@@ -239,22 +234,7 @@ console.log(userInfo?.details);
             multiline={true}
             required
             name="FromUserName"
-            // endAdornment={
-            //   <InputAdornment
-            //     sx={{
-            //       backgroundColor: "#f2f2f2",
-            //       mr: -1.4,
-            //       p: 2.1,
-            //       mt: -1.5,
-            //       mb: -1.5,
-            //       boxShadow: "1px 1px #bfbfbf",
-            //       borderRadius: 1,
-            //     }}
-            //     position="end"
-            //   >
-            //     Ax
-            //   </InputAdornment>
-            // }
+
             sx={{ m: 1, backgroundColor: "#ffffff" }}
           />
         </Grid>
@@ -284,22 +264,7 @@ console.log(userInfo?.details);
             multiline={true}
             required
             name="Subject"
-            // endAdornment={
-            //   <InputAdornment
-            //     sx={{
-            //       backgroundColor: "#f2f2f2",
-            //       mr: -1.4,
-            //       p: 2.1,
-            //       mt: -1.5,
-            //       mb: -1.5,
-            //       boxShadow: "1px 1px #bfbfbf",
-            //       borderRadius: 1,
-            //     }}
-            //     position="end"
-            //   >
-            //     Ax
-            //   </InputAdornment>
-            // }
+          
             sx={{ m: 1, backgroundColor: "#ffffff" }}
           />
         </Grid>

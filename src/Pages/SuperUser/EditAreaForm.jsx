@@ -3,7 +3,6 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
 import EditIcon from "@mui/icons-material/Edit";
@@ -17,6 +16,17 @@ import {
 import { useState } from "react";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import NumberOnly from "../../Apps/GlobalFunctions/NumberOnly";
+import PropTypes from "prop-types";
+
+EditAreaForm.propTypes = {
+  openform: PropTypes.bool.isRequired,
+  onSubmitForm: PropTypes.func.isRequired,
+  handleClose: PropTypes.func.isRequired,
+  EditableData: PropTypes.object.isRequired,
+  onChangeHandler: PropTypes.func.isRequired,
+  AreaTogglefunc: PropTypes.func.isRequired,
+  view: PropTypes.bool.isRequired,
+};
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;

@@ -4,24 +4,21 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Slide,
   TextField,
   FormHelperText,
 } from "@mui/material";
-import { Box } from "@mui/system";
 
 import NumberOnly from "../../Apps/GlobalFunctions/NumberOnly";
 import PinCodeValidation from "../../Apps/GlobalFunctions/PinCodeValidation";
-
+import PropTypes from "prop-types";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export default function AreaRegForm({
   openform,
-  setOpenform,
   onSubmitForm,
   handleClose,
   mystate,
@@ -131,11 +128,6 @@ export default function AreaRegForm({
           ) : null}
         </DialogContent>
         <DialogActions>
-          {console.log( mystate?.AreaName &&
-              mystate?.PinCode &&
-              mystate?.District &&
-              mystate?.state &&
-              mystate?.country )}
           <Button
             color="success"
             onClick={onSubmitForm}
@@ -174,3 +166,11 @@ export default function AreaRegForm({
     </React.Fragment>
   );
 }
+AreaRegForm.propTypes = {
+  openform: PropTypes.bool,
+  setOpenform: PropTypes.func,
+  onSubmitForm: PropTypes.func,
+  handleClose: PropTypes.func,
+  mystate: PropTypes.object,
+  setState: PropTypes.func,
+};

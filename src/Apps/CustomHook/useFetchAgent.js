@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useState} from "react";
+import { useEffect, useState} from "react";
 import { ClearState2, AgentList } from "../../Slice/Agent/AgentListSlice";
 import UseFetchLogger from "./UseFetchLogger";
 import { useSelector, useDispatch } from "react-redux";
-function useFetchAgent(obj = {}, dep = [], uniqueKey) {
+function useFetchAgent(obj = {}, dep = [],uniquekey="") {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
+  const [agentList, setAgentList] = useState();
   var at = localStorage.getItem("AccessToken");
   const { isloading2, AgentListData, isError2, error2, isSuccess2 } =
     useSelector((state) => state.AgentList);
@@ -18,14 +19,15 @@ function useFetchAgent(obj = {}, dep = [], uniqueKey) {
     }
   }, [...dep]);
 
-  let agentList=useMemo(() => {
+  useEffect(() => {
     if (isSuccess2 && !isloading2 && at !== undefined) {
-      return AgentListData;
+      setAgentList(AgentListData);
     }
     else {
-      return [];
+      return;
     }
-  }, [isSuccess2]);
+    dispatch(ClearState2());
+  }, [isSuccess2,...dep]);
 
   var agentcount = agentList?.length;
   return { agentcount, agentList, isError2, error2, isSuccess2, isloading2 };

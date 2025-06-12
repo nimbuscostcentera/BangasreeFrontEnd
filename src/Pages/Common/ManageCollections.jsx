@@ -57,6 +57,60 @@ import {
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
 import useFetchAcode from "../../Apps/CustomHook/useFetchAcode";
 import PropTypes from "prop-types";
+
+const CustomTheme = createTheme({
+  breakpoints: {
+    keys: ["xxs", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"],
+    values: {
+      xxs: 100,
+      xs: 200,
+      sm: 400,
+      mid: 550,
+      md: 813,
+      lg: 970,
+      l: 1060,
+      xl: 1175,
+      xxl: 1210,
+      xxxl: 1345,
+      Big: 1500,
+    },
+  },
+});
+
+const CustomGridToolBar = () => {
+  return (
+    <GridToolbarContainer sx={{ justifyContent: "space-between" }}>
+      <div>
+        <GridToolbarColumnsButton />
+        <GridToolbarDensitySelector />
+        <GridToolbarExport
+          csvOptions={{ allColumns: true }}
+          printOptions={{
+            hideFooter: true,
+            hideToolbar: true,
+            pageStyle: `@page {
+              size: A4 landscape;
+              margin: 10mm; /* Adjust margins as needed */
+            }
+            @media print {
+              body {
+                -webkit-print-color-adjust: exact;
+                margin: 0; /* Remove default body margin */
+              }
+              .MuiDataGrid-root {
+                page-break-inside: avoid; /* Prevent rows from splitting */
+              }
+            }
+          `,
+          }}
+        />
+      </div>
+      <div>
+        <GridToolbarQuickFilter />
+      </div>
+    </GridToolbarContainer>
+  );
+};
 const CustomFooter = ({ count }) => {
   const {
     rowSelected,
@@ -179,6 +233,7 @@ const CustomFooter = ({ count }) => {
     </Box>
   );
 };
+
 CustomFooter.propTypes = {
   count: PropTypes.shape({
     totalColl: PropTypes.number,
@@ -189,59 +244,7 @@ CustomFooter.propTypes = {
     agentcode: PropTypes.string,
   }).isRequired,
 };
-const CustomTheme = createTheme({
-  breakpoints: {
-    keys: ["xxs", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"],
-    values: {
-      xxs: 100,
-      xs: 200,
-      sm: 400,
-      mid: 550,
-      md: 813,
-      lg: 970,
-      l: 1060,
-      xl: 1175,
-      xxl: 1210,
-      xxxl: 1345,
-      Big: 1500,
-    },
-  },
-});
 
-const CustomGridToolBar = () => {
-  return (
-    <GridToolbarContainer sx={{ justifyContent: "space-between" }}>
-      <div>
-        <GridToolbarColumnsButton />
-        <GridToolbarDensitySelector />
-        <GridToolbarExport
-          csvOptions={{ allColumns: true }}
-          printOptions={{
-            hideFooter: true,
-            hideToolbar: true,
-            pageStyle: `@page {
-              size: A4 landscape;
-              margin: 10mm; /* Adjust margins as needed */
-            }
-            @media print {
-              body {
-                -webkit-print-color-adjust: exact;
-                margin: 0; /* Remove default body margin */
-              }
-              .MuiDataGrid-root {
-                page-break-inside: avoid; /* Prevent rows from splitting */
-              }
-            }
-          `,
-          }}
-        />
-      </div>
-      <div>
-        <GridToolbarQuickFilter />
-      </div>
-    </GridToolbarContainer>
-  );
-};
 
 function ManageCollections() {
   const ImageRef = useRef();
@@ -271,10 +274,10 @@ function ManageCollections() {
     open: false,
   });
   const [count, setCount] = useState({
-    totalColl: 0,
-    totalSub: 0,
-    com: 0,
-    comper: 0,
+    totalColl: 0.0,
+    totalSub: 0.0,
+    com: 0.0,
+    comper: 0.0,
     rowSelected: 0,
     agentcode: acode || null,
   });
@@ -321,11 +324,11 @@ function ManageCollections() {
     var value = e.target.value;
     setFilters({ ...Filters, [key]: value });
     setCount({
-      totalColl: 0,
-      totalSub: 0,
-      com: 0,
-      comper: 0,
-      rowSelected: 0,
+      totalColl: 0.0,
+      totalSub: 0.0,
+      com: 0.0,
+      comper: 0.0,
+      rowSelected: 0.0,
       agentcode: acode || null,
     });
     setPaymentID([]);
@@ -425,14 +428,16 @@ function ManageCollections() {
         flag = false;
       }
     });
+
     if (flag == false) {
       setParams({
         ...params,
         alert: true,
         warning: "Select Collection of a Specific Agent for Bulk Submission",
       });
-    } else {
-      if (count?.totalColl == subData?.CollectedAmt) {
+    }
+    else {
+      if (parseFloat(count?.totalColl) == parseFloat(subData?.CollectedAmt)) {
         let paymentIDdata = {
           ids: PaymentID,
           AgentCode: userInfo?.details?.AgentCode || Filters?.AgentCode,
@@ -455,11 +460,12 @@ function ManageCollections() {
             SubAmtFormData.append(key, global[key]);
           }
         }
-        for (let [key, value] of SubAmtFormData.entries()) {
-          console.log(`${key}: ${value}`);
-        }
+        // for (let [key, value] of SubAmtFormData.entries()) {
+        //   console.log(`${key}: ${value}`);
+        // }
         dispatch(LotEntryFunc(SubAmtFormData));
-      } else {
+      }
+      else {
         setParams({
           ...params,
           alert: true,
@@ -507,10 +513,10 @@ function ManageCollections() {
       .unwrap()
       .then((res) => {
         setCount({
-          totalColl: 0,
-          totalSub: 0,
-          com: 0,
-          comper: 0,
+          totalColl: 0.0,
+          totalSub: 0.0,
+          com: 0.0,
+          comper: 0.0,
           rowSelected: 0,
           agentcode: acode || null,
         });
@@ -578,7 +584,7 @@ function ManageCollections() {
     let submittedAmt=0, CollectedAmt=0, commission=0, percentage=0,all=0;
     let onj = AgentCode?.filter((item) => item?.AgentCode == Filters?.AgentCode)[0];
     percentage = parseFloat(onj?.Commision);
-    console.log(percentage, onj);
+    // console.log(percentage, onj);
     let selectedArray = PaymentDetails?.filter((item) =>
       PaymentID.includes(item?.CollectionId)
     );
@@ -610,84 +616,6 @@ function ManageCollections() {
       });
   }, [Filters?.AgentCode,acode,PaymentID]);
   
-  // useEffect(() => {
-  //   if (
-  //     global?.Utype == 1 &&
-  //     Filters?.AgentCode !== undefined &&
-  //     Filters?.AgentCode !== null &&
-  //     Filters?.AgentCode !== ""
-  //   ) {
-  //     let element = AgentCode.find((i) => i?.AgentCode === Filters?.AgentCode);
-
-  //     setCount((prev) => ({
-  //       ...prev,
-  //       agentcode: Filters?.AgentCode,
-  //       comper: element?.Commision || 0,
-  //     }));
-  //   } else if (global?.Utype == 2) {
-  //     setCount((prev) => ({
-  //       ...prev,
-  //       agentcode: userInfo?.details?.AgentCode,
-  //       comper: userInfo?.details?.Commision,
-  //     }));
-  //   }
-  // }, [
-  //   PayType,
-  //   Filters?.AgentCode,
-  //   Filters?.startDate,
-  //   Filters?.endDate,
-  //   PaymentDetails,
-  // ]);
-  //tot collection fetch
-  // useEffect(() => {
-  //   if (
-  //     Filters?.AgentCode !== null &&
-  //     Filters?.AgentCode !== "" &&
-  //     Filters?.AgentCode !== undefined
-  //   ) {
-  //     dispatch(FetchTotCollection({ ...global, ...Filters }));
-  //   }
-  // }, [
-  //   Filters?.AgentCode,
-  //   Filters?.PaymentStatus,
-  //   Filters?.startDate,
-  //   Filters?.endDate,
-  // ]);
-
-  //total collection view
-  // useEffect(() => {
-  //   if (TotCollectionList && isTotCollectionSuccess && Filters?.AgentCode) {
-  //     let obj = TotCollectionList || {};
-  //     console.log(TotCollectionList);
-  //     let obj2 = AgentCode?.filter(
-  //       (item) => item?.AgentCode == Filters?.AgentCode
-  //     )[0];
-  //     setCount((prev) => ({
-  //       ...prev,
-  //       totalColl: obj?.TotCollection,
-  //       totalSub: obj?.TotSubmission,
-  //       comper: obj2?.Commision,
-  //       com: (obj2?.Commision * obj?.TotCollection) / 100,
-  //       agentcode: Filters?.AgentCode,
-  //     }));
-  //   }
-  //   if (
-  //     Filters?.AgentCode == null ||
-  //     Filters?.AgentCode == "" ||
-  //     Filters?.AgentCode == undefined
-  //   ) {
-  //     setCount({
-  //       totalColl: 0,
-  //       totalSub: 0,
-  //       com: 0,
-  //       comper: 0,
-  //       rowSelected: 0,
-  //       agentcode: null,
-  //     });
-  //   }
-  //   dispatch(ClearStateTotColl());
-  // }, [isTotCollectionSuccess, TotCollectionList, Filters?.AgentCode]);
-
   //------------------------------------others--------------------------------------------
   let currentdate = moment().format("YYYY-MM-DD");
   //column
@@ -891,7 +819,7 @@ function ManageCollections() {
                   },
                 ]}
               />
-            )}{" "}
+            )}
           </Box>
           {myPermission?.Create ? (
             <div style={{ marginLeft: "10px" }}>
@@ -902,7 +830,7 @@ function ManageCollections() {
                 funcTrigger1={() => {
                   navigate("/executive/collectionentry");
                 }}
-              />{" "}
+              />
             </div>
           ) : null}
         </Grid>
@@ -1186,10 +1114,10 @@ function ManageCollections() {
                   NotAgentPayment: null,
                 });
                 setCount({
-                  totalColl: 0,
-                  totalSub: 0,
-                  com: 0,
-                  comper: 0,
+                  totalColl: 0.0,
+                  totalSub: 0.0,
+                  com: 0.0,
+                  comper: 0.0,
                   rowSelected: 0,
                   agentcode: null,
                 });
@@ -1324,31 +1252,7 @@ function ManageCollections() {
               columns={columns || []}
               rowHeight={44}
               rowCount={Filters?.total}
-              // paginationMode="server"
-              // paginationModel={{
-              //   page: Filters?.page - 1,
-              //   pageSize: Filters?.pageSize,
-              // }}
-              // onFilterModelChange={(model) => {
-              //   console.log(model?.quickFilterValues[0]?.toUpperCase());
-              //   if (isloading29 == false) {
-              //     setFilters((prev) => ({
-              //       ...prev,
-              //       SearchKey: model?.quickFilterValues[0]?.toUpperCase(),
-              //     }));
-              //   }
-              // }}
-              // onPaginationModelChange={(model) => {
-              //   console.log(model);
-              //   if (isloading29 == false) {
-              //     setFilters((prev) => ({
-              //       ...prev,
-              //       page: model.page + 1,
-              //       pageSize: model.pageSize,
-              //     }));
-              //   }
-              // }}
-              // pageSizeOptions={[25, 50, 100]}
+              
               checkboxSelection
               rowSelectionModel={PaymentID}
               onRowSelectionModelChange={(id) => {
@@ -1365,16 +1269,7 @@ function ManageCollections() {
                 footer: { count },
                 toolbar: {
                   showQuickFilter: true,
-                  // quickFilterProps: {
-                  //   debounceMs: 500,
-                  //   onInputChange: (e) => {
-                  //     console.log(e.target.value);
-                  //     setFilters((prev) => ({
-                  //       ...prev,
-                  //       SearchKey: e.target.value,
-                  //     }));
-                  //   },
-                  // },
+                  
                 },
               }}
             />

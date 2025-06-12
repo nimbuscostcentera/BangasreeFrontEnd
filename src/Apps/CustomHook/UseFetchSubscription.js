@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   CollectionList,
@@ -8,9 +8,10 @@ import UseFetchLogger from "./UseFetchLogger";
 const useFetchSupscription = (obj = {}, dep = [], uniquekey = "") => {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
-  let sub = [],
-    duepaycust = [],
-    maturity = 0;
+  const [sub, setSub] = useState([]);
+  const [duepaycust, setDuepaycust] = useState([]);
+  const [maturity, setMaturity] = useState(0);
+
   //Collection List for Table
   const { isloading23, Response, isError23, error23, isSuccess23 } =
     useSelector((state) => state.CollectionList);
@@ -25,25 +26,33 @@ const useFetchSupscription = (obj = {}, dep = [], uniquekey = "") => {
     }
   }, dep);
 
-  sub = useMemo(() => {
-    if (isSuccess23) {
-      return Response;
-    }
-  }, [isSuccess23,...dep]);
-  sub?.map((i) => {
-    if (i?.red == 1) {
-      let obj = { ...i };
-      obj.dueAmt = i?.PaybaleAmt - i?.totcollected;
-      duepaycust.push(obj);
-    }
-  });
+ useEffect(() => {
+    if (isSuccess23 && !isloading23 && at !== undefined && Array.isArray(Response)) {
+      setSub(Response);
+      let arr1=Response?.map((i) => {
+        if (i?.red == 1) {
+          let obj = { ...i };
+          obj.dueAmt = i?.PaybaleAmt - i?.totcollected;
+          return(obj);
+        }
+      });
+      setDuepaycust(arr1);
+      let count = 0;
+      Response &&
+        Response?.forEach((i) => {
+          if (i.MaturityStatus == 3) {
+            count = count + 1;
+          }
+        });
+      setMaturity(count);
+   }
+    else {
+      return;
+   }
+   dispatch(ClearState23());
+  }, [isSuccess23, ...dep]);
+  
 
-  sub &&
-    sub?.map((i) => {
-      if (i.MaturityStatus == 3) {
-        maturity = maturity + 1;
-      }
-    });
 
   return {
     sub,

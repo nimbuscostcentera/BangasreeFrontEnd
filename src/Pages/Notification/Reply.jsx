@@ -1,22 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Box } from "@mui/system";
 import Grid from "@mui/system/Unstable_Grid/Grid";
 import {
   Button,
-  Input,
-  InputAdornment,
   OutlinedInput,
   Paper,
-  TextField,
-  Typography,
+  TextField
 } from "@mui/material";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { useDispatch, useSelector } from "react-redux";
 import {
   SendNotification,
   ClearState45,
 } from "../../Slice/Notification/SendNotificationSlice";
-import { fetchObjHandler } from "../../Slice/others/NotificationHandlerSlice";
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

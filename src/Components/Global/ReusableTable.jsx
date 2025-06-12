@@ -57,7 +57,7 @@ const CustomGridToolBar = () => {
 export default function ReusableDataTable({
   uniqueid,
   columns,
-  rows,
+  rows=[],
   state,
   setState,
   width = "100%",
@@ -133,7 +133,7 @@ ReusableDataTable.propTypes = {
   uniqueid: PropTypes.string,
   columns: PropTypes.array,
   rows: PropTypes.array,
-  state: PropTypes.array,
+  state: PropTypes.any,
   setState: PropTypes.func,
   width: PropTypes.string,
   RedMark: PropTypes.bool,

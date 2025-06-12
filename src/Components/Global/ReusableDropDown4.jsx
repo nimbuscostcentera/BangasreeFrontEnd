@@ -38,7 +38,7 @@ function ReusableDropDown4({
         labelId="demo-simple-select-label"
         id={id}
         disabled={disabled}
-        value={Field}
+        value={Field||""}
         name={name||uniquekey}
         onChange={onChange}
         onOpen={onClick}
@@ -75,7 +75,7 @@ ReusableDropDown4.propTypes = {
   id: PropsType.string,
   disabled: PropsType.bool,
   ObjectKey: PropsType.array,
-  Field: PropsType.string,
+  Field: PropsType.any,
   uniquekey: PropsType.string,
   name:PropsType.string,
   deselectvalue: PropsType.bool,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import moment from "moment";
@@ -13,8 +13,8 @@ import {
   Modal,
 } from "@mui/material";
 
-import BiSepBox from "../../Components/styledComponent/BiSepBox";
 import IconOnOffButton from "../../Components/Global/IconOnOffButton";
+import ReusableDropDown4 from "../../Components/Global/ReusableDropDown4";
 import OnOffButton from "../../Components/Global/OnOffButton";
 import ReusableBreadcrumbs from "../../Components/Global/ReusableBreadcrumbs";
 import Loader from "../../Components/Global/loader";
@@ -23,7 +23,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import {
-  ClearState29,
   PaymentDetailList,
 } from "../../Slice/PaymentDetails/PaymentDetailsSlice";
 import {
@@ -57,6 +56,7 @@ function EditCollection() {
     PaymentType: 2,
     CollectedAmt: 0,
     CollDate: null,
+    PaymentMode:1
   });
   const [open, setOpen] = useState(false);
 
@@ -67,7 +67,7 @@ function EditCollection() {
   const dispatch = useDispatch();
 
   // collection List
-  const { isloading29, Resp29, error29, isError29, isSuccess29 } = useSelector(
+  const { isloading29, Resp29,  isSuccess29 } = useSelector(
     (state) => state.CustPayDetails
   );
 
@@ -168,13 +168,22 @@ function EditCollection() {
           PaymentType: 2,
           CollectedAmt: PaymentDetails?.totcolection,
           CollDate: PaymentDetails?.CollDate,
+          PaymentMode:PaymentDetails?.PaymentMode
         });
       } else {
         setOpen(true);
       }
     }
   }, [isloading29, isloading59, PaymentDetails]);
-  console.log(formData);
+
+  let PaymentModeData = [
+    { PaymentMode: 1, value: "Cash" },
+    { PaymentMode: 2, value: "Online Bank Transfer" },
+    { PaymentMode: 3, value: "Cheque" },
+    { PaymentMode: 4, value: "UPI" },
+    { PaymentMode: 5, value: "Credit Note" },
+    { PaymentMode: 6, value: "Poila Boisakh Coupon" },
+  ];
   return (
     <Grid container maxtype={"xl"} mt={1} ml={2} columnGap={2} rowGap={2}>
       <Modal
@@ -213,7 +222,11 @@ function EditCollection() {
       <Grid item md={12} sm={12} xs={12}>
         <ReusableBreadcrumbs
           props={[
-            { title: "Home",link: global.Utype == 1 ? "/executive" : "/agent", icon: "home" },
+            {
+              title: "Home",
+              link: global.Utype == 1 ? "/executive" : "/agent",
+              icon: "home",
+            },
             {
               title: "Manage Collection Details",
               link:
@@ -264,6 +277,7 @@ function EditCollection() {
                     PaymentType: 2,
                     CollectedAmt: PaymentDetails?.totcolection,
                     CollDate: PaymentDetails?.CollDate,
+                    PaymentMode: PaymentDetails?.PaymentMode,
                   });
                 } else if (Edit === false) {
                   setEdit(!Edit);
@@ -280,37 +294,18 @@ function EditCollection() {
         <Divider />
       </Grid>
 
-      {/* <Grid item xs={12} sm={12} md={12} lg={12} color={"black"} mt={-2}>
-        <Typography sx={{ color: "grey" }}>
-          Customer Account No.{PaymentDetails?.CustomerAccNo}
-        </Typography>
-        <BiSepBox>
-          <Box sx={{ color: "grey" }}>
-            Customer Name : {PaymentDetails?.CustomerName}
-            <br />
-            Agent Code : {PaymentDetails?.AgentCode}
-            <br />
-            Collected By:{" "}
-            {PaymentDetails?.NotAgentPayment == 1 ? "Backoffice" : "Agent"}
-            <br />
-            Scheme Title: {PaymentDetails?.SchemeTitle}
-          </Box>
-        </BiSepBox>
-        <Divider />
-      </Grid> */}
       <Grid item xs={12} sm={12} md={5.5} lg={5.5}>
         <TextField
           fullWidth
           size="small"
           name="CustomerAccNo"
-          value={PaymentDetails?.CustomerAccNo}
+          value={PaymentDetails?.CustomerAccNo || ""}
           disabled={true}
           inputProps={{ shrink: true }}
           label="Customer Account No."
         />
       </Grid>
       <Grid item xs={12} sm={12} md={5.5} lg={5.5}>
-        {" "}
         <TextField
           fullWidth
           name="CustomerName"
@@ -318,11 +313,10 @@ function EditCollection() {
           disabled={true}
           inputProps={{ shrink: true }}
           label="Customer Name"
-          value={PaymentDetails?.CustomerName}
+          value={PaymentDetails?.CustomerName || ""}
         />
       </Grid>
       <Grid item xs={12} sm={12} md={5.5} lg={5.5}>
-        {" "}
         <TextField
           fullWidth
           name="AgentCode"
@@ -330,11 +324,10 @@ function EditCollection() {
           disabled={true}
           inputProps={{ shrink: true }}
           label="Agent Code"
-          value={PaymentDetails?.AgentCode}
+          value={PaymentDetails?.AgentCode || ""}
         />
       </Grid>
       <Grid item xs={12} sm={12} md={5.5} lg={5.5}>
-        {" "}
         <TextField
           fullWidth
           name="CollectedBy"
@@ -346,7 +339,6 @@ function EditCollection() {
         />
       </Grid>
       <Grid item xs={12} sm={12} md={5.5} lg={5.5}>
-        {" "}
         <TextField
           fullWidth
           size="small"
@@ -354,7 +346,7 @@ function EditCollection() {
           disabled={true}
           inputProps={{ shrink: true }}
           label="Scheme Title"
-          value={PaymentDetails?.SchemeTitle}
+          value={PaymentDetails?.SchemeTitle || ""}
         />
       </Grid>
       <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -375,7 +367,7 @@ function EditCollection() {
             justifyContent: "center",
           }}
         >
-          <Grid container columnGap={2} rowGap={1}>
+          <Grid container columnGap={1}>
             <Grid item xs={12} sm={12} md={5.5} lg={5.5}>
               <TextField
                 size={"small"}
@@ -425,6 +417,56 @@ function EditCollection() {
                 onChange={InputHandler}
               />
             </Grid>
+            <Grid item xs={12} sm={12} md={5.5} lg={5.5}>
+              <TextField
+                size={"small"}
+                fullWidth
+                value={
+                  PaymentDetails?.PaymentMode == "1"
+                    ? "Cash"
+                    : PaymentDetails?.PaymentMode == "2"
+                    ? "Online Bank Transfer"
+                    : PaymentDetails?.PaymentMode == "3"
+                    ? "Cheque"
+                    : PaymentDetails?.PaymentMode == "4"
+                    ? "UPI"
+                    : PaymentDetails?.PaymentMode == "5"
+                    ? "Credit Note"
+                    : PaymentDetails?.PaymentMode == "6"
+                    ? "Poila Boisakh Coupon"
+                    : null || ""
+                }
+                disabled={true}
+                margin="normal"
+                aria-readonly
+                name="PaymentMode"
+                label="Before Change Payment Mode"
+                InputLabelProps={{ shrink: true }}
+                type="text"
+                id="PaymentMode"
+                inputProps={{ max: maxdate, min: mindate }}
+              />
+            </Grid>
+            {Edit && (
+              <Grid item xs={12} sm={12} md={5.5} lg={5.5} mt={1}>
+                <ReusableDropDown4
+                  label={"Payment Mode"}
+                  data={PaymentModeData}
+                  ObjectKey={["value"]}
+                  uniquekey={"PaymentMode"}
+                  ddwidth={400}
+                  Field={formData["PaymentMode"]}
+                  onChange={(e) => {
+                    let value = e.target.value;
+                    if (value) {
+                      setformData({ ...formData, PaymentMode: e.target.value });
+                    }
+                  }}
+                  id="PaymentMode"
+                />
+              </Grid>
+            )}
+
             <Grid
               item
               md={11}
@@ -432,7 +474,11 @@ function EditCollection() {
               xs={11}
               lg={11.2}
               mt={1}
-              sx={{display:"flex",justifyContent:"center",alignItems:"center"}}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
               <OnOffButton
                 yes={"Update"}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { ToastContainer, toast } from "react-toastify";
@@ -55,7 +55,7 @@ const CreateScheme = () => {
     setOpen(false);
   };
 
-  const { userInfo, global } = UseFetchLogger();
+  const {global } = UseFetchLogger();
 
   const { isloading17, Msg17, error17, isError17, isSuccess17 } = useSelector(
     (state) => state.addScheme

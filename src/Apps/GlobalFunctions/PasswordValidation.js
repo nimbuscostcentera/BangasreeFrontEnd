@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+
 function PasswordValidation(Password) {
   // var [Error, setError] = useState([]);
   // var err = [];
@@ -18,8 +18,6 @@ function PasswordValidation(Password) {
   var Special = isSpecial.test(Password);
   var isSpace = /\s/;
   var Space = isSpace.test(Password);
-
-
 
   if (Num && Upper && Lower && Special && !Space === true) {
 

@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
 import { Box } from "@mui/system";
 import SubList from "./SubList";
 import useFetchNotification from "../../Apps/CustomHook/useFetchNotification";
-function SeenMsgList({setNobj, setToggle,nobj }) {
-
+import PropTypes from "prop-types";
+function SeenMsgList({setNobj, setToggle ,nobj }) {
   const { seen=[] } = useFetchNotification();
   return (
     <Box
@@ -26,5 +25,10 @@ function SeenMsgList({setNobj, setToggle,nobj }) {
     </Box>
   );
 }
+SeenMsgList.propTypes = {
+  setNobj: PropTypes.func,
+  setToggle: PropTypes.func,
+  nobj: PropTypes.object,
+};
 
 export default SeenMsgList;

@@ -734,10 +734,10 @@ export default function EditLeadCust() {
           </Grid>
           <CenterBox>
             <OnOffButton
-              yes={CustRegPermission?.Edit == 1 ? "Edit Lead Customer" : null}
-              no={CustRegPermission?.Create == 1 ? "Convert to Customer" : null}
-              type1={CustRegPermission?.Edit == 1 ? "submit" : null}
-              type2={CustRegPermission?.Create == 1 ? "info" : null}
+              yes={CustRegPermission?.Edit == 1 ? "Edit Lead Customer" : ""}
+              no={CustRegPermission?.Create == 1 ? "Convert to Customer" : ""}
+              type1={CustRegPermission?.Edit == 1 ? "submit" : ""}
+              type2={CustRegPermission?.Create == 1 ? "info" : ""}
               disabled1={
                 Edit == true &&
                 (rawData?.CustomerName ||

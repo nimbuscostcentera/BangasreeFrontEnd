@@ -895,7 +895,7 @@ function AddCustNewScheme() {
                             Scheme Title
                           </TableCell>
                           <TableCell sx={{ color: "#ffffff" }}>
-                            registration Fees
+                            Registration Fees (₹)
                           </TableCell>
                           {userInfo?.details?.Utype == 1 ? (
                             <TableCell sx={{ color: "#ffffff" }}>
@@ -904,22 +904,22 @@ function AddCustNewScheme() {
                           ) : null}
 
                           <TableCell sx={{ color: "#ffffff" }}>
-                            EMI Amount
+                            EMI Amount (₹)
                           </TableCell>
                           <TableCell sx={{ color: "#ffffff" }}>
-                            frequency of EMI
+                            Frequency of EMI
                           </TableCell>
                           <TableCell sx={{ color: "#ffffff" }}>
-                            Duration in months
+                            Duration in Months
                           </TableCell>
                           <TableCell sx={{ color: "#ffffff" }}>
-                            Total EMI Amt
+                            Total EMI Amt.(₹)
                           </TableCell>
                           <TableCell sx={{ color: "#ffffff" }}>
-                            bonus Amount
+                            Bonus Amt.(₹)
                           </TableCell>
                           <TableCell sx={{ color: "#ffffff" }}>
-                            Reedemed Amount
+                            Redeemed Amt.(₹)
                           </TableCell>
                         </TableRow>
                       </TableHead>

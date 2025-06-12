@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   RateVsPurityFunc,
   ClearState79,
 } from "../../Slice/PurityVsRate/RateVsPuritySlice";
 import UseFetchLogger from "./UseFetchLogger";
-const useFetchGoldRateList = (obj = {},dep=[]) => {
-  const [rateList, setRateList] = useState(false);
+const useFetchGoldRateList = (obj = {}, dep = []) => {
+  const [rateList, setRateList] = useState([]);
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
   var at = localStorage.getItem("AccessToken");
@@ -19,14 +19,14 @@ const useFetchGoldRateList = (obj = {},dep=[]) => {
     if (at !== undefined) {
       dispatch(RateVsPurityFunc({ ...global, ...obj }));
     }
-  },dep);
+  }, dep);
 
   useEffect(() => {
-    if (Resp79?.length!==0) {
+    if (isSuccess79 && !isloading79 && at !== undefined) {
       setRateList(Resp79);
     }
     dispatch(ClearState79());
-  }, [dep]);
+  }, [isSuccess79, ...dep]);
 
   return { isloading79, rateList, isError79, error79, isSuccess79 };
 };

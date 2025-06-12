@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid/Grid";
 import MsgList from "./MsgList";
 import MsgSend from "./MsgSend";
@@ -16,7 +15,7 @@ import {
 function Notification() {
   const dispatch = useDispatch();
 
-  const { toggle, bell, nobj } = useSelector(
+  const { toggle, nobj } = useSelector(
     (state) => state.NotificationHandler
   );
   var parray = JSON.parse(window.localStorage.getItem("loggerPermission"));

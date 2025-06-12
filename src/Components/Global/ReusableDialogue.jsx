@@ -13,7 +13,7 @@ import {
 import StyledBox from "../styledComponent/StyledBox";
 import PropTypes from "prop-types";
 ReusableDialogue.propTypes = {
-  icon: PropTypes.string,
+  icon: PropTypes.node,
   button: PropTypes.bool,
   type: PropTypes.string,
   color: PropTypes.string,
@@ -59,8 +59,8 @@ export default function
         {icon ? (
           <div
             style={{
-              height:"50px",
-              width:"200px",
+              height: "50px",
+              width: "200px",
               display: "flex",
               justifyContent: "flex-start",
               alignItems: "center",
@@ -72,14 +72,16 @@ export default function
             </div>
             <div>
               <Tooltip title={TooltipMsg}>
-                <IconButton
-                  variant="outlined"
-                  onClick={handleClickOpen}
-                  disabled={disabledId}
-                >
-                  {icon}
-                </IconButton>
-              </Tooltip>{" "}
+                <span>
+                  <IconButton
+                    variant="outlined"
+                    onClick={handleClickOpen}
+                    disabled={disabledId}
+                  >
+                    {icon}
+                  </IconButton>
+                </span>
+              </Tooltip>
             </div>
           </div>
         ) : null}

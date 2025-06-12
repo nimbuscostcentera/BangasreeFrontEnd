@@ -15,7 +15,11 @@ import LocalPrintshopIcon from "@mui/icons-material/LocalPrintshop";
 import ReusableUnCheckedTable from "../../Components/Global/ReusableUnCheckedTable";
 import ReusableBreadcrumbs from "../../Components/Global/ReusableBreadcrumbs";
 
-import { PaymentDetailList } from "../../Slice/PaymentDetails/PaymentDetailsSlice";
+// import { PaymentDetailList } from "../../Slice/PaymentDetails/PaymentDetailsSlice";
+import {
+  PaymentHistoryFunc,
+  ClearStatePayHistory,
+} from "../../Slice/PaymentDetails/PaymentHistorySlice";
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
 
 const CustomTheme = createTheme({
@@ -45,40 +49,50 @@ function CustPaymentHistory() {
   const { SchemeRegId = null } = location.state || {};
 
   const { global } = UseFetchLogger();
-  const { isloading29, Resp29, isSuccess29 } = useSelector(
-    (state) => state.CustPayDetails
-  );
-
+  // const { isloading29, Resp29, isSuccess29 } = useSelector(
+  //   (state) => state.CustPayDetails
+  // );
+  const { isPayHistoryLoading, PaymentHistoryList, isPayHistorySucc } =
+    useSelector((state) => state.payHist);
   useEffect(() => {
     if (SchemeRegId) {
-      dispatch(PaymentDetailList({ ...global, SchemeRegId: SchemeRegId }));
+      dispatch(PaymentHistoryFunc({ ...global, SchemeRegId: SchemeRegId }));
     }
   }, [SchemeRegId]);
 
   useEffect(() => {
-    if (isSuccess29 && SchemeRegId && Resp29?.length !== 0) {
-      setPay(Resp29);
-      let arr = [...Resp29];
+    if (isPayHistorySucc && SchemeRegId && !isPayHistoryLoading) {
+      let arr = [...PaymentHistoryList];
+      let sum = 0;
       let modifiedArr = arr.map((item) => {
         let obj = { ...item };
         obj.Purity = "916 HUID";
         obj.gold_rate = `${(item?.gold_rate || 0).toFixed(2)}/-`;
-        obj.PaymentMode =
+        obj.PMode =
           item?.PaymentMode == "1"
             ? "Cash"
             : item?.PaymentMode == "2"
-            ? "Online Bank"
+            ? "Online Bank Transfer"
             : item?.PaymentMode == "3"
             ? "Cheque"
             : item?.PaymentMode == "4"
             ? "UPI"
-            : "";
+            : item?.PaymentMode == "5"
+            ? "Credit Note"
+            : item?.PaymentMode == "6"
+            ? "Poila Boisakh Coupon"
+            : null;
+        sum = sum + item?.totcolection;
+        obj.TotalPaidAmt = `${sum}/-`;
         obj.Collection = `${(item?.totcolection || 0).toFixed(2)}/-`;
         return obj;
       });
+      modifiedArr.reverse();
+      setPay(modifiedArr);
       setPrintableRow(modifiedArr);
     }
-  }, [isSuccess29, SchemeRegId, isloading29]);
+    dispatch(ClearStatePayHistory());
+  }, [isPayHistorySucc, SchemeRegId, isPayHistoryLoading]);
 
   const col = [
     {
@@ -128,7 +142,7 @@ function CustPaymentHistory() {
       renderCell: (item) => {
         return (
           <span style={{ textAlign: "center", width: "100%", fontSize: 15 }}>
-            ₹{item?.row?.gold_rate || 0}/-
+            ₹{item?.row?.gold_rate || 0}
           </span>
         );
       },
@@ -143,6 +157,20 @@ function CustPaymentHistory() {
         return (
           <span style={{ textAlign: "center", width: "100%", fontSize: 15 }}>
             ₹{item?.row?.totcolection || 0}/-
+          </span>
+        );
+      },
+    },
+    {
+      field: "TotalPaidAmt",
+      headerName: "Total Paid Amt.",
+      PrintHeaderName: "Total Paid Amt.",
+      width: 120,
+      printWidth: 100,
+      renderCell: (item) => {
+        return (
+          <span style={{ textAlign: "center", width: "100%", fontSize: 15 }}>
+            ₹{item?.row?.TotalPaidAmt || 0}
           </span>
         );
       },
@@ -187,24 +215,12 @@ function CustPaymentHistory() {
       },
     },
     {
-      field: "PaymentMode",
+      field: "PMode",
       headerName: "Payment Mode",
       width: 120,
       printWidth: 30,
       renderCell: (item) => {
-        return (
-          <>
-            {item?.row?.PaymentMode == 1
-              ? "Cash"
-              : item?.row?.PaymentMode == 2
-              ? "Online Bank"
-              : item?.row?.PaymentMode == 3
-              ? "Cheque"
-              : item?.row?.PaymentMode == 4
-              ? "UPI"
-              : ""}
-          </>
-        );
+        return <>{item?.row?.PMode}</>;
       },
     },
     {
@@ -255,10 +271,20 @@ function CustPaymentHistory() {
     doc.text("Customer Details", pageWidth / 2, 36, { align: "center" });
     // Customer Details Title
     const CustDetails = [
-      ["Customer Name", printableRow[0]?.CustomerName],
+      ["Cust. Name", printableRow[0]?.CustomerName],
       ["Phone", printableRow[0]?.PhoneNumber],
       ["Address", printableRow[0]?.Address],
       ["A/C No.", printableRow[0]?.CustomerAccNo],
+      [
+        "Reg. Fees.",
+        `${
+          printableRow[0]?.Regfees == 0 ||
+          printableRow[0]?.Regfees == null ||
+          printableRow[0]?.Regfees == undefined
+            ? "Not Paid Yet"
+            : "Rs." + printableRow[0]?.Regfees + "/- Paid"
+        }`,
+      ],
     ];
 
     doc.autoTable({
@@ -273,10 +299,10 @@ function CustPaymentHistory() {
       didParseCell: function (data) {
         if (data.row.index === 2) {
           // Address row
-          data.cell.styles.minCellHeight = 4 * 5.5; // Each line = 5px height
+          data.cell.styles.minCellHeight = 3 * 5.6; // Each line = 5px height
         }
       },
-      styles: { fontSize: 9, cellPadding: 2.3 },
+      styles: { fontSize: 9, cellPadding: 2.1 },
       margin: { left: 10, right: 10 },
       tableWidth: 90,
     });
@@ -311,7 +337,7 @@ function CustPaymentHistory() {
         0: { fillColor: [245, 245, 245] },
         1: { fillColor: [255, 255, 255] },
       },
-      styles: { fontSize: 9, cellPadding: 2.1 },
+      styles: { fontSize: 9, cellPadding: 2.2 },
       margin: { left: 110 },
       tableWidth: 90,
     });
@@ -322,17 +348,19 @@ function CustPaymentHistory() {
       { header: "Purity", dataKey: "Purity" },
       { header: "Gold Rate", dataKey: "gold_rate" },
       { header: "Paid Amt.", dataKey: "Collection" },
-      { header: "Payment Mode", dataKey: "PaymentMode" },
+      { header: "Total Paid Amt.", dataKey: "TotalPaidAmt" },
+      { header: "Payment Mode", dataKey: "PMode" },
       { header: "Agent", dataKey: "AgentCode" },
     ];
 
     const paymentHistoryRows = printableRow.map((item) => ({
       CollDate: moment(item.CollDate).format("DD/MM/YYYY"),
-      Purity: item.Purity,
-      gold_rate: item.gold_rate,
-      Collection: item.Collection,
-      PaymentMode: item?.PaymentMode,
-      AgentCode: item?.AgentCode,
+      Purity: item?.Purity || "",
+      gold_rate: item?.gold_rate || "",
+      Collection: item?.Collection || "",
+      TotalPaidAmt: item?.TotalPaidAmt || "",
+      PMode: item?.PMode || "",
+      AgentCode: item?.AgentCode || "",
     }));
 
     let startY = custTableHeight + 10;
@@ -353,8 +381,14 @@ function CustPaymentHistory() {
           .slice(i, i + rowsPerPage)
           .map((row) => paymentHistoryColumns.map((col) => row[col.dataKey])),
         theme: "grid",
-        headStyles: { fillColor: "#8b2424" },
-        styles: { fontSize: 9, cellPadding: 1.5 },
+        headStyles: { fillColor: "#8b2424", halign: "center" },
+        styles: { fontSize: 9, cellPadding: 1.5, halign: "center" },
+        columnStyles: {
+          2: { halign: "right", cellWidth:25 },
+          3: { halign: "right", cellWidth:25 },
+          4: { halign: "right", cellWidth:30 },
+          5: { cellWidth:30},
+        },
         margin: { left: 10, right: 10 },
         pageBreak: "auto",
         didDrawPage: function () {
@@ -483,7 +517,7 @@ function CustPaymentHistory() {
             columns={col || []}
             rows={pay || []}
             uniqueid={"CollectionId"}
-            isloading={isloading29}
+            isloading={isPayHistoryLoading}
             height={580}
           />
         </Grid>

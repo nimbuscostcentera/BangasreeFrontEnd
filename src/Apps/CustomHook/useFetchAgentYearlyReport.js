@@ -9,9 +9,10 @@ import {
 function useFetchAgentYearlyReport(obj = {}, dep = []) {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
-  const { isloading72, Resp72, isError72, error72, isSuccess72 } = useSelector(
+  const { isloading72, Resp72, isSuccess72 } = useSelector(
     (state) => state.AP
   );
+  const [data, setData] = useState();
   var at = localStorage.getItem("AccessToken");
 
   useEffect(() => {
@@ -19,8 +20,9 @@ function useFetchAgentYearlyReport(obj = {}, dep = []) {
       dispatch(AgentPerformancefunc({ ...global, ...obj }));
     }
   }, [...dep]);
-  let data = useMemo(() => {
-    if (isSuccess72 && Resp72) {
+
+  useEffect(() => {
+    if (isSuccess72 && !isloading72) {
       let Linedata = [];
       Resp72?.map((item) => {
         if (item?.id == "001") {
@@ -33,12 +35,13 @@ function useFetchAgentYearlyReport(obj = {}, dep = []) {
           Linedata.push({ ...item, color: "grey" });
         }
       });
-      return Linedata;
+      setData(Linedata);
     } else {
-      return [];
+      return;
     }
-  }, [Resp72, ...dep]);
-  //console.log(data);
+    dispatch(ClearState72());
+  }, [isSuccess72, ...dep]);
+
   return { data };
 }
 

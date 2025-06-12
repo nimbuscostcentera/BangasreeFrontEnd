@@ -1,7 +1,8 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
+import moment from "moment";
+import PropTypes from "prop-types";
 import {
   List,
   ListItem,
@@ -19,22 +20,18 @@ import {
 
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 
-function SubList({
-  MsgArray,
-}) {
+function SubList({ MsgArray }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-    const { toggle, bell, nobj } = useSelector(
-    (state) => state.NotificationHandler
-  );
+  const { nobj } = useSelector((state) => state.NotificationHandler);
   return (
     <List dense>
-      {MsgArray.map((item, index) => {
+      {MsgArray?.map((item, index) => {
         const labelId = `checkbox-list-secondary-label-${item?.Notificationid}`;
         const isActive = nobj && nobj?.Notificationid == item?.Notificationid;
         return (
           <ListItem
-            key={index}
+            key={item?.Notificationid}
             sx={{
               bgcolor: isActive ? "#F3FFF6" : "#ffffff",
               borderRadius: "25px",
@@ -70,7 +67,9 @@ function SubList({
                       >
                         {item?.FromUserName}
                       </Typography>{" "}
-                      <span>{(item?.createdAt).split("T")[0]}</span>
+                      <span>
+                        {moment(item?.createdAt).format("DD/MM/YYYY")}
+                      </span>
                     </Box>
                   </React.Fragment>
                 }
@@ -96,5 +95,7 @@ function SubList({
     </List>
   );
 }
-
+SubList.propTypes = {
+  MsgArray: PropTypes.array,
+};
 export default SubList;

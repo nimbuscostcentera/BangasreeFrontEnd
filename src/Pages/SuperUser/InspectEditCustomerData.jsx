@@ -292,7 +292,7 @@ function InspectEditCustomerData() {
     {
       field: `CustomerAccNo`,
       headerName: "Cust. A/C No.",
-      width: 125,
+      width: 140,
       hideable: false,
     },
     {
@@ -300,12 +300,12 @@ function InspectEditCustomerData() {
       headerName: "Customer Name",
       width: 130,
     },
-    { field: `SchemeTitle`, headerName: "Scheme Title", width: 110 },
+    { field: `SchemeTitle`, headerName: "Scheme Title", width: 150 },
 
     {
       field: `amttobepaid`,
       headerName: "Total Amt.",
-      width: 100,
+      width: 95,
       renderCell: (item) => {
         return <Typography> ₹ {item.row.amttobepaid || 0} /-</Typography>;
       },
@@ -314,7 +314,7 @@ function InspectEditCustomerData() {
       field: `totcolection`,
       headerName: "Collected Amt.",
       hideable: false,
-      width: 120,
+      width: 105,
       renderCell: (item) => {
         return <Typography> ₹ {item.row.totcolection || 0} /-</Typography>;
       },
@@ -323,7 +323,7 @@ function InspectEditCustomerData() {
       field: `RedeemAmt`,
       headerName: "Redeem Amt.",
       hideable: false,
-      width: 110,
+      width: 98,
       renderCell: (item) => {
         return (
           <>
@@ -715,7 +715,6 @@ function InspectEditCustomerData() {
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Box component={"form"} onSubmit={OnSubmitHandler} color={"black"}>
-            {" "}
             <Grid container columnGap={4}>
               <Grid item lg={5.7} md={5.5} sm={12} xs={12}>
                 <TextField
@@ -784,7 +783,7 @@ function InspectEditCustomerData() {
               <Grid item lg={5.7} md={5.5} sm={12} xs={12}>
                 <TextField
                   size="small"
-                  value={data?.PhoneNumber}
+                  value={data?.PhoneNumber||""}
                   fullWidth
                   disabled={true}
                   InputLabelProps={{ shrink: true }}
@@ -862,7 +861,7 @@ function InspectEditCustomerData() {
                         disabled={!Edit}
                         InputLabelProps={{ shrink: true }}
                         row
-                        value={EditData?.Sex}
+                        value={EditData?.Sex||""}
                         aria-labelledby="demo-row-radio-buttons-group-label"
                       >
                         <FormControlLabel
@@ -900,7 +899,7 @@ function InspectEditCustomerData() {
                 ) : (
                   <TextField
                     size="small"
-                    value={data?.Sex}
+                    value={data?.Sex||""}
                     disabled={true}
                     label="Gender"
                     InputLabelProps={{ shrink: true }}
@@ -987,7 +986,7 @@ function InspectEditCustomerData() {
                         ? "Pending"
                         : data?.Status == 2
                         ? "Blocked"
-                        : null
+                        : ""
                     }
                     fullWidth
                     disabled={!Edit}
@@ -1032,7 +1031,7 @@ function InspectEditCustomerData() {
                           ? "Block"
                           : data?.Status == 3
                           ? "Pending"
-                          : null
+                          : ""
                       }
                       disabled={true}
                       InputLabelProps={{ shrink: true }}
@@ -1193,7 +1192,7 @@ function InspectEditCustomerData() {
                   <Grid item lg={2.7} md={5.5} sm={12} xs={12} mt={1}>
                     <TextField
                       size="small"
-                      value={`${data?.AgentCode} : ${data?.Name}`}
+                      value={`${data?.AgentCode} : ${data?.Name}`||""}
                       disabled={true}
                       InputLabelProps={{ shrink: true }}
                       margin="normal"
@@ -1243,7 +1242,7 @@ function InspectEditCustomerData() {
                   <Grid item lg={2.6} md={5.5} sm={12} xs={12} mt={1}>
                     <TextField
                       size="small"
-                      value={`${data?.AreaName}`}
+                      value={`${data?.AreaName}`||""}
                       disabled={true}
                       fullWidth
                       InputLabelProps={{ shrink: true }}
@@ -1331,7 +1330,7 @@ function InspectEditCustomerData() {
                 <Grid item lg={5.7} md={5.5} sm={12} xs={12}>
                   <TextField
                     size="small"
-                    value={data?.IdProofType}
+                    value={data?.IdProofType||""}
                     fullWidth
                     disabled={true}
                     InputLabelProps={{ shrink: true }}
@@ -1366,7 +1365,7 @@ function InspectEditCustomerData() {
                   <Grid item lg={2.6} md={5.5} sm={12} xs={12} mt={1}>
                     <TextField
                       size="small"
-                      value={data?.IdProofType}
+                      value={data?.IdProofType||""}
                       fullWidth
                       disabled={true}
                       InputLabelProps={{ shrink: true }}
@@ -1387,7 +1386,7 @@ function InspectEditCustomerData() {
                   <TextField
                     size="small"
                     fullWidth
-                    value={data?.IdProofNumber}
+                    value={data?.IdProofNumber||""}
                     disabled={true}
                     InputLabelProps={{ shrink: true }}
                     margin="normal"
@@ -1433,14 +1432,14 @@ function InspectEditCustomerData() {
                       <FormHelperText error>
                         Give Correct ID Proof Number
                       </FormHelperText>
-                    ) : null}{" "}
+                    ) : null}
                   </Grid>
                   <Grid item lg={2.6} md={5.5} sm={12} xs={12} mt={1}>
-                    {" "}
+                
                     <TextField
                       size="small"
                       fullWidth
-                      value={data?.IdProofNumber}
+                      value={data?.IdProofNumber||""}
                       disabled={true}
                       InputLabelProps={{ shrink: true }}
                       margin="normal"

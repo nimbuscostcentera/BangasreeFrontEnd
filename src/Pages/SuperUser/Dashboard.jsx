@@ -98,7 +98,7 @@ const Dashboard = () => {
         item
       );
     });
-    console.log(matchingSession);
+
     setFilter((prevFilter) => ({
       ...prevFilter,
       StartDate: sdate,

@@ -45,7 +45,7 @@ import useFetchAcode from "../../Apps/CustomHook/useFetchAcode";
 export default function CollectionSummary() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const currentdate = moment();
+  const currentdate = moment().format("YYYY-MM-DD");
   const [Lot, setLot] = useState();
   const [LotID, setLotID] = useState([]);
   const [params, setParams] = useState({

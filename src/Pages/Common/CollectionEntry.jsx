@@ -197,21 +197,21 @@ function CollectionEntryForm() {
   //permission List data Fetch
   // var parray = JSON.parse(window.localStorage.getItem("loggerPermission"));
   // var myPermission = parray && parray.filter((i) => i?.PageName == "Manage Collections")[0];
-  console.log(location.state);
+
   let PaymentModeData = [
     { PaymentMode: 1, value: "Cash" },
-    { PaymentMode: 2, value: "Online Bank Trasfer" },
+    { PaymentMode: 2, value: "Online Bank Transfer" },
     { PaymentMode: 3, value: "Cheque" },
     { PaymentMode: 4, value: "UPI" },
+    { PaymentMode: 5, value: "Credit Note" },
+    { PaymentMode: 6, value: "Poila Boisakh Coupon" },
   ];
   
   return (
-    <Grid container maxtype={"xl"} mt={1} ml={2} columnGap={2} rowGap={2}>
+    <Grid container maxWidth={"xl"} mt={1} ml={2} columnGap={2} rowGap={2}>
       <Modal
         open={open}
         onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
         sx={{
           position: "stickey",
           top: "40%",
@@ -299,7 +299,6 @@ function CollectionEntryForm() {
               ) : (
                 <Autocomplete
                   options={custList}
-                  componentName="CustUUid"
                   isOptionEqualToValue={(option, value) => {
                     return option?.UUid === value?.value;
                   }}

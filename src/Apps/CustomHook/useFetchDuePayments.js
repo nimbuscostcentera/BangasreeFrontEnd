@@ -1,25 +1,30 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import UseFetchLogger from "./UseFetchLogger";
 import { useSelector, useDispatch } from "react-redux";
 import { DuePaymentsfunc, ClearState66 } from "../../Slice/Dashboard/DuePaymentsSlice";
 function useFetchDuePayments(obj = {}, dep = []) {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
-  const { isloading66, Resp66, isError66, error66, isSuccess66 } = useSelector(
+  const [DuePayments, setDuePayments] = useState([]);
+  const { isloading66, Resp66, isSuccess66 } = useSelector(
     (state) => state.DuePay
   );
   var at = localStorage.getItem("AccessToken");
 
   useEffect(() => {
     if (at !== undefined) {
-      dispatch(DuePaymentsfunc({ ...global, Status: 1 }));
+      dispatch(DuePaymentsfunc({ ...global, Status: 1,...obj }));
     }
   }, [...dep]);
 
-  let DuePayments = useMemo(() => {
+  useEffect(() => {
     if (isSuccess66 && !isloading66) {
-      return Resp66;
+      setDuePayments(Resp66);
     }
+    else {
+      return;
+    }
+    dispatch(ClearState66());
   }, [isSuccess66, ...dep]);
 
   return { DuePayments };

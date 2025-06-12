@@ -24,7 +24,7 @@ const RateVsPuritySlice = createSlice({
   name: "RateVsPurity",
   initialState: {
     isloading79: false,
-    Resp79: {},
+    Resp79:[],
     error79: "",
     isError79: false,
     isSuccess79: false,

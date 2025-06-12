@@ -46,6 +46,7 @@ import MontlyPaymentSlice from "../Slice/PaymentDetails/MontlyPaymentSlice";
 import WalletBalanceSlice from "../Slice/PaymentDetails/WalletBalanceSlice";
 import PaymentDetailListSlice from "../Slice/PaymentDetails/PaymentDetailsSlice";
 import PaymentStatusUpdateSlice from "../Slice/PaymentDetails/PaymentStatusUpdateSlice";
+import PaymentHistorySlice from "../Slice/PaymentDetails/PaymentHistorySlice";
 
 import AgentEditSlice from "../Slice/Agent/AgentEditSlice";
 import AgentByIdSlice from "../Slice/Agent/AgentByIdSlice";
@@ -213,6 +214,7 @@ const rootReducer = combineReducers({
   logs: LogBookListSlice,
   totcol: TotCollectionShowSlice,
   custTrans: CustomerTransferSlice,
+  payHist:PaymentHistorySlice,
 });
 const persistConfig = {
   key: "root",

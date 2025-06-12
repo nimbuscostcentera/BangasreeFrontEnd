@@ -90,22 +90,30 @@ function ViewLogs() {
       hideable: false
     },
   ];
-  console.log(LogBookdetails);
+ 
   useEffect(() => {
-    let arr = [];
-    LogBookdetails?.forEach((i) => arr.push({...i}));
-    console.log(arr)
-    let req={};
-    arr?.forEach((item) => {
-      req = JSON.parse(item?.Request);
-      item.message = `A ${
-        req?.SuperUserType == 1 ? "Super User" : "BackOfficeUser"
-      } of LoggerID ${req?.LoggerID} and BarnchID ${req?.LoggerBranchId} ${
-        item?.Description
-      } ${req?.SchemeRegId?"of SchemeID "+req?.SchemeRegId:""}`;
-      console.log(req)
-    });
-    setFilterData(arr);
+    if (LogBookdetails?.length > 0) {
+      let arr = [];
+      LogBookdetails?.forEach((i) => arr.push({ ...i }));
+      let req = {};
+      arr?.forEach((item) => {
+        req = JSON.parse(item?.Request);
+        item.message = `A ${
+          req?.Utype == 1
+            ? req?.SuperUserType == 1
+              ? "Super User"
+              : "BackOfficeUser"
+            : "Agent"
+        } of LoggerID ${req?.LoggerID} and BarnchID ${req?.LoggerBranchId} ${
+          item?.Description
+        } ${req?.SchemeRegId ? "of SchemeID " + req?.SchemeRegId : ""}`;
+      });
+      setFilterData(arr);
+    }
+    else {
+      return;
+    }
+    
   }, [LogBookdetails]);
   return (
     <ThemeProvider theme={CustomTheme}>
@@ -136,8 +144,8 @@ function ViewLogs() {
           sx={{ display: "flex", justifyContent: "flex-end" }}
         >
           <DateRangFilter2
-            state1={Filters?.StartDate}
-            state2={Filters?.EndDate}
+            state1={Filters?.StartDate||""}
+            state2={Filters?.EndDate||""}
             name1={"StartDate"}
             name2={"EndDate"}
             MaxDate1={
@@ -145,9 +153,9 @@ function ViewLogs() {
               Filters?.EndDate !== null &&
               Filters?.EndDate !== ""
                 ? Filters?.EndDate
-                : currentdate
+                : currentdate.format("YYYY-MM-DD")
             }
-            MaxDate2={currentdate}
+            MaxDate2={currentdate.format("YYYY-MM-DD")}
             InputHandler={FilterHandler}
           />
         </Grid>

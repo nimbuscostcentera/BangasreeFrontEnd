@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import {
   ClearState36,
   SuperUserList,
@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 function useFetchSuperUser(obj = {}, dep = []) {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
+  const [buList, setbuList] = useState([]);
   const { isloading36, Resp36, error36, isError36, isSuccess36 } = useSelector(
     (state) => state.superuser
   );
@@ -25,14 +26,17 @@ function useFetchSuperUser(obj = {}, dep = []) {
     }
   }, [...dep, ...array]);
 
-  let buList = useMemo(() => {
+  useEffect(() => {
     if (Resp36 && Resp36?.length !== 0) {
-      return Resp36;
+      setbuList(Resp36);
     } else {
-      return [];
+      return ;
     }
+    dispatch(ClearState36());
   }, [Resp36, ...dep, ...array]);
+
   let bucount = buList?.length || 0;
+
   return { bucount, buList, isError36, error36, isSuccess36, isloading36 };
 }
 

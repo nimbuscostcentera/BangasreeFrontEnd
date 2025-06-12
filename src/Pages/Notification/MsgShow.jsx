@@ -1,13 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Grid from "@mui/system/Unstable_Grid/Grid";
-import { Divider, IconButton, Paper, Typography } from "@mui/material";
+import { Divider,Paper, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  ReadNotification,
-  ClearState46,
-} from "../../Slice/Notification/ReadNotificationSlice";
+import {ReadNotification} from "../../Slice/Notification/ReadNotificationSlice";
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function MsgShow() {
