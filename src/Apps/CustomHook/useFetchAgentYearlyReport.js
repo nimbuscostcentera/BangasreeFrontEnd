@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import  { useEffect, useState } from "react";
 import UseFetchLogger from "./UseFetchLogger";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -12,7 +12,7 @@ function useFetchAgentYearlyReport(obj = {}, dep = []) {
   const { isloading72, Resp72, isSuccess72 } = useSelector(
     (state) => state.AP
   );
-  const [data, setData] = useState();
+  const [data, setData] = useState([]);
   var at = localStorage.getItem("AccessToken");
 
   useEffect(() => {
@@ -36,10 +36,11 @@ function useFetchAgentYearlyReport(obj = {}, dep = []) {
         }
       });
       setData(Linedata);
+      dispatch(ClearState72());
     } else {
       return;
     }
-    dispatch(ClearState72());
+   
   }, [isSuccess72, ...dep]);
 
   return { data };

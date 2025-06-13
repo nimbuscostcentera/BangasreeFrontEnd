@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getPuritylist,
@@ -25,9 +25,11 @@ const useFetchPuritylist = (obj = {},dep=[]) => {
   useEffect(() => {
     if (isSuccess77 && !isloading77 && at !== undefined) {
       setplist(Resp77);
+      dispatch(ClearState77());
+    } else {
+      return;
     }
-    dispatch(ClearState77());
-  }, [isSuccess77]);
+  }, [isSuccess77, isloading77,...dep]);
 
   return { isloading77, plist, isError77, error77, isSuccess77 };
 };

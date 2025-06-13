@@ -5,7 +5,7 @@ import {
   ClearState23,
 } from "../../Slice/Collection/CollectionListSlice";
 import UseFetchLogger from "./UseFetchLogger";
-const useFetchSupscription = (obj = {}, dep = [], uniquekey = "") => {
+const useFetchSupscription = (obj = {}, dep = []) => {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
   const [sub, setSub] = useState([]);
@@ -45,11 +45,11 @@ const useFetchSupscription = (obj = {}, dep = [], uniquekey = "") => {
           }
         });
       setMaturity(count);
+      dispatch(ClearState23());
    }
     else {
       return;
    }
-   dispatch(ClearState23());
   }, [isSuccess23, ...dep]);
   
 

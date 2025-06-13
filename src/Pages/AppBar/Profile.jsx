@@ -42,7 +42,7 @@ function Profile() {
      obj.CustomerID = userInfo?.details?.CustomerID;
      obj.CustUUid = userInfo?.details?.UUid;
    }
-    const { CardData } = useFetchCards(obj, [], "");
+    const { CardData } = useFetchCards(obj, []);
   
 
   return (

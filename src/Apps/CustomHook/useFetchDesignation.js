@@ -1,4 +1,4 @@
-import React, { useEffect, useState ,useMemo} from "react";
+import { useEffect, useState} from "react";
 import {
   ClearState54,
   DesListFunc,
@@ -12,21 +12,21 @@ function useFetchDesignation(obj = {}, dep = []) {
     (state) => state.DesiList
   );
   var at = localStorage.getItem("AccessToken");
-
+const [des,setDes]=useState([]);
   useEffect(() => {
     if (at !== undefined) {
-      dispatch(DesListFunc({ ...global, Status: 1 }));
+      dispatch(DesListFunc({ ...global, Status: 1, ...obj }));
     }
   }, [...dep]);
 
-  let des = useMemo(() => {
-    if (Resp54 && Resp54?.length !== 0) {
-      return Resp54;
+  useEffect(() => {
+    if (isSuccess54 && !isloading54 && at !== undefined) {
+      setDes(Resp54);
+      dispatch(ClearState54());
+    } else {
+      return;
     }
-    else {
-      return [];
-    }
-  }, [Resp54, ...dep]);
+  }, [isloading54,isSuccess54, ...dep]);
 
   return { isError54, des, error54, isSuccess54, isloading54 };
 }

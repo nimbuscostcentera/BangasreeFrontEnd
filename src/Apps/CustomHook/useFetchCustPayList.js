@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   PaymentDetailList,
@@ -13,6 +13,9 @@ const useFetchCustPayList = (obj = {}, dep = []) => {
     (state) => state.CustPayDetails
   );
   var at = localStorage.getItem("AccessToken");
+
+  const [sumColl, setSumColl] = useState(0);
+  const [pay,setPay]=useState([])
 
   //Collection List
   useEffect(() => {
@@ -32,16 +35,17 @@ const useFetchCustPayList = (obj = {}, dep = []) => {
     }
   }, dep);
 
-  let pay = useMemo(() => {
-    if (Resp29 !== undefined) {
-      return Resp29 || [];
+  useEffect(() => {
+    if (isSuccess29 && !isloading29 && at !== undefined) {
+      setPay(Resp29);
+      let sum = Resp29?.reduce((acc, curr) => acc + curr?.totcolection, 0);
+      setSumColl(sum);
+      dispatch(ClearState29());
+    } else {
+      return;
     }
-  }, [Resp29, ...dep]);
+  }, [isloading29,isSuccess29, ...dep]);
 
-  var sumColl = 0;
-  pay.map((i) => {
-    sumColl = sumColl + i?.totcolection;
-  });
   return { isloading29, pay, sumColl, isError29, error29, isSuccess29 };
 };
 export default useFetchCustPayList;

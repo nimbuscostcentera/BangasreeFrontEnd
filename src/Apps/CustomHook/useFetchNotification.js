@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   NotificationList,
@@ -12,15 +12,13 @@ function useFetchNotification() {
 
   var at = localStorage.getItem("AccessToken");
 
-  const { isloading44, Resp44, error44, isError44, isSuccess44 } = useSelector(
+  const { isloading44, Resp44, isSuccess44 } = useSelector(
     (state) => state.notify
   );
 
   const { userInfo } = useSelector((state) => state.auth);
 
-  const { isloading46, Resp46, error46, isError46, isSuccess46 } = useSelector(
-    (state) => state.readmsg
-  );
+  const { isError46, isSuccess46 } = useSelector((state) => state.readmsg);
 
   var global = {
     CompanyCode: userInfo?.details?.CompanyCode,
@@ -28,7 +26,6 @@ function useFetchNotification() {
     UserID: userInfo?.details?.UserID,
     senderName: userInfo?.details?.UserName,
   };
-
 
   useEffect(() => {
     if (at !== undefined) {
@@ -41,12 +38,13 @@ function useFetchNotification() {
       var a = Resp44.filter((i) => i.Seen === null);
       setUnSeen(a);
       var b = Resp44.filter((i) => i.Seen === 1);
-   
-      setSeen(b);
-    }
-    //dispatch(ClearState46());
-  }, [isSuccess44, isSuccess46]);
 
+      setSeen(b);
+      dispatch(ClearState44());
+    } else {
+      return;
+    }
+  }, [isSuccess44, isSuccess46]);
 
   return { UnSeenMsg, seen };
 }

@@ -1,17 +1,17 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState} from "react";
 import {
   ClearState6,
   CustomerList,
 } from "../../Slice/Customer/CustomerListSlice";
 import UseFetchLogger from "./UseFetchLogger";
 import { useSelector, useDispatch } from "react-redux";
-function useFetchCustomer(obj = {}, dep = [], uniquekey) {
+function useFetchCustomer(obj = {}, dep = []) {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
   var at = localStorage.getItem("AccessToken");
   const { isloading6, CustomerDetail, isError6, error6, isSuccess6 } =
     useSelector((state) => state.CustomerList);
-
+  const [custList, setCustList] = useState([]);
   useEffect(() => {
     if (at !== undefined && Object.keys(obj).length !== 0) {
       dispatch(CustomerList({ ...global, ...obj }));
@@ -20,13 +20,15 @@ function useFetchCustomer(obj = {}, dep = [], uniquekey) {
     }
   }, [...dep]);
 
-  let custList = useMemo(() => {
+  useEffect(() => {
     if (isSuccess6 && !isloading6 && at !== undefined) {
-      return CustomerDetail;
+      setCustList(CustomerDetail);
+      dispatch(ClearState6());
     } else {
-      return [];
+      return;
     }
-  }, [isSuccess6]);
+
+  }, [isSuccess6, isloading6]);
 
   var count = custList?.length;
   return { count, custList, isError6, error6, isSuccess6, isloading6 };

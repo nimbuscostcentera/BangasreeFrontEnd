@@ -39,11 +39,12 @@ function useFetchAgentAreaColl() {
         });
       });
       setAreaAgentData(Bardata);
+      dispatch(ClearState73());
     }
     else {
       return;
     }
-    dispatch(ClearState73());
+   
   }, [isSuccess73]);
 
   return { AreaAgentData, nameArray, isloading73, isSuccess73 };

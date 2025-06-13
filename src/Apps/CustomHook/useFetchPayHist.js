@@ -28,10 +28,11 @@ function useFetchPieChartData(obj = {}, dep = []) {
           return item
       });
       setPayHistList(data);
+      dispatch(ClearStatePayHistory());
     } else {
       return ;
       }
-      dispatch(ClearStatePayHistory());
+  
   }, [isPayHistorySucc, ...dep]);
 
   return { payHistList };

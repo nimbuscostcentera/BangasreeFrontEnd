@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState} from "react";
 import UseFetchLogger from "./UseFetchLogger";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -8,20 +8,18 @@ import {
 function useFetchLineChartData(obj = {}, dep = []) {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
-  
-  const { isloading67, Resp67, isError67, error67, isSuccess67 } = useSelector((state)=> state.Line);
+  const [data,setData] = useState([]);
+  const { isloading67, Resp67, isSuccess67 } = useSelector((state)=> state.Line);
   var at = localStorage.getItem("AccessToken");
 
-
   useEffect(() => {
-    // console.log(AreaID, dep, obj, StartDate, EndDate, "area");
     if (at) {
       dispatch(LineChartsfunc({ ...global, ...obj }));
     }
   },dep);
 
-  let data = useMemo(() => {
-    if (Resp67 && Resp67?.length !== 0) {
+  useEffect(() => {
+    if (isSuccess67 && !isloading67 && at !== undefined) {
       let Linedata = [];
       Resp67?.map((item) => {
         if (item?.id == "001") {
@@ -34,11 +32,12 @@ function useFetchLineChartData(obj = {}, dep = []) {
           Linedata.push({ ...item, color: "grey" });
         }
       });
-      return Linedata;
+      setData(Linedata);
+      dispatch(ClearState67());
     } else {
-      return [];
+      return;
     }
-  }, [isSuccess67, ...dep]);
+  }, [isloading67,isSuccess67, ...dep]);
  
   
   return { data };

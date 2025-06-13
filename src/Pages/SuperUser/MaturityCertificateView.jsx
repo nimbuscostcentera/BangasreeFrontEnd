@@ -72,9 +72,7 @@ function MaturityCertificateView() {
     dispatch(MCshowFunc({ ...global, SchemeRegId: SchemeRegId }));
   }, []);
 
-  const { sub } = useFetchSupscription({ SchemeRegId: SchemeRegId }, [
-    SchemeRegId,
-  ]);
+  const { sub } = useFetchSupscription({ SchemeRegId: SchemeRegId }, [SchemeRegId]);
 
   let subscribe = useMemo(() => sub && sub[0], [sub]);
   let MC = useMemo(() => resp65[0], [isSuccess65]);

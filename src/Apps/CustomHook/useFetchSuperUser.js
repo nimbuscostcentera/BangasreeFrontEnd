@@ -9,6 +9,7 @@ function useFetchSuperUser(obj = {}, dep = []) {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
   const [buList, setbuList] = useState([]);
+  const [bucount, setBUcount] = useState(0);
   const { isloading36, Resp36, error36, isError36, isSuccess36 } = useSelector(
     (state) => state.superuser
   );
@@ -27,15 +28,14 @@ function useFetchSuperUser(obj = {}, dep = []) {
   }, [...dep, ...array]);
 
   useEffect(() => {
-    if (Resp36 && Resp36?.length !== 0) {
+    if (isSuccess36 && !isloading36) {
       setbuList(Resp36);
+      setBUcount(Resp36?.length);
+      dispatch(ClearState36());
     } else {
-      return ;
+      return;
     }
-    dispatch(ClearState36());
   }, [Resp36, ...dep, ...array]);
-
-  let bucount = buList?.length || 0;
 
   return { bucount, buList, isError36, error36, isSuccess36, isloading36 };
 }

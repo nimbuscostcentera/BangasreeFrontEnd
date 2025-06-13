@@ -75,11 +75,7 @@ function CollectionEntryForm() {
     useSelector((state) => state.CollectionEntry);
 
   //Customer list
-  const { custList } = useFetchCustomer(
-    { Status: 1, AgentCode: userInfo?.details?.AgentCode },
-    [],
-    ""
-  );
+  const { custList } = useFetchCustomer({ Status: 1, AgentCode: userInfo?.details?.AgentCode },[]);
 
   //access token
   var at = localStorage.getItem("AccessToken");

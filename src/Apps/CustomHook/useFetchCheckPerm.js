@@ -1,22 +1,11 @@
-import React, { useEffect, useState } from "react";
-import {
-  PermissionList,
-  ClearState14,
-} from "../../Slice/Page/PagePermissionSlice";
-import UseFetchLogger from "./UseFetchLogger";
-import { useSelector, useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 function useFetchCheckPerm(PageName) {
   const [myPermission, setPer] = useState({});
-  const [perm, setPerm] = useState([]);
-  const { global } = UseFetchLogger();
-  const { isloading14, PermissionData, isError14, isSuccess14, error14 } =
+  const { isloading14, PermissionData,isSuccess14} =
     useSelector((state) => state.Permission);
-  const dispatch = useDispatch();
 
-  useEffect(() => {
-    setPerm(PermissionData);
-  }, [isSuccess14]);
   let parray = [];
   let Perdata = localStorage.getItem("loggerPermission");
   if (Perdata) {

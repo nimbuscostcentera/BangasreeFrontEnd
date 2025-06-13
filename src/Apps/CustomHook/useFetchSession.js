@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import {
   ClearState71,
   SessionListfunc,
@@ -12,20 +12,21 @@ function useFetchSession() {
     (state) => state.session
   );
   var at = localStorage.getItem("AccessToken");
-
+const [session, setSession] = useState([]);
   useEffect(() => {
     if (at !== undefined) {
       dispatch(SessionListfunc({ ...global }));
     }
   }, []);
 
-  let session = useMemo(() => {
-    if (isSuccess71 && Resp71?.length !== 0) {
-      return Resp71;
+  useEffect(() => {
+    if (isSuccess71 && !isloading71) {
+      setSession(Resp71);
+      dispatch(ClearState71());
     } else {
-      return [];
+      return;
     }
-  }, [isSuccess71]);
+  }, [isSuccess71, isloading71]);
 
   return { isError71, session, error71, isSuccess71, isloading71 };
 }

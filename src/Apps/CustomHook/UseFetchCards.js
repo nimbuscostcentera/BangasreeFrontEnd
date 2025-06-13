@@ -1,15 +1,17 @@
-import React, { useEffect,useMemo } from "react";
+import  { useEffect,useState } from "react";
 import UseFetchLogger from "./UseFetchLogger";
 import { useSelector, useDispatch } from "react-redux";
 import { CardsDataFetchFunc, ClearState63 } from "../../Slice/Dashboard/CardsSlice";
 
-function useFetchCards(obj = {}, dep = [], uniqueKey) {
+function useFetchCards(obj = {}, dep = []) {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
   var at = localStorage.getItem("AccessToken");
-  const { isloading63, Resp63, isError63, error63, isSuccess63 } =
+  const { isloading63, Resp63, isSuccess63 } =
     useSelector((state) => state.DashboardCards);
 
+  const [CardData, setCardData] = useState([]);
+  
   useEffect(() => {
     if (at !== undefined) {
       if (Object.keys(obj).length !== 0) {
@@ -20,9 +22,15 @@ function useFetchCards(obj = {}, dep = [], uniqueKey) {
     }
   }, [...dep]);
 
-    let CardData = useMemo(() => {if (isSuccess63) {
-      return Resp63;
-    }}, [isSuccess63]);
+  useEffect(() => {
+    if (isSuccess63 && !isloading63 && at !== undefined) {
+      setCardData(Resp63);
+      dispatch(ClearState63());
+    }
+    else {
+      return;
+    }
+  }, [isloading63,isSuccess63, ...dep]);
 
  
   return { CardData };

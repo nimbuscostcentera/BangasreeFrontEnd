@@ -24,8 +24,10 @@ const useFetchGoldRateList = (obj = {}, dep = []) => {
   useEffect(() => {
     if (isSuccess79 && !isloading79 && at !== undefined) {
       setRateList(Resp79);
+      dispatch(ClearState79());
+    } else {
+      return;
     }
-    dispatch(ClearState79());
   }, [isSuccess79, ...dep]);
 
   return { isloading79, rateList, isError79, error79, isSuccess79 };

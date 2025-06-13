@@ -125,11 +125,7 @@ const Dashboard = () => {
   }, [Filter.SessionID, session]);
 
   //card data fetch
-  const { CardData } = useFetchCards(
-    Filter,
-    [Filter?.AreaID, Filter?.BranchId, Filter?.AgentCode],
-    ""
-  );
+  const { CardData } = useFetchCards(Filter,[Filter?.AreaID, Filter?.BranchId, Filter?.AgentCode]);
   //multicard data fetch
   const { duepaycust } = useFetchSubscription(
     Filter,

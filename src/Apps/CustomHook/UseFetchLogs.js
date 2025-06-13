@@ -26,11 +26,11 @@ function UseFetchLogs(obj = {}, dep = []) {
   useEffect(() => {
     if (isLogListSuccess && !isLogListLoading) {
       setLogBookdetails(LogListResult);
+      dispatch(ClearstateLogList());
     } else {
       return;
     }
-    dispatch(ClearstateLogList());
-  }, [isLogListSuccess, ...dep]);
+  }, [isLogListLoading, isLogListSuccess, ...dep]);
 
   return {
     LogBookdetails,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ClearStateSchemeHistory,
   getAllSchemeHistory,
@@ -46,9 +46,11 @@ function useFetchSchemeHistory(obj = {}, dep = [], uniquekey) {
   useEffect(() => {
     if (isSchemeHistorySuccess && !isSHLoading && at !== undefined) {
       setSchemeHist(SchemeHistoryList);
+      dispatch(ClearStateSchemeHistory());
+    } else {
+      return;
     }
-    dispatch(ClearStateSchemeHistory());
-  }, [isSchemeHistorySuccess, ...dep]);
+  }, [isSHLoading,isSchemeHistorySuccess, ...dep]);
 
   return {
     SchemeHist,

@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { SchemeByCustId } from "../../Slice/Scheme/SchemebyCustIdSlice";
+import { useEffect, useState } from "react";
+import {
+  SchemeByCustId,
+  ClearState27,
+} from "../../Slice/Scheme/SchemebyCustIdSlice";
 import UseFetchLogger from "./UseFetchLogger";
 import { useDispatch, useSelector } from "react-redux";
 
-function useFetchSchemeById(obj = {}, dep = [],uniquekey) {
+function useFetchSchemeById(obj = {}, dep = []) {
   const [SchemeData, setSchemeData] = useState([]);
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
@@ -22,8 +25,11 @@ function useFetchSchemeById(obj = {}, dep = [],uniquekey) {
   useEffect(() => {
     if (isSuccess27 && !isloading27) {
       setSchemeData(Resp27[0]);
+      dispatch(ClearState27());
+    } else {
+      return;
     }
-  }, [isSuccess27, ...dep]);
+  }, [isloading27, isSuccess27, ...dep]);
 
   return { SchemeData, isloading27, isError27, error27, isSuccess27 };
 }

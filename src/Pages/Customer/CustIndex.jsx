@@ -33,8 +33,8 @@ function CustIndex() {
     obj.CustomerID = userInfo?.details?.CustomerID;
     obj.CustUUid = userInfo?.details?.UUid;
   }
-  const { CardData } = useFetchCards(obj, [], "");
-  const { duepaycust } = useFetchSupscription(obj, [], "");
+  const { CardData } = useFetchCards(obj, []);
+  const { duepaycust } = useFetchSupscription(obj,[]);
   let TotalAcc = null;
   TotalAcc = CardData?.TotalAcc;
   let TotalMaturedAcc = null;
@@ -43,11 +43,7 @@ function CustIndex() {
   TotalPayedAmt = CardData?.TotalPayedAmt;
   let AgentName = CardData?.AgentName || null;
 
-  const { sub ,isloading23} = useFetchSupscription(
-    { CustomerID: userInfo?.details?.CustomerID },
-    [],
-    ""
-  );
+  const { sub ,isloading23} = useFetchSupscription({ CustomerID: userInfo?.details?.CustomerID },[]);
 
   const [scrid, setSCRID] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);

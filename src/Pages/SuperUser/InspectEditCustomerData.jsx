@@ -198,8 +198,7 @@ function InspectEditCustomerData() {
       CustUUid: CustUUid,
       ...global,
     },
-    [isSuccess11, isSuccess10, Edit],
-    "CustUUid"
+    [isSuccess11, isSuccess10, Edit]
   );
 
   //load cust detail

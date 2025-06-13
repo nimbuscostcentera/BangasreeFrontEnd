@@ -20,11 +20,11 @@ function useFetchDuePayments(obj = {}, dep = []) {
   useEffect(() => {
     if (isSuccess66 && !isloading66) {
       setDuePayments(Resp66);
+      dispatch(ClearState66());
     }
     else {
       return;
     }
-    dispatch(ClearState66());
   }, [isSuccess66, ...dep]);
 
   return { DuePayments };

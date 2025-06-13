@@ -8,9 +8,12 @@ import { useDispatch, useSelector } from "react-redux";
 
 function useFetchAcode(obj = {}, dep = [], uniquekey = undefined) {
   const dispatch = useDispatch();
+
   const [AgentCode, setAgentCode] = useState([]);
+  
   const { global } = UseFetchLogger();
   var at = localStorage.getItem("AccessToken");
+
   useEffect(() => {
     if (at !== undefined && !uniquekey) {
       dispatch(AgentCodeList({ ...global }))

@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { DueLeadfunc } from "../../Slice/Dashboard/DueLeadSlice";
+import { useEffect, useState } from "react";
+import { DueLeadfunc, ClearState74 } from "../../Slice/Dashboard/DueLeadSlice";
 import UseFetchLogger from "./UseFetchLogger";
 import { useSelector, useDispatch } from "react-redux";
-function useFetchDueLeads(obj = {}, dep = [], uniquekey) {
+function useFetchDueLeads(obj = {}, dep = []) {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
   var at = localStorage.getItem("AccessToken");
@@ -18,15 +18,18 @@ function useFetchDueLeads(obj = {}, dep = [], uniquekey) {
     }
   }, [...dep]);
 
-  let DueleadList = useMemo(() => {
+  const [DueleadList, setDueleadList] = useState([]);
+  const [count,setCount]=useState(0);
+  useEffect(() => {
     if (isSuccess74 && !isloading74 && at !== undefined) {
-      return Resp74;
+      setDueleadList(Resp74);
+      setCount(Resp74.length);
+      dispatch(ClearState74());
     } else {
-      return [];
+      return ;
     }
-  }, [isSuccess74]);
+  }, [isSuccess74, isloading74,...dep]);
 
-  var count = DueleadList?.length;
   return { count, DueleadList, isError74, error74, isSuccess74, isloading74 };
 }
 

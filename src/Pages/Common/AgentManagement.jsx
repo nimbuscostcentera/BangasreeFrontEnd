@@ -161,8 +161,7 @@ export default function AgentManagement() {
       AreaID: Filters?.AreaID || "",
       ...global,
     },
-    [Filters, isSuccess9],
-    ""
+    [Filters, isSuccess9]
   );
 
   //AgentStatus Update

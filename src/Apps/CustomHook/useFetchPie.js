@@ -31,11 +31,11 @@ function useFetchPieChartData(obj = {}, dep = []) {
         }
       });
       setData(piedata);
+      dispatch(ClearState68());
     } else {
       return;
     }
-    dispatch(ClearState68());
-  }, [isSuccess68, ...dep]);
+  }, [isloading68, isSuccess68, ...dep]);
 
   return {data};
 }

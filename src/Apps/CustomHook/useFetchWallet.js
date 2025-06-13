@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   WalletBalanceFunc,
@@ -25,8 +25,12 @@ const useFetchWallet = (obj) => {
   useEffect(() => {
     if (isSuccess53 && !isloading53 && at !== undefined) {
       setWallBal(Resp53[0]);
+      dispatch(ClearState53());
     }
-  }, [isSuccess53]);
+    else {
+      return;
+    }
+  }, [isSuccess53, isloading53]);
 
   return { isloading53, wallBal, isError53, error53, isSuccess53 };
 };

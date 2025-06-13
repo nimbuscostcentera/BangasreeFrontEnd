@@ -126,9 +126,7 @@ export default function CustomerManagement() {
   }
   const { custList: CustomerDetails, isloading6 } = useFetchCustomer(
     { ...global, ...Filters, ...addobj },
-    [Filters, isSuccess10, isSuccess7, navigate],
-    ""
-  );
+    [Filters, isSuccess10, isSuccess7, navigate]);
   const {
     isCustomerTransferSucc,
     isCustomerTransferErr,

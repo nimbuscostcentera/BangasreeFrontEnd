@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import UseFetchLogger from "./UseFetchLogger";
 import { useSelector, useDispatch } from "react-redux";
 import { BranchList, ClearState35 } from "../../Slice/Area/BranchListSlice";
@@ -6,10 +6,13 @@ import { BranchList, ClearState35 } from "../../Slice/Area/BranchListSlice";
 function useFetchBranch(obj={},dep=[],uniquekey) {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
-  const { isloading35, Resp35, isError35, error35, isSuccess35 } = useSelector(
+  const { isloading35, Resp35,  isSuccess35 } = useSelector(
     (state) => state.branch
   );
   var at = localStorage.getItem("AccessToken");
+
+const [branch,setBranch]=useState([]);
+
   useEffect(() => {
       if (
         at !== undefined &&
@@ -25,12 +28,17 @@ function useFetchBranch(obj={},dep=[],uniquekey) {
       ) {
         dispatch(BranchList(global));
       }
-  }, [...dep]);
+  },dep);
   
- let branch = useMemo(() => {
-   if (Resp35 && Resp35?.length !== 0) {
-     return Resp35;
+ useEffect(() => {
+   if (isSuccess35 && !isloading35 && at !== undefined) {
+     setBranch(Resp35);
+     dispatch(ClearState35());
    }
+   else {
+     return
+   }
+ 
  }, [Resp35, ...dep]);
 
   return { branch};

@@ -168,8 +168,7 @@ function InspectEditAgentData() {
   //agentdetail
   const { AgentByIdDetail } = useFetchAgentByID(
     { ...global, AgentID: AgentID },
-    [isSuccess12, AgentID],
-    "AgentID"
+    [isSuccess12, AgentID]
   );
   //redirect
   useEffect(() => {

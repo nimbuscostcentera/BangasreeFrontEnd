@@ -58,7 +58,7 @@ function PerformanceReport() {
     obj.AgentID = userInfo?.details?.AgentID;
     obj.AgentCode = userInfo?.details?.AgentCode;
   }
-  const { CardData } = useFetchCards(obj, [], "");
+  const { CardData } = useFetchCards(obj, []);
 
   const { duepaycust } = useFetchSubscription(obj, [], "");
 
@@ -129,7 +129,7 @@ function PerformanceReport() {
   );
 
   const { AreaAgentData = [], nameArray = [], isloading73 = false } = useFetchAgentAreaColl({},[]);
-  console.log(data);
+ 
 
   return (
     <Grid container maxWidth={"xl"} columnGap={2} rowGap={2} ml={3} mt={3}>

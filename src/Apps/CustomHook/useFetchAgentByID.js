@@ -2,7 +2,7 @@ import { useEffect,  useState } from "react";
 import { ClearState22, AgentById } from "../../Slice/Agent/AgentByIdSlice";
 import UseFetchLogger from "./UseFetchLogger";
 import { useSelector, useDispatch } from "react-redux";
-function useFetchAgentByID(obj = {}, dep = [],uniquekey="") {
+function useFetchAgentByID(obj = {}, dep = []) {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
   var at = localStorage.getItem("AccessToken");
@@ -21,10 +21,11 @@ function useFetchAgentByID(obj = {}, dep = [],uniquekey="") {
   useEffect(() => {
     if (isSuccess22 && !isloading22 && at !== undefined) {
       setAgentByIdDetail(AgentByIdDetails);
+      dispatch(ClearState22());
     } else {
       return;
     }
-    dispatch(ClearState22());
+   
   }, [isSuccess22,...dep]);
 
   return { AgentByIdDetail };

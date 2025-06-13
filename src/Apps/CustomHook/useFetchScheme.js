@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { SchemeList } from "../../Slice/Scheme/SchemeListSlice";
+import { useEffect, useState } from "react";
+import { SchemeList, ClearState18 } from "../../Slice/Scheme/SchemeListSlice";
 import UseFetchLogger from "./UseFetchLogger";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -37,10 +37,14 @@ function useFetchScheme(obj = {}, dep = [], uniquekey) {
   );
   //schemeList response save to hook
   useEffect(() => {
-    if (isSuccess18 && !isloading18 &&  at !== undefined) {
+    if (isSuccess18 && !isloading18 && at !== undefined) {
       setScheme(Schemes);
+      dispatch(ClearState18());
     }
-  }, [isSuccess18, ...dep]);
+    else {
+      return;
+    }
+  }, [isloading18,isSuccess18, ...dep]);
 
   return { Scheme, isloading18, isError18, error18, isSuccess18 };
 }

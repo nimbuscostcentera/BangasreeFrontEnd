@@ -11,7 +11,7 @@ export const AgentPerformancefunc = createAsyncThunk(
         },
       };
       const { data } = await AxiosInstance.post(URL, UserData, config);
-      console.log(data?.response);
+      
       return data?.response;
     } catch (error) {
       if (error.response && error.response.data.response) {

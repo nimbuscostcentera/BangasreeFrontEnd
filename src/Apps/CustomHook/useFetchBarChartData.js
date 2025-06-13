@@ -1,34 +1,37 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import UseFetchLogger from "./UseFetchLogger";
 import { useSelector, useDispatch } from "react-redux";
 import { BarChartsfunc, ClearState69 } from "../../Slice/Dashboard/BarChart";
-import { color } from "@mui/system";
-function useFetchBarChartData(obj = {},dep=[]) {
+function useFetchBarChartData(obj = {}, dep = []) {
   const dispatch = useDispatch();
   const { global } = UseFetchLogger();
-  const { isloading69, Resp69, isError69, error69, isSuccess69 } = useSelector(
+  const { isloading69, Resp69, isSuccess69 } = useSelector(
     (state) => state.Bar
   );
   var at = localStorage.getItem("AccessToken");
 
+  const [bardata, setBardata] = useState([]);
+  const [nameArray, setNameArray] = useState([]);
   useEffect(() => {
     if (at !== undefined) {
-      dispatch(BarChartsfunc({...global,...obj}));
+      dispatch(BarChartsfunc({ ...global, ...obj }));
     }
   }, dep);
-    let transArray = [];
-    Resp69?.map((item) => {
+
+  useEffect(() => {
+    if (isSuccess69 && !isloading69 && at !== undefined) {
+      let transArray = [];
+      Resp69?.map((item) => {
         let arr = Object.keys(item);
         transArray = [...arr, ...transArray];
-    });
-    let myset = new Set(transArray);
-    let midarray = [...myset];
-    let nameArray = midarray.filter((item)=>item!=="AgentName");
-  let bardata = useMemo(() => {
-    if (Resp69 && Resp69?.length !== 0) {
-      let Bardata = [];
+      });
+      let myset = new Set(transArray);
+      let midarray = [...myset];
+      let nArray = midarray.filter((item) => item !== "AgentName");
+      setNameArray(nArray);
+      let bdata = [];
       Resp69?.map((item) => {
-        Bardata.push({
+        bdata.push({
           ...item,
           color1: "blue",
           color2: "green",
@@ -37,9 +40,15 @@ function useFetchBarChartData(obj = {},dep=[]) {
           color5: "violet",
         });
       });
-      return Bardata;
+      setBardata(bdata); //Bardata;
+      dispatch(ClearState69());
     }
-  }, [isSuccess69,...dep]);
+    else
+    {
+      return;
+      }
+  
+  }, [isloading69, isSuccess69]);
 
   return { bardata, nameArray, isloading69 };
 }
