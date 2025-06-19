@@ -20,7 +20,7 @@ import {
   AlertTitle,
   Stack,
 } from "@mui/material";
-import HistoryIcon from "@mui/icons-material/History";
+
 import Grid from "@mui/system/Unstable_Grid/Grid";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -34,15 +34,14 @@ import ReusableDataTable from "../../Components/Global/ReusableTable";
 import ReusableDropDown4 from "../../Components/Global/ReusableDropDown4";
 import ReusableDropDown3 from "../../Components/Global/ReusableDropDown3";
 import Loader from "../../Components/Global/loader";
-
 import IconOnOffButton from "../../Components/Global/IconOnOffButton";
 import PictureInspection2 from "../../Components/Global/PictureInspection2";
 import OnOffButton from "../../Components/Global/OnOffButton";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
-
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import HistoryIcon from "@mui/icons-material/History";
 
 import {
   CustomerEdit,
@@ -53,7 +52,10 @@ import {
   ClearState10,
 } from "../../Slice/Customer/CutomerStatusUpdateSlice";
 
-import { CollectionList } from "../../Slice/Collection/CollectionListSlice";
+import {
+  CollectionList,
+  ClearState23,
+} from "../../Slice/Collection/CollectionListSlice";
 import UseFetchLogger from "../../Apps/CustomHook/UseFetchLogger";
 import useFetchBranch from "../../Apps/CustomHook/useFetchBranch";
 import useFetchArea from "../../Apps/CustomHook/useFetchArea";
@@ -91,12 +93,11 @@ const CustomTheme = createTheme({
 });
 
 function InspectEditCustomerData() {
+  //-----------------------------------------hooks-----------------------------------//
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
   var { CustUUid } = location.state;
-  //console.log(location);
-
   let datetime = moment().format("DD/MM/YYYY HH:mm:SS");
   const [sub, setSub] = useState([]);
   const [params, setParams] = useState({ warning: "", alert: false });
@@ -104,7 +105,7 @@ function InspectEditCustomerData() {
   const [openPrompt, setOpenPrompt] = useState(false);
   const [comment, setComment] = useState({ Comment: "" });
   const [Edit, setEdit] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [EditPic, setEditPic] = useState({
     IdProofPhoto: null,
     AplicantPhoto: null,
@@ -166,12 +167,8 @@ function InspectEditCustomerData() {
     Relation: true,
     NomineeIdProofNumber: true,
   });
+  //---------------------------------------API call-------------------------------------//
 
-  // const [paymentdetail, setPaymentDetail] = useState([]);
-
-  const handleClose = () => {
-    setOpen(false);
-  };
   //status
   const { isloading10, Msg10, isError10, error10, isSuccess10 } = useSelector(
     (state) => state.CustStatus
@@ -180,18 +177,23 @@ function InspectEditCustomerData() {
   const { isloading11, Msg11, error11, isError11, isSuccess11 } = useSelector(
     (state) => state.CustomerEdit
   );
-  // const { isloading29 } = useSelector((state) => state.CustPayDetails);
+
   //Collection List for Table
-  const { isloading23} =
-    useSelector((state) => state.CollectionList);
+  const { isloading23 } = useSelector(
+    (state) => state.CollectionList
+  );
 
   const { userInfo, global } = UseFetchLogger();
 
   const { AreaList } = useFetchArea({ Status: 1 });
 
-  const { branch } = useFetchBranch({ Status: 1 }, [CustUUid], "");
+  const { branch} = useFetchBranch(
+    { Status: 1 },
+    [CustUUid],
+    ""
+  );
 
-  const { custList, isSuccess6 } = useFetchCustomer(
+  const { custList,isSuccess6,isloading6,isError6 } = useFetchCustomer(
     {
       UUid: userInfo?.details?.UUid,
       Utype: 3,
@@ -200,20 +202,143 @@ function InspectEditCustomerData() {
     },
     [isSuccess11, isSuccess10, Edit]
   );
+  console.log(custList, "custList");
+  //agent code
+  const { AgentCode} = useFetchAgentCode(
+    {
+      Status: 1,
+      BranchId: EditData?.BranchId || data?.BranchId,
+    },
+    [EditData?.BranchId, data?.BranchId]
+  );
+  //---------------------------------functions------------------------------//
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const NavigateToPaymentHistory = () => {
+    console.log(scid);
 
-  //load cust detail
-  useEffect(() => {
-    setOpen(true);
-    let timer = setTimeout(() => {
+    if (scid.length == 1) {
+      navigate("/customer/custpaymenthistory", {
+        state: { SchemeRegId: scid[0] },
+        replace: true,
+      });
+    } else {
+      setParams({ alert: true, warning: "Select 1 Customer Account." });
+    }
+  };
+  const BlockUser = (event) => {
+    event.preventDefault();
+    const UserData = {
+      Status: 2,
+      CustUUid: CustUUid,
+      CustomerID: data?.CustomerID,
+      LoggerId: global?.LoggerID,
+      UUid: global?.LoggerUUid,
+      ...comment,
+      ...global,
+    };
+
+    dispatch(CutomerStatusUpdate(UserData));
+    setOpenPrompt(false);
+  };
+  const OnSubmitHandler = (e) => {
+    e.preventDefault();
+    var finalobj = Object.keys(EditData).reduce((acc, key) => {
       if (
-        custList?.length !== 0 &&
-        CustUUid == custList[0]?.UUid &&
-        isSuccess6
+        EditData[key] !== null &&
+        EditData[key] !== undefined &&
+        EditData[key] !== ""
       ) {
-        let apidata= custList[0];
+        if (key === "Status" && EditData[key] == 4) {
+          acc[key] = 0;
+        } else {
+          acc[key] = EditData[key];
+        }
+      }
+      return acc;
+    }, {});
+
+    finalobj.UUid = userInfo?.details?.UUid;
+    finalobj.Utype = 3;
+    finalobj.CustUUid = CustUUid;
+    finalobj.CustomerID = data?.CustomerID;
+    finalobj.BranchId = finalobj.BranchId || userInfo?.details?.BranchId;
+    console.log({ ...finalobj, ...global, PhoneNumber: data?.PhoneNumber });
+    dispatch(
+      CustomerEdit({ ...finalobj, ...global, PhoneNumber: data?.PhoneNumber })
+    );
+  };
+  const InputHandler = (e) => {
+    var value = e.target.value;
+    var key = e.target.name;
+    if (key === "DOB") {
+      let now = new moment().add(-18, "years");
+      let inputdate = new moment(e?.target?.value);
+      let diffdays = now.diff(inputdate, "days");
+
+      if (diffdays < 0) {
+        value = null;
+      } else {
+        value = e?.target?.value;
+      }
+    }
+    setEditData({ ...EditData, [key]: value });
+  };
+  const IdProofValidation = (a) => {
+    var b = false;
+    if (EditData?.IdProofType == "Aadhaar Card") {
+      b = AdhaarValidation(a);
+    } else if (EditData?.IdProofType == "Voter Card") {
+      b = VoterCardValidation(a);
+    } else if (EditData?.IdProofType == "Passport") {
+      b = PassportValidation(a);
+    } else if (EditData?.IdProofType == "Driving Licence") {
+      b = DrivingLicenceValidation(a);
+    }
+    return b;
+  };
+  const getMaxLengthForIDProof = (IdProofType) => {
+    switch (IdProofType) {
+      case "Aadhaar Card":
+        return 12;
+      case "Driving Licence":
+        return 16;
+      case "Passport":
+        return 8;
+      case "Voter Card":
+        return 10;
+      default:
+        return 45; // Default maxLength
+    }
+  };
+  const ManageIdProofNumberDD = (e) => {
+    let value = e.target.value;
+    if (EditData?.IdProofType !== value) {
+      setEditData({
+        ...EditData,
+        IdProofNumber: null,
+        IdProofType: value,
+      });
+      setInput({ ...input, IdProofNumber: true });
+    } else {
+      setEditData({ ...EditData, IdProofType: value });
+    }
+  };
+  //-------------------------------------------useEffects---------------------------------//
+  console.log(custList[0], AreaList[0],AgentCode[0]);
+  useEffect(() => {
+    if (
+AreaList?.length >0 && 
+      AgentCode?.length > 0 
+    ) {
+      if((custList?.length == 0 && !isloading6 && isSuccess6)||isError6){
+        navigate("/superuser/customermanagement");
+      }
+      if (Array.isArray(custList) && custList?.length > 0) {
+        let apidata = custList[0];
         setData({ ...apidata, IdProofNumber: custList[0]?.IDProofNumber });
         setEditData({ ...apidata, IdProofNumber: custList[0]?.IDProofNumber });
-
         dispatch(
           CollectionList({
             ...global,
@@ -222,46 +347,22 @@ function InspectEditCustomerData() {
         )
           .then(async (resp) => {
             setSub(resp?.payload);
+            dispatch(ClearState23());
+            handleClose();
           })
           .catch((err) => {
             console.log(err);
           });
-      } else if (custList?.length == 0 && isSuccess6) {
-        setData({
-          CustomerName: null,
-          Guardian: null,
-          PhoneNumber: null,
-          AlternateNo: null,
-          DOB: null,
-          Sex: null,
-          EmailId: null,
-          Occupation: null,
-          AgentCode: null,
-          Status: null,
-          Address: null,
-          Geolocation: null,
-          BranchId: null,
-          AreaID: null,
-          LocalBody: null,
-          LandMark: null,
-          IdProofType: null,
-          IdProofNumber: null,
-        });
-        navigate("/superuser/customermanagement");
       }
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, [isSuccess6, CustUUid, isSuccess11, Edit]);
-
-  //agent code
-  const { AgentCode } = useFetchAgentCode(
-    {
-      Status: 1,
-      BranchId: EditData?.BranchId || data?.BranchId,
-    },
-    [EditData?.BranchId, data?.BranchId],
-    "BranchId"
-  );
+      
+    } else {
+      return;
+    }
+  }, [
+    CustUUid,
+    Edit,
+    AgentCode,branch,AreaList,custList,isSuccess10,isSuccess11
+  ]);
 
   //toaster
   useEffect(() => {
@@ -404,122 +505,6 @@ function InspectEditCustomerData() {
       url: "Customer/Signature",
     },
   ];
-  const NavigateToPaymentHistory = () => {
-    console.log(scid);
-
-    if (scid.length == 1) {
-      navigate("/customer/custpaymenthistory", {
-        state: { SchemeRegId: scid[0] },
-        replace: true,
-      });
-    } else {
-      setParams({ alert: true, warning: "Select 1 Customer Account." });
-    }
-  };
-  const BlockUser = (event) => {
-    event.preventDefault();
-    const UserData = {
-      Status: 2,
-      CustUUid: CustUUid,
-      CustomerID: data?.CustomerID,
-      LoggerId: global?.LoggerID,
-      UUid: global?.LoggerUUid,
-      ...comment,
-      ...global,
-    };
-
-    dispatch(CutomerStatusUpdate(UserData));
-    setOpenPrompt(false);
-  };
-
-  const OnSubmitHandler = (e) => {
-    e.preventDefault();
-    var finalobj = Object.keys(EditData).reduce((acc, key) => {
-      if (
-        EditData[key] !== null &&
-        EditData[key] !== undefined &&
-        EditData[key] !== ""
-      ) {
-        if (key === "Status" && EditData[key] == 4) {
-          acc[key] = 0;
-        } else {
-          acc[key] = EditData[key];
-        }
-      }
-      return acc;
-    }, {});
-
-    finalobj.UUid = userInfo?.details?.UUid;
-    finalobj.Utype = 3;
-    finalobj.CustUUid = CustUUid;
-    finalobj.CustomerID = data?.CustomerID;
-    finalobj.BranchId = finalobj.BranchId || userInfo?.details?.BranchId;
-    console.log({ ...finalobj, ...global, PhoneNumber: data?.PhoneNumber });
-    dispatch(
-      CustomerEdit({ ...finalobj, ...global, PhoneNumber: data?.PhoneNumber })
-    );
-  };
-
-  const InputHandler = (e) => {
-    var value = e.target.value;
-    var key = e.target.name;
-    if (key === "DOB") {
-      let now = new moment().add(-18, "years");
-      let inputdate = new moment(e?.target?.value);
-      let diffdays = now.diff(inputdate, "days");
-
-      if (diffdays < 0) {
-        value = null;
-      } else {
-        value = e?.target?.value;
-      }
-    }
-    setEditData({ ...EditData, [key]: value });
-  };
-
-  const IdProofValidation = (a) => {
-    var b = false;
-    if (EditData?.IdProofType == "Aadhaar Card") {
-      b = AdhaarValidation(a);
-    } else if (EditData?.IdProofType == "Voter Card") {
-      b = VoterCardValidation(a);
-    } else if (EditData?.IdProofType == "Passport") {
-      b = PassportValidation(a);
-    } else if (EditData?.IdProofType == "Driving Licence") {
-      b = DrivingLicenceValidation(a);
-    }
-    return b;
-  };
-
-  const getMaxLengthForIDProof = (IdProofType) => {
-    switch (IdProofType) {
-      case "Aadhaar Card":
-        return 12;
-      case "Driving Licence":
-        return 16;
-      case "Passport":
-        return 8;
-      case "Voter Card":
-        return 10;
-      default:
-        return 45; // Default maxLength
-    }
-  };
-
-  //function
-  const ManageIdProofNumberDD = (e) => {
-    let value = e.target.value;
-    if (EditData?.IdProofType !== value) {
-      setEditData({
-        ...EditData,
-        IdProofNumber: null,
-        IdProofType: value,
-      });
-      setInput({ ...input, IdProofNumber: true });
-    } else {
-      setEditData({ ...EditData, IdProofType: value });
-    }
-  };
 
   const custAge = MaxMinDate(18);
 
@@ -528,14 +513,14 @@ function InspectEditCustomerData() {
   var myPermission =
     parray && parray.filter((i) => i?.PageName == "Manage Customer")[0];
 
-  useEffect(() => {
-    if ((isloading11 || isloading10) && data?.PhoneNumber == undefined) {
-      setOpen(true);
-    } else {
-      setOpen(false);
-    }
-  }, [isloading11, isloading10, data]);
-  
+  // useEffect(() => {
+  //   if ((isloading11 || isloading10) && data?.PhoneNumber == undefined) {
+  //     setOpen(true);
+  //   } else {
+  //     setOpen(false);
+  //   }
+  // }, [isloading11, isloading10, data]);
+
   return (
     <ThemeProvider theme={CustomTheme}>
       <Grid container ml={3} mt={2} maxWidth={"xl"}>
@@ -782,7 +767,7 @@ function InspectEditCustomerData() {
               <Grid item lg={5.7} md={5.5} sm={12} xs={12}>
                 <TextField
                   size="small"
-                  value={data?.PhoneNumber||""}
+                  value={data?.PhoneNumber || ""}
                   fullWidth
                   disabled={true}
                   InputLabelProps={{ shrink: true }}
@@ -860,7 +845,7 @@ function InspectEditCustomerData() {
                         disabled={!Edit}
                         InputLabelProps={{ shrink: true }}
                         row
-                        value={EditData?.Sex||""}
+                        value={EditData?.Sex || ""}
                         aria-labelledby="demo-row-radio-buttons-group-label"
                       >
                         <FormControlLabel
@@ -898,7 +883,7 @@ function InspectEditCustomerData() {
                 ) : (
                   <TextField
                     size="small"
-                    value={data?.Sex||""}
+                    value={data?.Sex || ""}
                     disabled={true}
                     label="Gender"
                     InputLabelProps={{ shrink: true }}
@@ -1191,7 +1176,7 @@ function InspectEditCustomerData() {
                   <Grid item lg={2.7} md={5.5} sm={12} xs={12} mt={1}>
                     <TextField
                       size="small"
-                      value={`${data?.AgentCode} : ${data?.Name}`||""}
+                      value={`${data?.AgentCode} : ${data?.Name}` || ""}
                       disabled={true}
                       InputLabelProps={{ shrink: true }}
                       margin="normal"
@@ -1241,7 +1226,7 @@ function InspectEditCustomerData() {
                   <Grid item lg={2.6} md={5.5} sm={12} xs={12} mt={1}>
                     <TextField
                       size="small"
-                      value={`${data?.AreaName}`||""}
+                      value={`${data?.AreaName}` || ""}
                       disabled={true}
                       fullWidth
                       InputLabelProps={{ shrink: true }}
@@ -1302,7 +1287,7 @@ function InspectEditCustomerData() {
                   label="LandMark"
                   type="text"
                   id="LandMark"
-                  inputProps={{ maxLength:200 }}
+                  inputProps={{ maxLength: 200 }}
                   error={!input?.LandMark}
                   onChange={(e) => {
                     if (e.target.value == "") {
@@ -1329,7 +1314,7 @@ function InspectEditCustomerData() {
                 <Grid item lg={5.7} md={5.5} sm={12} xs={12}>
                   <TextField
                     size="small"
-                    value={data?.IdProofType||""}
+                    value={data?.IdProofType || ""}
                     fullWidth
                     disabled={true}
                     InputLabelProps={{ shrink: true }}
@@ -1364,7 +1349,7 @@ function InspectEditCustomerData() {
                   <Grid item lg={2.6} md={5.5} sm={12} xs={12} mt={1}>
                     <TextField
                       size="small"
-                      value={data?.IdProofType||""}
+                      value={data?.IdProofType || ""}
                       fullWidth
                       disabled={true}
                       InputLabelProps={{ shrink: true }}
@@ -1385,7 +1370,7 @@ function InspectEditCustomerData() {
                   <TextField
                     size="small"
                     fullWidth
-                    value={data?.IdProofNumber||""}
+                    value={data?.IdProofNumber || ""}
                     disabled={true}
                     InputLabelProps={{ shrink: true }}
                     margin="normal"
@@ -1434,11 +1419,10 @@ function InspectEditCustomerData() {
                     ) : null}
                   </Grid>
                   <Grid item lg={2.6} md={5.5} sm={12} xs={12} mt={1}>
-                
                     <TextField
                       size="small"
                       fullWidth
-                      value={data?.IdProofNumber||""}
+                      value={data?.IdProofNumber || ""}
                       disabled={true}
                       InputLabelProps={{ shrink: true }}
                       margin="normal"
@@ -1467,7 +1451,7 @@ function InspectEditCustomerData() {
                       yes={"Update"}
                       type1={"submit"}
                       disabled1={
-                        !Edit||
+                        !Edit ||
                         !(
                           EditData?.CustomerName !== "" &&
                           EditData?.Guardian !== "" &&
@@ -1483,8 +1467,8 @@ function InspectEditCustomerData() {
                           EditData?.LocalBody !== "" &&
                           EditData?.LandMark !== "" &&
                           EditData?.IdProofType !== "" &&
-                         ( EditData?.IdProofNumber !== "" ||
-                          EditData?.IdProofNumber !== null)
+                          (EditData?.IdProofNumber !== "" ||
+                            EditData?.IdProofNumber !== null)
                         ) ||
                         !(
                           input?.CustomerName &&
@@ -1579,10 +1563,10 @@ function InspectEditCustomerData() {
             <Typography variant="h6" color={"#000000"} ml={"2%"} mb={1}>
               Customer Accounts
             </Typography>
-            <div style={{color:"black"}}>
+            <div style={{ color: "black" }}>
               Payment History
               <IconButton variant="outlined" onClick={NavigateToPaymentHistory}>
-                <HistoryIcon/>
+                <HistoryIcon />
               </IconButton>
             </div>
           </Box>

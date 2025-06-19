@@ -21,15 +21,18 @@ function useFetchCustomer(obj = {}, dep = []) {
   }, [...dep]);
 
   useEffect(() => {
-    if (isSuccess6 && !isloading6 && at !== undefined) {
+    if (isSuccess6 && !isloading6 && at !== undefined ) {
       setCustList(CustomerDetail);
-      dispatch(ClearState6());
     } else {
       return;
     }
-
   }, [isSuccess6, isloading6]);
 
+  useEffect(() => {
+    if (isSuccess6 && CustomerDetail?.length == custList?.length) {
+      dispatch(ClearState6());
+    }
+  }, [isSuccess6, custList?.length, CustomerDetail?.length]);
   var count = custList?.length;
   return { count, custList, isError6, error6, isSuccess6, isloading6 };
 }

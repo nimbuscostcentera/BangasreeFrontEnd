@@ -77,10 +77,10 @@ function CustPaymentHistory() {
             ? "Cheque"
             : item?.PaymentMode == "4"
             ? "UPI"
-            : item?.PaymentMode == "5"
-            ? "Credit Note"
-            : item?.PaymentMode == "6"
-            ? "Poila Boisakh Coupon"
+            // : item?.PaymentMode == "5"
+            // ? "Credit Note"
+            // : item?.PaymentMode == "6"
+            // ? "Poila Boisakh Coupon"
             : null;
         sum = sum + item?.totcolection;
         obj.TotalPaidAmt = `${sum}/-`;

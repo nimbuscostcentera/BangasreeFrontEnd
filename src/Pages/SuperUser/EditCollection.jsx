@@ -181,8 +181,8 @@ function EditCollection() {
     { PaymentMode: 2, value: "Online Bank Transfer" },
     { PaymentMode: 3, value: "Cheque" },
     { PaymentMode: 4, value: "UPI" },
-    { PaymentMode: 5, value: "Credit Note" },
-    { PaymentMode: 6, value: "Poila Boisakh Coupon" },
+    // { PaymentMode: 5, value: "Credit Note" },
+    // { PaymentMode: 6, value: "Poila Boisakh Coupon" },
   ];
   return (
     <Grid container maxtype={"xl"} mt={1} ml={2} columnGap={2} rowGap={2}>

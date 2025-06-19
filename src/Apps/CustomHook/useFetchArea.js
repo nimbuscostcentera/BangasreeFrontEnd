@@ -24,12 +24,17 @@ function useFetchArea(obj = {}, dep = []) {
   useEffect(() => {
     if (isSuccess5 && !isloading5 && at !== undefined) {
       setAreaList(areaList);
-      dispatch(ClearState5());
+      
     } else {
       return;
     }
-   
   }, [isSuccess5, ...dep]);
+  
+  useEffect(() => {
+    if (isSuccess5 && AreaList?.length == areaList?.length) {
+      dispatch(ClearState5());
+    }
+  }, [AreaList, isSuccess5, areaList]);
 
   return { AreaList, isError5, error5, isSuccess5, isloading5 };
 }

@@ -48,6 +48,7 @@ export default function CollectionSummary() {
   const currentdate = moment().format("YYYY-MM-DD");
   const [Lot, setLot] = useState();
   const [LotID, setLotID] = useState([]);
+  const [currImgLink, setCurrImgLink] = useState('');
   const [params, setParams] = useState({
     alert: false,
     warning: "",
@@ -186,14 +187,15 @@ export default function CollectionSummary() {
       width: 70,
       renderCell: (item) => {
         return (
-          <React.Fragment>
-            <IconButton onClick={HandleOpenModal}>
+          <React.Fragment key={item?.row?.index}>
+            <IconButton onClick={() => { HandleOpenModal(item?.row?.pic) }} key={item?.row?.index}>
               <InsertPhotoIcon />
             </IconButton>
             <Dialog
               fullScreen
               open={params?.openModal}
               onClose={HandleCloseModal}
+              key={item?.row?.index}
             >
               <DialogTitle
                 sx={{
@@ -214,9 +216,23 @@ export default function CollectionSummary() {
                   justifyContent: "center",
                   alignItems: "center",
                 }}
+                key={item?.row?.index}
               >
-                <Box>
-                  <img src={item?.row?.pic} width={900} height={600} />
+                <Box
+                  key={
+                    item?.row?.LotId +
+                    `${moment().format("DD_MM_YYYY_HH_mm_ss")}`
+                  }
+                >
+                  <img
+                    src={currImgLink}
+                    width={900}
+                    height={600}
+                    key={
+                      item?.row?.LotId +
+                      `${moment().format("DD_MM_YYYY_HH_mm_ss")}`
+                    }
+                  />
                 </Box>
               </DialogContent>
               <DialogActions>
@@ -242,8 +258,9 @@ export default function CollectionSummary() {
     { value: "Rejected", Status: 4 },
   ];
 
-  const HandleOpenModal = () => {
+  const HandleOpenModal = (link) => {
     setParams({ ...params, openModal: true });
+    setCurrImgLink(() => link);
   };
   const HandleCloseModal = () => {
     setParams({ ...params, openModal: false });

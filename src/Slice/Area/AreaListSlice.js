@@ -31,14 +31,14 @@ const AreaListSlice = createSlice({
   initialState: {
     isloading5: false,
     areaList: [],
-    error5: false,
+    error5: "",
     isError5: false,
     isSuccess5: false,
   },
   reducers: {
     ClearState5: (state) => {
       (state.isloading5 = false),
-        (state.error5 = false),
+        (state.error5 = ""),
         (state.isError5 = false),
         (state.isSuccess5 = false);
     },
@@ -47,21 +47,15 @@ const AreaListSlice = createSlice({
     builder
       .addCase(getAreaList.pending, (state) => {
         state.isloading5 = true;
-        state.isError5 = false;
-        state.isSuccess5 = false;
-        state.error5 = false;
       })
       .addCase(getAreaList.fulfilled, (state, { payload }) => {
         state.areaList = payload;
         state.isSuccess5 = true;
         state.isloading5 = false;
-        state.isError5 = false;
-        state.error5 = false;
       })
       .addCase(getAreaList.rejected, (state, { payload }) => {
         state.error5 = payload;
         state.isError5 = true;
-        state.isSuccess5 = false;
         state.isloading5 = false;
       });
   },

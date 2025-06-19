@@ -33,15 +33,19 @@ const [branch,setBranch]=useState([]);
  useEffect(() => {
    if (isSuccess35 && !isloading35 && at !== undefined) {
      setBranch(Resp35);
-     dispatch(ClearState35());
    }
    else {
      return
    }
- 
  }, [Resp35, ...dep]);
 
-  return { branch};
+  useEffect(() => {
+    if(isSuccess35  && Resp35?.length == branch?.length){
+      dispatch(ClearState35());
+    }
+  },[isSuccess35,branch,Resp35]);
+  
+  return { branch, isloading35 ,isSuccess35};
 }
 
 export default useFetchBranch;

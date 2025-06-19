@@ -919,7 +919,7 @@ function ManageCollections() {
             label={"Collected by"}
             data={[
               { NotAgentPayment: 1, value: "Backoffice" },
-              { NotAgentPayment: 0, value: "Agent" },
+              { NotAgentPayment: 2, value: "Agent" },
             ]}
             id={"arial_collector"}
             disabled={false}
@@ -1251,8 +1251,7 @@ function ManageCollections() {
               rows={PaymentDetails || []}
               columns={columns || []}
               rowHeight={44}
-              rowCount={Filters?.total}
-              
+              rowCount={Filters?.total}              
               checkboxSelection
               rowSelectionModel={PaymentID}
               onRowSelectionModelChange={(id) => {

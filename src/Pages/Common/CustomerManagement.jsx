@@ -110,7 +110,7 @@ export default function CustomerManagement() {
   //Login List for Table
   const { userInfo, global } = UseFetchLogger();
   //agent List
-  const { AgentCode: AgentListDD } = useFetchAcode();
+  const { AgentCode: AgentListDD } = useFetchAcode({},[]);
   //Customer CustomerApproval
   const { isloading10, Msg10, error10, isError10, isSuccess10 } = useSelector(
     (state) => state.CustStatus

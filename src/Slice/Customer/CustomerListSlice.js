@@ -40,18 +40,14 @@ const CustomerListSlice = createSlice({
     builder
       .addCase(CustomerList.pending, (state) => {
         state.isloading6 = true;
-        state.isError6 = false;
-        state.isSuccess6 = false;
       })
       .addCase(CustomerList.fulfilled, (state, { payload }) => {
         state.isloading6 = false;
-        state.isError6 = false;
         state.isSuccess6 = true;
         state.CustomerDetail = payload;
       })
       .addCase(CustomerList.rejected, (state, { payload }) => {
         state.isloading6 = false;
-        state.isSuccess6 = false;
         state.isError6 = true;
         state.error6 = payload;
       });
