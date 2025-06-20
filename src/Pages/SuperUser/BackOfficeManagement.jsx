@@ -269,7 +269,7 @@ export default function SuperUserManagement() {
   let currentdate = moment().format("YYYY-MM-DD");
   return (
     <ThemeProvider theme={CustomTheme}>
-         <Grid container ml={2} mt={2} maxWidth={"l"}>
+      <Grid container ml={2} mt={2} maxWidth={"l"}>
         <ToastContainer autoClose={3000} />
         <Grid
           item
@@ -466,7 +466,7 @@ export default function SuperUserManagement() {
             columns={columns}
             rows={SuperUserDetails}
             state={ids}
-            setState={setIds}
+            selectState={(arr) => { setIds(arr) }}
             isloading={isloading36}
             height={"68vh"}
           />

@@ -236,11 +236,11 @@ const CustomFooter = ({ count }) => {
 
 CustomFooter.propTypes = {
   count: PropTypes.shape({
-    totalColl: PropTypes.number,
-    totalSub: PropTypes.number,
-    comper: PropTypes.number,
-    com: PropTypes.number,
-    rowSelected: PropTypes.number,
+    totalColl: PropTypes.any,
+    totalSub: PropTypes.any,
+    comper: PropTypes.any,
+    com: PropTypes.any,
+    rowSelected: PropTypes.any,
     agentcode: PropTypes.string,
   }).isRequired,
 };

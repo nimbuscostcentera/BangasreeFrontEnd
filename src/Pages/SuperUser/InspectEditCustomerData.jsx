@@ -1595,17 +1595,13 @@ AreaList?.length >0 &&
               rows={sub || []}
               uniqueid={"SchemeRegId"}
               isloading={isloading23}
-              setState={setScid}
+              selectState={(arr) => {
+                setScid(arr);
+              }}
               state={scid}
               width="100%"
               height={"auto"}
             />
-            {/* <ReusableDataTable
-              columns={columns}
-              rows={[]}
-              uniqueid={"CollectionId"}
-              isloading={isloading29}
-            /> */}
           </CenterBox>
           <br />
         </Grid>

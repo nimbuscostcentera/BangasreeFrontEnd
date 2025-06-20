@@ -763,7 +763,9 @@ export default function CustomerManagement() {
             columns={columns}
             rows={CustomerDetails}
             state={CustID}
-            setState={setCustID}
+            selectState={(arr) => {
+              setCustID(arr);
+            }}
             isloading={isloading6}
             height={"90vh"}
           />

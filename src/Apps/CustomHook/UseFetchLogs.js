@@ -8,9 +8,8 @@ import {
 function UseFetchLogs(obj = {}, dep = []) {
   const dispatch = useDispatch();
   const [LogBookdetails, setLogBookdetails] = useState([]);
-  const { isLogListSuccess, LogListResult, isLogListLoading } = useSelector(
-    (state) => state.logs
-  );
+  const { isLogListSuccess, LogListResult, isLogListLoading, isLogListError } =
+    useSelector((state) => state.logs);
   const { global } = UseFetchLogger();
   useEffect(() => {
     if (
@@ -24,15 +23,23 @@ function UseFetchLogs(obj = {}, dep = []) {
   }, dep);
 
   useEffect(() => {
-    if (isLogListSuccess && !isLogListLoading) {
+    if (isLogListSuccess && !isLogListLoading && !isLogListError) {
       setLogBookdetails(LogListResult);
-      dispatch(ClearstateLogList());
     } else {
       return;
     }
   }, [isLogListLoading, isLogListSuccess, ...dep]);
 
+  useEffect(() => {
+    if (
+      LogListResult?.length==LogBookdetails?.length
+    ) {
+      dispatch(ClearstateLogList());
+    }
+  },[LogBookdetails?.length]);
   return {
+    isLogListLoading,
+    isLogListSuccess,
     LogBookdetails,
   };
 }

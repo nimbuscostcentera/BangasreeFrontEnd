@@ -49,7 +49,7 @@ function ViewLogs() {
       [key]: value,
     });
   };
-  const { LogBookdetails } = UseFetchLogs(Filters, [
+  const { LogBookdetails,isLogListLoading,isLogListSuccess } = UseFetchLogs(Filters, [
     Filters?.StartDate,
     Filters?.EndDate,
   ]);
@@ -66,8 +66,9 @@ function ViewLogs() {
       width: 180,
       hideable: false,
       renderCell: (i) => {
+        console.log(i?.row?.DateTime);
         return (
-          <span>{moment(i?.rows?.DateTime).format("DD/MM/YYYY HH:mm:ss")}</span>
+          <span>{moment(i?.row?.DateTime).format("DD/MM/YYYY HH:mm:ss")}</span>
         );
       },
     },
@@ -92,29 +93,29 @@ function ViewLogs() {
   ];
  
   useEffect(() => {
-    if (LogBookdetails?.length > 0) {
+    if (isLogListSuccess && !isLogListLoading) {
       let arr = [];
-      LogBookdetails?.forEach((i) => arr.push({ ...i }));
-      let req = {};
-      arr?.forEach((item) => {
-        req = JSON.parse(item?.Request);
-        item.message = `A ${
-          req?.Utype == 1
-            ? req?.SuperUserType == 1
-              ? "Super User"
-              : "BackOfficeUser"
-            : "Agent"
-        } of LoggerID ${req?.LoggerID} and BarnchID ${req?.LoggerBranchId} ${
-          item?.Description
-        } ${req?.SchemeRegId ? "of SchemeID " + req?.SchemeRegId : ""}`;
-      });
-      setFilterData(arr);
-    }
-    else {
+        LogBookdetails?.forEach((i) => arr.push({ ...i }));
+        let req = {};
+        arr?.forEach((item) => {
+          req = JSON.parse(item?.Request);
+          item.message = `A ${
+            req?.Utype == 1
+              ? req?.SuperUserType == 1
+                ? "Super User"
+                : "BackOfficeUser"
+              : "Agent"
+          } of LoggerID ${req?.LoggerID} and BarnchID ${req?.LoggerBranchId} ${
+            item?.Description
+          } ${req?.SchemeRegId ? "of SchemeID " + req?.SchemeRegId : ""} ${
+            req?.CollectionId? "of Collection ID " + req?.CollectionId:""
+          }`;
+        });
+        setFilterData(arr);
+    } else {
       return;
     }
-    
-  }, [LogBookdetails]);
+  }, [LogBookdetails,isLogListLoading, isLogListSuccess,Filters?.EndDate,Filters?.StartDate]);
   return (
     <ThemeProvider theme={CustomTheme}>
        <Grid container ml={2} mt={3} maxWidth={"l"}>

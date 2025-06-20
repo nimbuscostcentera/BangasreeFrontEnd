@@ -59,7 +59,7 @@ export default function ReusableDataTable({
   columns,
   rows=[],
   state,
-  setState,
+  selectState,
   width = "100%",
   RedMark,
   height,
@@ -113,7 +113,7 @@ export default function ReusableDataTable({
       onRowSelectionModelChange={(id) => {
         const SelectedIDs = new Set(id);
         const IDarr = Array.from(SelectedIDs);
-        setState(IDarr);
+        selectState(IDarr);
       }}
       getRowClassName={(params) => {
         return params.row.red && RedMark ? `RedColor` : `whitesmoke`;
@@ -134,7 +134,7 @@ ReusableDataTable.propTypes = {
   columns: PropTypes.array,
   rows: PropTypes.array,
   state: PropTypes.any,
-  setState: PropTypes.func,
+  selectState: PropTypes.func,
   width: PropTypes.string,
   RedMark: PropTypes.bool,
   height: PropTypes.any,

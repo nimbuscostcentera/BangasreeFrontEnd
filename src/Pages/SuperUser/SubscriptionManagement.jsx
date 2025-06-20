@@ -935,7 +935,7 @@ function SubscriptionManagement() {
           xs={12}
           sx={{
             display: "flex",
-            justifyContent: { md: "end", sm: "center", xs:"center"},
+            justifyContent: { md: "end", sm: "center", xs: "center" },
             alignItems: "center",
             my: {
               sm: 2,
@@ -1022,7 +1022,9 @@ function SubscriptionManagement() {
             columns={columns}
             rows={CollectionDetails}
             state={CId}
-            setState={setCId}
+            selectState={(IDArray) => {
+              setCId(IDArray);
+            }}
             RedMark={checkedMatured || checkedDues}
             isloading={isloading23}
             height={"90vh"}

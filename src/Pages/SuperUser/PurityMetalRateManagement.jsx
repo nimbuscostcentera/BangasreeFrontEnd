@@ -61,10 +61,10 @@ function PurityMetalRateManagement() {
   const HandleOpen = () => {
     setShow(true);
   };
+
   //purity add
   const SavePurity = (e) => {
     e.preventDefault();
-    console.log(purity);
     dispatch(AddPurityFunc({ ...global, ...purity }));
   };
   const PurityHandler = (e) => {
@@ -84,7 +84,6 @@ function PurityMetalRateManagement() {
   };
   const SubmitRateVsPurity = (e) => {
     e.preventDefault();
-    console.log(RateVsPurityData);
     dispatch(addRateVsPurityFunc({ ...global, ...RateVsPurityData }));
   };
   //add purity response
@@ -117,7 +116,6 @@ function PurityMetalRateManagement() {
     }
     dispatch(ClearState78());
   }, [isSuccess78, isloading78, isError78]);
-  console.log(rateList);
   //column
   const Col = [
     // {
@@ -342,7 +340,9 @@ function PurityMetalRateManagement() {
           columns={Col}
           rows={rateList || []}
           isloading={false}
-          setState={setRateVsPurityData}
+          selectState={(arr) => {
+            setRateVsPurityData(arr);
+          }}
           state={RateVsPurityData}
           uniqueid={"ID"}
           key={1}

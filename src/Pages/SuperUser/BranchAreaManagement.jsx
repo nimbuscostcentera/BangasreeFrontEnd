@@ -725,7 +725,7 @@ export default function BranchAreaManagement() {
           columns={columns}
           rows={tableData}
           state={ids}
-          setState={setIds}
+          selectState={(arr) => { setIds(arr) }}
           isloading={isloading35}
           height={350}
         />
@@ -875,7 +875,7 @@ export default function BranchAreaManagement() {
           columns={col}
           rows={area}
           state={aids}
-          setState={setAids}
+          selectState={(arr) => { setAids(arr) }}
           isloading={isloading5}
           height={450}
         />

@@ -188,7 +188,7 @@ function CustIndex() {
   
   return (
     <Grid container mt={3} ml={2} columnGap={2.5} rowGap={1}>
-      <ToastContainer/>
+      <ToastContainer />
       <Grid item md={12} xs={12} sm={12}>
         <Header
           title="Customer Dashboard"
@@ -238,7 +238,7 @@ function CustIndex() {
         }}
       >
         <StatBox
-          title={TotalAcc||0}
+          title={TotalAcc || 0}
           subtitle="No. of A/C"
           stcolor={"#ffffff"}
           icon={<PersonIcon sx={{ color: "whitesmoke", fontSize: "35px" }} />}
@@ -262,10 +262,10 @@ function CustIndex() {
         }}
       >
         <StatBox
-          title={`₹${TotalPayedAmt||0}/-`}
+          title={`₹${TotalPayedAmt || 0}/-`}
           subtitle="Total Payed"
           stcolor={"#ffffff"}
-          icon={<PersonIcon sx={{ color: "whitesmoke", fontSize: "35px"}} />}
+          icon={<PersonIcon sx={{ color: "whitesmoke", fontSize: "35px" }} />}
         />
       </Grid>
       <Grid
@@ -352,36 +352,38 @@ function CustIndex() {
       <Grid item sm={12} xs={12} md={12} lg={12} display={"flex"}>
         <ReusableDataTable
           columns={columns}
-          rows={sub||[]}
-          setState={setSCRID}
+          rows={sub || []}
+          selectState={(arr) => {
+            setSCRID(arr);
+          }}
           state={scrid}
           uniqueid={"SchemeRegId"}
           isloading={isloading23}
         />
         {Pop === null ? null : (
-                  <>
-                    <Popover
-                      id="mouse-over-popover"
-                      sx={{
-                        pointerEvents: "none",
-                      }}
-                      open={open}
-                      anchorEl={anchorEl}
-                      anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "left",
-                      }}
-                      transformOrigin={{
-                        vertical: "top",
-                        horizontal: "left",
-                      }}
-                      onClose={handlePopoverClose}
-                      disableRestoreFocus
-                    >
-                      <Typography sx={{ p: 1 }}>{Pop}</Typography>
-                    </Popover>
-                  </>
-                )}
+          <>
+            <Popover
+              id="mouse-over-popover"
+              sx={{
+                pointerEvents: "none",
+              }}
+              open={open}
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "left",
+              }}
+              onClose={handlePopoverClose}
+              disableRestoreFocus
+            >
+              <Typography sx={{ p: 1 }}>{Pop}</Typography>
+            </Popover>
+          </>
+        )}
       </Grid>
     </Grid>
   );

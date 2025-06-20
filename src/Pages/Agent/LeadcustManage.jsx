@@ -328,7 +328,7 @@ function LeadcustManage() {
             columns={columns}
             rows={Lead}
             state={LeadId}
-            setState={setLeadId}
+            selectState={(arr) => { setLeadId(arr) }}
             isloading={loader}
             height={"70vh"}
           />

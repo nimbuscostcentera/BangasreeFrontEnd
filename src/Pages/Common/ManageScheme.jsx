@@ -480,7 +480,9 @@ export default function SchemeManagement() {
           columns={columns}
           rows={SchemeDetails || []}
           state={SUUid}
-          setState={setSUUid}
+          selectState={(arr) => {
+            setSUUid(arr);
+          }}
           isloading={isloading18}
           height={"68vh"}
         />

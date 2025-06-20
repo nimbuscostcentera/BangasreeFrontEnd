@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import AxiosInstance from "../../Apps/GlobalFunctions/AxiosInstance";
-const URL = `/superuser-routes//logbook-list`;
+const URL = `/superuser-routes/logbook-list`;
 
 export const LogBookListFunc = createAsyncThunk(
   "LogBookList",
@@ -39,8 +39,8 @@ const LogListSlice = createSlice({
   reducers: {
     ClearstateLogList: (state) => {
       (state.isLogListLoading = false),
-        (state.isLogListError = false),
-        (state.isLogListSuccess = false);
+      (state.isLogListError = false),
+      (state.isLogListSuccess = false);
     },
   },
   extraReducers: (builder) => {
@@ -54,12 +54,10 @@ const LogListSlice = createSlice({
         state.LogListResult = payload;
         state.isLogListSuccess = true;
         state.isLogListLoading = false;
-        state.isLogListError = false;
       })
       .addCase(LogBookListFunc.rejected, (state, { payload }) => {
         state.LogListError = payload;
         state.isLogListError = true;
-        state.isLogListSuccess = false;
         state.isLogListLoading = false;
       });
   },

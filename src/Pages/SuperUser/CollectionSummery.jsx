@@ -513,7 +513,9 @@ export default function CollectionSummary() {
           columns={columns}
           rows={Lot || []}
           state={LotID}
-          setState={setLotID}
+          selectState={(arr) => {
+            setLotID(arr);
+          }}
           isloading={isLotLoading}
           height={"70vh"}
           width="98%"

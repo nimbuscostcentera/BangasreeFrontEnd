@@ -463,7 +463,9 @@ export default function AgentManagement() {
             columns={columns}
             rows={AgentDetails || []}
             state={ids}
-            setState={setIds}
+            selectState={(arr) => {
+              setIds(arr);
+            }}
             isloading={isloading2}
             height={"68vh"}
           />
