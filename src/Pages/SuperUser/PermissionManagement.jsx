@@ -321,6 +321,7 @@ function PermissionManagement() {
           funcTrigger1={handleSubmitData}
           disable1={tableData?.length !== 0 ? false : true}
           h2={"Filter Out"}
+          Tooltip2={"Filter Out"}
           icon2={<FilterAltOffIcon fontSize="medium" />}
           funcTrigger2={FilterOut}
           disable2={false}

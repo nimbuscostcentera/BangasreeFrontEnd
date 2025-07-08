@@ -302,7 +302,7 @@ export default function SuperUserManagement() {
               <IconOnOffButton
                 h1={"Add SuperUser"}
                 icon1={<AddCircleOutlineIcon fontSize="medium" />}
-                Tooltip1={"ADD Collection"}
+                Tooltip1={"Add SuperUser"}
                 funcTrigger1={() => {
                   navigate("/superuser/superuserregistration");
                 }}
@@ -466,7 +466,9 @@ export default function SuperUserManagement() {
             columns={columns}
             rows={SuperUserDetails}
             state={ids}
-            selectState={(arr) => { setIds(arr) }}
+            selectState={(arr) => {
+              setIds(arr);
+            }}
             isloading={isloading36}
             height={"68vh"}
           />

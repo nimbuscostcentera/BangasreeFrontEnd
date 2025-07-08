@@ -311,7 +311,7 @@ export default function AgentManagement() {
                 <AddCircleOutlineIcon fontSize="medium" />
               ) : null
             }
-            Tooltip2={myPermission?.Create == 1 ? "ADD Collection" : null}
+            Tooltip2={myPermission?.Create == 1 ? "Add Agent" : null}
             funcTrigger2={
               myPermission?.Create == 1
                 ? () => {
@@ -326,7 +326,6 @@ export default function AgentManagement() {
         </Grid>
         {params?.alert ? (
           <Grid item md={12} sm={12} xs={12} lg={12}>
-            {" "}
             <Box display={"flex"} justifyContent={"space-between"}>
               <Stack sx={{ width: "100%" }} spacing={2}>
                 <Alert

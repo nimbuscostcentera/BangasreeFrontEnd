@@ -682,7 +682,7 @@ export default function CustomerManagement() {
                   uniquekey={"AgentCode"}
                   ObjectKey={["AgentCode", "Name"]}
                   data={AgentListDD || []}
-                  deselectvalue={true}
+                  deselectvalue={false}
                   disabled={false}
                   id={"AgentCode"}
                   label={"from Old Agent"}
@@ -716,7 +716,7 @@ export default function CustomerManagement() {
                   name={"NewAgentCode"}
                   ObjectKey={["AgentCode", "Name"]}
                   data={AgentListDD || []}
-                  deselectvalue={true}
+                  deselectvalue={false}
                   disabled={false}
                   id={"AgentCode"}
                   label={"Assign To New Agent"}

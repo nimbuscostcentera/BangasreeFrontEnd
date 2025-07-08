@@ -5,7 +5,6 @@ import {
   ClearState52,
 } from "../../Slice/PaymentDetails/MontlyPaymentSlice";
 import UseFetchLogger from "./UseFetchLogger";
-import { defaultProps } from "@nivo/bar";
 const useFetchMonthlyPayment = (obj={},dep=[]) => {
   const [mpay, setmpay] = useState([]);
   const dispatch = useDispatch();
@@ -31,7 +30,7 @@ const useFetchMonthlyPayment = (obj={},dep=[]) => {
     {
       return;
       }
-  }, [isSuccess52, isloading52,...defaultProps]);
+  }, [isSuccess52, isloading52,...dep]);
 
   return { isloading52, mpay, isError52, error52, isSuccess52 };
 };

@@ -202,15 +202,26 @@ function PurityMetalRateManagement() {
           sx={{
             mt: 1,
             color: "grey",
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
           }}
         >
-          <Typography>Add Purity</Typography>
-          <IconButton onClick={HandleOpen}>
-            <AddCircleOutlineIcon sx={{ color: "grey", fontSize: "25px" }} />
-          </IconButton>
+          <Tooltip title="Add Purity">
+            <span>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                }}
+              >
+                <Typography>Add Purity</Typography>
+                <IconButton onClick={HandleOpen}>
+                  <AddCircleOutlineIcon
+                    sx={{ color: "grey", fontSize: "25px" }}
+                  />
+                </IconButton>{" "}
+              </Box>
+            </span>
+          </Tooltip>
           <AddPurityform
             InputHandler={PurityHandler}
             PrtData={purity}

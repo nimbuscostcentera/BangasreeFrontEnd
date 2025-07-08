@@ -318,7 +318,7 @@ export default function CollectionSummary() {
         </Box>
         <IconOnOffButton
           icon1={<VisibilityIcon fontSize="medium" />}
-          Tooltip1={"ADD"}
+          Tooltip1={"All Collection"}
           h1={"All Collection"}
           disable2={LotID && LotID.length !== 1 ? true : false}
           funcTrigger1={() => {
@@ -438,7 +438,6 @@ export default function CollectionSummary() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            mt: 2,
           }}
         >
           <Typography>Details</Typography>

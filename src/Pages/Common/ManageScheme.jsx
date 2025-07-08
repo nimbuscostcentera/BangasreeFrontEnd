@@ -9,6 +9,7 @@ import {
   AlertTitle,
   Stack,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import { GRID_CHECKBOX_SELECTION_COL_DEF } from "@mui/x-data-grid";
 import { Box } from "@mui/system";
@@ -319,7 +320,7 @@ export default function SchemeManagement() {
         {myPermission?.Create == 1 ? (
           <IconOnOffButton
             icon1={<AddCircleOutlineIcon fontSize="medium" />}
-            Tooltip1={"ADD"}
+            Tooltip1={"Add Scheme"}
             h1={"Add Scheme"}
             disable2={SUUid && SUUid.length !== 1 ? true : false}
             funcTrigger1={() => {
@@ -421,17 +422,20 @@ export default function SchemeManagement() {
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  mt: 2,
                 }}
               >
                 <Typography>Scheme History</Typography>
-                <IconButton
-                  onClick={() => {
-                    navigate("/superuser/scheme-history");
-                  }}
-                >
-                  <HistoryIcon />
-                </IconButton>
+                <Tooltip title={"Scheme History"}>
+                  <span>
+                    <IconButton
+                      onClick={() => {
+                        navigate("/superuser/scheme-history");
+                      }}
+                    >
+                      <HistoryIcon />
+                    </IconButton>
+                  </span>
+                </Tooltip>
               </Box>
             ) : null}
           </>
